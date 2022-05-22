@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # adds language pattern in permalink line and all found relative links in the current open file recursively from a given root dir
-# evoke like: python _utils/postprocess_translation.py de _qubes-translated/de/ _utils/tx-mapping _utils/translated_hrefs_urls.txt --yml
+# evoke like: python _utils/postprocess_translation.py de _translated/de/ _utils/tx-mapping _utils/translated_hrefs_urls.txt --yml
 #param1 is the language in short form
 #param2 is the root translated dir 
 #param3 is current transifex mapping between original and translated files in the format: 
@@ -15,7 +15,7 @@ from yaml import dump as ydump
 import frontmatter
 from io import open as iopen
 from os.path import isfile, isdir
-from os import linesep, walk
+from os import linesep, walk, environ
 from re import findall
 from sys import exit
 from argparse import ArgumentParser
@@ -43,43 +43,19 @@ YML_KEYS = ['url', 'topic', 'title', 'category', 'folder', 'htmlsection', 'tweet
         'tts1', 'tts2', 'txp', 'txaq', 'pxaq', 'column1', 'column2', 'column3', 'yes_short', 'no_short', 'no_extended', 'tba',
         'bold', 'item', 'note', 'section', 'row', 'r_version',
         'go', 'search', 'metatopic', 'ddg', 'hover']
-
-YML_KEYS_ORIGINAL_TO_RETAIN= [
-        'icon',
-        'category',
-        'img',
-        'attachment',
-        'tweet',
-        'avatar',
-        'htmlsection',
-        'folder',
-        'id',
-        'slug',
-        'title',
-        'author',
-        'category',
-        'name',
-        'type',
-        'picture',
-        'email',
-        'fingerprint',
-        'github',
-        'website',
-        'section',
-        'r_version',
-        'note'
-        ]
-
 URL_KEY = 'url' 
 # md frontmatterkeys:
 PERMALINK_KEY = 'permalink'
 REDIRECT_KEY = 'redirect_from'
+REDIRECT_TO = 'redirect_to'
 LANG_KEY = 'lang'
 TRANSLATED_KEY = 'translated'
 LAYOUT_KEY = 'layout'
 SLASH = '/'
 MD_URL_SPLIT_PATTERNS = ['/)','/#']
 TRANSLATED_LANGS = ['de']
+if 'TRANSLATED_LANGS' in environ:
+    TRANSLATED_LANGS = environ['TRANSLATED_LANGS'].split()
 #EXCLUDE_FILES = ['download.md' ]
 
 
@@ -134,6 +110,9 @@ def process_markdown(source_file, translated_file, permalinks, lang):
             mdt = frontmatter.load(t)
             if mds.get(PERMALINK_KEY) != None:
                 mdt[PERMALINK_KEY] = SLASH + lang + mds.get(PERMALINK_KEY)
+            elif PERMALINK_KEY in mdt:
+                # if missing in source, remove from translated too
+                del mdt[PERMALINK_KEY]
     
             if mds.get(REDIRECT_KEY) != None:
                 redirects = mds.get(REDIRECT_KEY)
@@ -151,11 +130,25 @@ def process_markdown(source_file, translated_file, permalinks, lang):
                 if mdt.get(PERMALINK_KEY) != None and mdt[PERMALINK_KEY] in mdt[REDIRECT_KEY]:
                     mdt[REDIRECT_KEY].remove(mdt[PERMALINK_KEY])
 
-                tmp = list(set(mdt[REDIRECT_KEY]))
+                tmp = sorted(set(mdt[REDIRECT_KEY]))
                 mdt[REDIRECT_KEY] = tmp
+            elif REDIRECT_KEY in mdt:
+                # if missing in source, remove from translated too
+                del mdt[REDIRECT_KEY]
 
             if mds.get(LAYOUT_KEY) != None:
                 mdt[LAYOUT_KEY] = mds[LAYOUT_KEY]
+
+            if mds.get(REDIRECT_TO) != None:
+                redirect = mds.get(REDIRECT_TO)
+                if isinstance(redirect, list):
+                    redirect = redirect[0]
+                if redirect.startswith('/') and not redirect.startswith(SLASH + lang + SLASH) and not redirect.startswith(news):
+                    mdt[REDIRECT_TO] = SLASH + lang + redirect
+                else:
+                    mdt[REDIRECT_TO] = redirect
+            elif REDIRECT_TO in mdt:
+                del mdt[REDIRECT_TO]
 
             mdt[LANG_KEY] = lang
             # TODO we do not need the translated key anymore
@@ -263,20 +256,17 @@ def replace_url(to_replace, original, lang, permalinks):
         if isinstance(v_r, list) and isinstance(v_o, list):
             for i, j in zip(v_r, v_o):
                 replace_url(i, j, lang, permalinks)
-        if k_r != k_o:
-            logger.error("ERROR, ordered of the loaded yml file is not preserved %s" % k_r +':' + k_o)
-            exit(1)
-        if k_r in YML_KEYS_ORIGINAL_TO_RETAIN:
-            to_replace[k_r] = original[k_r]
-        if URL_KEY == k_r and URL_KEY == k_o:
-            val = original[URL_KEY]
-            if val is not None and '#' in val and "http" not in val and not val.startswith('#'):
+        elif URL_KEY == k_r and URL_KEY == k_o:
+            val = original[k_r]
+            if val is not None and '#' in val:
                 tmp_val = val[0:val.find('#')]
                 to_replace[URL_KEY]= SLASH + lang + val if (tmp_val in permalinks) else val
-            elif val is not None and "http" not in val and not val.startswith('#'):
-                to_replace[URL_KEY]= SLASH + lang + val if (val in permalinks) else val
             else:
-                logger.debug("Do nothing for key:value in yaml file. %s: %s", k_o, v_o)
+                to_replace[URL_KEY]= SLASH + lang + val if (val in permalinks) else val
+        elif k_r != k_o:
+            logger.error("ERROR, ordered of the loaded yml file is not preserved %s" % k_r +':' + k_o)
+            exit(1)
+
 
 
 def process_yml(source, translated, lang, permalinks):
@@ -416,7 +406,7 @@ def main(translated_dir, lang, yml, mapping, href_filename):
 
 if __name__ == '__main__':
 
-    # python _utils/postprocess_translation.py de _qubes-translated/de/ _utils/tx-mapping _utils/translated_hrefs_urls.txt --yml
+    # python _utils/postprocess_translation.py de _translated/de/ _utils/tx-mapping _utils/translated_hrefs_urls.txt --yml
     parser = ArgumentParser()
     # for which language should we do this
     parser.add_argument("language")
