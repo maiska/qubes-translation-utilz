@@ -25,7 +25,7 @@ redirect_base_url = 'https://foo.bar' # TODO
 rst_directory = '/home/user/qubes-translation-utilz/md2rst/refactor_test/TEST/rst-convert/qubesos.github.io.rtd/_doc/'
 copy_from_dir = '/home/user/qubes-translation-utilz/md2rst/preparation/' # TODO nice to have
 md_file_names = ['admin-api-table.md', 'admin-api.md', 'doc.md'] # TODO nice to have
-rst_file_names = ['requirements.txt', 'conf.py', '.readthedocs.yaml'] # TODO nice to have
+rst_file_names = ['requirements.txt', 'conf.py', '.readthedocs.yaml', 'introduction/video-tours.rst'] # TODO nice to have
 directory_to_remove = 'external' # TODO nice to have
 hidden_files_to_remove = ['.gitlab-ci.yml', '.travis.yml'] # TODO nice to have
 
