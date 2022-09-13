@@ -901,7 +901,7 @@ class QubesRstTranslator(nodes.NodeVisitor):
         print(node.children)
         if len(node)==1:
             child_tmp = node.children[0]
-            if isinstance(child_tmp, docutils.nodes.reference):
+            if isinstance(child_tmp, nodes.reference):
                 refuri = child_tmp.get('refuri')
                 self.add_text(_('|%s| image:: %s') % (refuri[refuri.rfind('/') + 1:len(refuri)], refuri))
         raise nodes.SkipNode
