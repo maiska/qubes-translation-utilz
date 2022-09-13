@@ -17,13 +17,13 @@ version = "1.0.0"
 author = "m"
 
 [markdown]
-root_directory = '/home/user/md2rst/refactor_test/TEST/markdown/qubesos.github.io.rtd'
+root_directory = '/home/user/qubes-translation-utilz/md2rst/refactor_test/TEST/markdown/qubesos.github.io.rtd'
 redirect_base_url = 'https://foo.bar' # TODO
 
 [rst]
 # TODO delete if we are going with just one directory
-rst_directory = '/home/user/md2rst/refactor_test/TEST/rst-convert/qubesos.github.io.rtd/_doc/'
-copy_from_dir = '/home/user/md2rst/preparation/' # TODO nice to have
+rst_directory = '/home/user/qubes-translation-utilz/md2rst/refactor_test/TEST/rst-convert/qubesos.github.io.rtd/_doc/'
+copy_from_dir = '/home/user/qubes-translation-utilz/md2rst/preparation/' # TODO nice to have
 md_file_names = ['admin-api-table.md', 'admin-api.md', 'doc.md'] # TODO nice to have
 rst_file_names = ['requirements.txt', 'conf.py', '.readthedocs.yaml'] # TODO nice to have
 directory_to_remove = 'external' # TODO nice to have
@@ -58,7 +58,7 @@ redirect_markdown = false # TODO
 [url_mapping]
 save_to_json = false
 #save_to_json = true
-dump_directory_name = '/home/user/md2rst/refactor_test/md-dump/'
+dump_directory_name = '/home/user/qubes-translation-utilz/md2rst/refactor_test/md-dump/'
 dump_external_filename = 'external_redirects_mappings.json'
 dump_docs_filename = 'md_doc_permalinks_and_redirects_to_filepath_map.json'
 dump_pages_filename = 'md_pages_permalinks_and_redirects_to_filepath_map.json'
@@ -72,10 +72,10 @@ logfile = '/tmp/md2rst.log'
 [test]
 #run = false
 run = true
-#file_name = '/home/user/md2rst/refactor_test/filez/development-workflow.rst'
-file_name = '/home/user/md2rst/refactor_test/filez/screenshots.rst'
-#file_name = '/home/user/md2rst/refactor_test/filez/qubes-builder-details.rst'
-#file_name = '/home/user/md2rst/refactor_test/filez/qubes-builder.rst'
+#file_name = '/home/user/qubes-translation-utilz/md2rst/refactor_test/filez/development-workflow.rst'
+file_name = '/home/user/qubes-translation-utilz/md2rst/refactor_test/filez/screenshots.rst'
+#file_name = '/home/user/qubes-translation-utilz/md2rst/refactor_test/filez/qubes-builder-details.rst'
+#file_name = '/home/user/qubes-translation-utilz/md2rst/refactor_test/filez/qubes-builder.rst'
 
 
 
