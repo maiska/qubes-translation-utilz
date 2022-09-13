@@ -897,11 +897,13 @@ class QubesRstTranslator(nodes.NodeVisitor):
         raise nodes.SkipNode
 
     def visit_substitution_definition(self, node):
-        print(node)
-        # if len(node)==1:
-        #     child_tmp = node.children[0]
-        #     if isinstance(child_tmp, docutils.nodes.refernce):
-        #         self.add_text(_('|%s| image:: %s') % (refuri[refuri.rfind('/') + 1:len(refuri)], refuri))
+        print("subst", node)
+        print(node.children)
+        if len(node)==1:
+            child_tmp = node.children[0]
+            if isinstance(child_tmp, docutils.nodes.reference):
+                refuri = child_tmp.get('refuri')
+                self.add_text(_('|%s| image:: %s') % (refuri[refuri.rfind('/') + 1:len(refuri)], refuri))
         raise nodes.SkipNode
 
     def depart_substitution_definition(self, node):
@@ -1189,7 +1191,10 @@ class QubesRstTranslator(nodes.NodeVisitor):
     #     raise nodes.SkipNode
     def visit_substitution_reference(self, node):
         print(node)
-        pass
+        print("****")
+        refname = node.get('refname')
+        self.add_text(_('|%s|') % (refname))
+        raise nodes.SkipNode
 
     def depart_substitution_reference(self, node):
         pass
