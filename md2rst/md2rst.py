@@ -89,7 +89,7 @@ def run(config_toml: dict) -> None:
         external_redirects_mappings = get_mappings(config_toml)
 
     logger.debug("md_doc_permalinks_and_redirects_to_filepath_map")
-    logger.debug(md_doc_permoalinks_and_redirects_to_filepath_map)
+    logger.debug(md_doc_permalinks_and_redirects_to_filepath_map)
     logger.debug("md_pages_permalinks_and_redirects_to_filepath_map")
     logger.debug(md_pages_permalinks_and_redirects_to_filepath_map)
     logger.debug("external_redirects_mappings")

@@ -85,10 +85,13 @@ def get_url(path):
 
 
 def get_cross_referencing_role(uri):
+    
     if uri.startswith('/') and '#' in uri and not uri.startswith('/attachment'):
         return ':ref:'
     elif uri.startswith('/') and not uri.startswith('/attachment'):
         return ':doc:'
+    elif uri.startswith('#'):
+        return 'inline-section'
     else:
         return ''
     return ''
@@ -947,13 +950,20 @@ class QubesRstTranslator(nodes.NodeVisitor):
                 self.add_text(self.check_cross_referencing_escape_uri(refuri))
             else:
                 role = get_cross_referencing_role(refuri)
+                ref_tmp = self.check_cross_referencing_escape_uri(refuri)
                 if refuri.startswith('/attachment') and "png" in refuri:
                     self.add_text(_('|%s| image:: %s') % (refuri[refuri.rfind('/') + 1:len(refuri)], refuri))
                     return
                 if role == ':doc:' or role == ':ref:':
                     underscore = ''
-                self.add_text(
-                    '%s`%s <%s>`%s' % (role, refname, self.check_cross_referencing_escape_uri(refuri), underscore))
+                if role == ':ref:' and ref_tmp.startswith('/'):
+                    ref_tmp = ref_tmp[1:len(ref_tmp)]
+                if role == 'inline-section':
+                    underscore = '_'
+                    self.add_text('`%s`%s' % (ref_tmp, underscore))
+                else:
+                    self.add_text('%s`%s <%s>`%s' % (role, refname, ref_tmp, underscore))
+
             print('raise2')
             raise nodes.SkipNode
 
@@ -972,6 +982,10 @@ class QubesRstTranslator(nodes.NodeVisitor):
         return path
 
     def check_cross_referencing_escape_uri(self, uri: str) -> str:
+        if uri.startswith('#'):
+            # inline section
+            section = uri[uri.index('#') + 1:len(uri)]
+            uri = section.replace('-', ' ').replace('#', '')
         if '#' in uri and uri.startswith('/') and not uri.startswith('/attachment'):
             # sections
             # perm_match = uri
