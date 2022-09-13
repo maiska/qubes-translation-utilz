@@ -1,0 +1,7 @@
+md2rst/venv/
+md2rst/.venv/
+md2rst/mynotes
+md2rst/.idea/
+md2rst/__pycache__/*
+md2rst/refactor_test/
+md2rst/preparation/*
