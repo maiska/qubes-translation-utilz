@@ -68,11 +68,7 @@ class PandocConverter:
                     print(filepath)
                     shutil.copy(file_to_copy, filepath)
 
-    def post_convert(self, copy_from_dir='/home/user/md2rst/preparation/',
-                     rst_file_names=['requirements.txt', 'conf.py', '.readthedocs.yaml']):
+    def post_convert(self, copy_from_dir='/home/user/md2rst/preparation/'):
         # TODO Maya test
         shutil.move(os.path.join(self.directory_to_convert, "doc.rst"),
                     os.path.join(self.directory_to_convert, "index.rst"))
-        for file_name in rst_file_names:
-            file_to_copy = os.path.join(copy_from_dir, file_name)
-            shutil.copy(file_to_copy, self.directory_to_convert)

@@ -1,6 +1,7 @@
 #! /usr/bin/env python3
 import codecs
 import os
+import shutil
 import sys
 from argparse import ArgumentParser
 from logging import basicConfig, getLogger, DEBUG, Formatter, FileHandler
@@ -47,12 +48,20 @@ def get_configuration(configuration: str) -> dict:
     return config_dict
 
 
+def copy_manual_rst(config_toml: dict):
+    copy_from_dir = config_toml[RST][COPY_FROM_DIR]
+    rst_file_names_to_copy = config_toml[RST][RST_FILE_NAMES]
+    rst_directory = config_toml[RST][RST_DIRECTORY]
+    logger.info("Copy from %s directory to %s", copy_from_dir, rst_file_names_to_copy)
+    for file_name in rst_file_names_to_copy:
+        file_to_copy = os.path.join(copy_from_dir, file_name)
+        shutil.copy(file_to_copy, os.path.join(rst_directory, os.path.dirname(file_name)))
+
 def convert_md_to_rst(config_toml: dict) -> None:
     rst_directory = config_toml[RST][RST_DIRECTORY]
     # TODO Maya test
     copy_from_dir = config_toml[RST][COPY_FROM_DIR]
     md_file_names_to_copy = config_toml[RST][MD_FILE_NAMES]
-    rst_file_names_to_copy = config_toml[RST][RST_FILE_NAMES]
     rst_dir_to_remove = config_toml[RST][DIRECTORY_TO_REMOVE]
 
     logger.info("Converting from Markdown to RST")
@@ -73,8 +82,8 @@ def convert_md_to_rst(config_toml: dict) -> None:
         rst_converter.remove_whole_directory(rst_dir_to_remove)
 
     if config_toml[RUN][COPY_RST_FILES]:
-        logger.info("Copy from %s directory to %s", copy_from_dir, rst_file_names_to_copy)
-        rst_converter.post_convert(copy_from_dir, rst_file_names_to_copy)
+        logger.info("Copy from %s directory", copy_from_dir)
+        rst_converter.post_convert(copy_from_dir)
 
     if config_toml[RUN][REMOVE_HIDDEN_FILES]:
         rst_converter.remove_obsolete_files(config_toml[RST][HIDDEN_FILES_TO_REMOVE])
@@ -111,6 +120,9 @@ def run(config_toml: dict) -> None:
     if config_toml[TEST][RUN]:
         run_single_rst_test(config_toml, external_redirects_mappings, md_doc_permalinks_and_redirects_to_filepath_map,
                             md_pages_permalinks_and_redirects_to_filepath_map)
+
+    if config_toml[RUN][COPY_RST_FILES]:
+        copy_manual_rst(config_toml)
 
 
 def run_single_rst_test(config_toml, external_redirects_mappings, md_doc_permalinks_and_redirects_to_filepath_map,

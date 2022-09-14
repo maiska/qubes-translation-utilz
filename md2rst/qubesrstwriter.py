@@ -904,7 +904,7 @@ class QubesRstTranslator(nodes.NodeVisitor):
         print(node.children)
         if len(node)==1:
             child_tmp = node.children[0]
-            if isinstance(child_tmp, docutils.nodes.reference):
+            if isinstance(child_tmp, nodes.reference):
                 refuri = child_tmp.get('refuri')
                 self.add_text(_('|%s| image:: %s') % (refuri[refuri.rfind('/') + 1:len(refuri)], refuri))
         raise nodes.SkipNode
@@ -962,8 +962,11 @@ class QubesRstTranslator(nodes.NodeVisitor):
                     underscore = '_'
                     self.add_text('`%s`%s' % (ref_tmp, underscore))
                 else:
-                    self.add_text('%s`%s <%s>`%s' % (role, refname, ref_tmp, underscore))
-
+                    uri = self.check_cross_referencing_escape_uri(refuri)
+                    if role == ':ref:':
+                        uri = uri.lstrip('/')
+                    self.add_text(
+                        '%s`%s <%s>`%s' % (role, refname, uri, underscore))
             print('raise2')
             raise nodes.SkipNode
 
@@ -991,8 +994,14 @@ class QubesRstTranslator(nodes.NodeVisitor):
             # perm_match = uri
             perm = uri[0:uri.index('#')]
             section = uri[uri.index('#') + 1:len(uri)]
+            internal_section = section.replace('#', '')
+            if internal_section == 'how-to-guides':
+                internal_section = 'how-to guides'
+            elif internal_section not in (
+            'qubes-devel', 'qubes-users', 'qubes-announce', 'qubes-project', 'qubes-translation'):
+                internal_section = internal_section.replace('-', ' ')
             if perm in DOC_BASE_PATH:
-                uri = '/' + uri[uri.index('#'):len(uri)]
+                uri = 'index:' + internal_section
             elif perm.startswith('/news/'):
                 uri = BASE_SITE + uri[1:len(uri)]
             else:
@@ -1001,7 +1010,6 @@ class QubesRstTranslator(nodes.NodeVisitor):
                     uri = replace_page_aux(uri, path)
                 else:
                     path = self.get_path_from_md_internal_mapping(perm, 'doc')
-                    internal_section = section.replace('-', ' ').replace('#', '')
                     if len(path) > 0:
                         uri = path + ':' + internal_section
             # print('sections')
@@ -1014,7 +1022,7 @@ class QubesRstTranslator(nodes.NodeVisitor):
         elif uri.startswith('/news/'):
             uri = BASE_SITE + uri[1:len(uri)]
         elif uri in DOC_BASE_PATH:
-            uri = '/'
+            uri = '/index'
         elif uri in FEED_XML:
             uri = BASE_SITE + FEED_XML[1:len(FEED_XML)]
         elif uri in self.md_pages_permalinks_and_redirects_to_filepath_map.keys():
