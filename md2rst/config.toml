@@ -70,12 +70,25 @@ output = 'mapping.txt'
 logfile = '/tmp/md2rst.log'
 
 [test]
-#run = false
+##run = false
 run = true
-#file_name = '/home/user/qubes-translation-utilz/md2rst/refactor_test/filez/development-workflow.rst'
-file_name = '/home/user/qubes-translation-utilz/md2rst/refactor_test/filez/screenshots.rst'
-#file_name = '/home/user/qubes-translation-utilz/md2rst/refactor_test/filez/qubes-builder-details.rst'
-#file_name = '/home/user/qubes-translation-utilz/md2rst/refactor_test/filez/qubes-builder.rst'
+validate = true
+
+#file_name = '/home/user/testingfilez/qubes-template-configs.rst' # TODO empty?
+#file_name = '/home/user/testingfilez/source-code.rst'
+#file_name = '/home/user/testingfilez/coding-style.rst'
+file_name = '/home/user/testingfilez/code-signing.rst'
+
+#file_name = '/home/user/testingfilez/license.rst'
+#file_name = '/home/user/testingfilez/development-workflow.rst'
+#file_name = '/home/user/testingfilez/qubes-builder-details.rst'
+#file_name = '/home/user/testingfilez/qubes-builder.rst'
+#file_name = '/home/user/testingfilez/qubes-iso-building.rst'
+
+# DONE
+
+
+[manual]
 
 
 

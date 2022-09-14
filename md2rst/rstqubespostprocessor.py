@@ -8,7 +8,8 @@ from docutils.io import StringOutput
 from sphinx.util import ensuredir
 
 from config_constants import RST, RST_DIRECTORY
-from qubesrstwriter import QubesRstWriter, RstBuilder
+# from qubesrstwriter import QubesRstWriter, RstBuilder
+from qubesrstwriter2 import QubesRstWriter, RstBuilder
 from utilz import check_file, is_not_readable, is_dict_empty, get_mappings
 
 basicConfig(level=DEBUG)
@@ -19,6 +20,7 @@ class RSTFilePostProcessor:
     def __init__(self, file_path: str, md_doc_permalinks_and_redirects_to_filepath_map: dict,
                  md_pages_permalinks_and_redirects_to_filepath_map: dict, external_url_map: dict) -> None:
         if not check_file(file_path):
+            print(file_path)
             raise ValueError("Directory parameter does not point to a directory")
         if is_not_readable(file_path):
             raise PermissionError("Directory could not be read")
@@ -96,10 +98,14 @@ def parse_and_validate_rst(rst_directory: str, file_pattern: str = '*.rst') -> N
     for path, dirs, files in os.walk(os.path.abspath(rst_directory)):
         for filename in fnmatch.filter(files, file_pattern):
             filepath = os.path.join(path, filename)
-            fileobj = open(filepath, 'r')
-            default_settings = docutils.frontend.OptionParser(
-                components=(docutils.parsers.rst.Parser,)).get_default_values()
-            rst_document = docutils.utils.new_document(fileobj.name, default_settings)
-            qubes_parser = docutils.parsers.rst.Parser()
-            qubes_parser.parse(fileobj.read(), rst_document)
-            fileobj.close()
+            validate_rst_file(filepath)
+
+
+def validate_rst_file(filepath):
+    fileobj = open(filepath, 'r')
+    default_settings = docutils.frontend.OptionParser(
+        components=(docutils.parsers.rst.Parser,)).get_default_values()
+    rst_document = docutils.utils.new_document(fileobj.name, default_settings)
+    qubes_parser = docutils.parsers.rst.Parser()
+    qubes_parser.parse(fileobj.read(), rst_document)
+    fileobj.close()

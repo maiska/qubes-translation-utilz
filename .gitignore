@@ -1,5 +1,6 @@
 md2rst/venv/
 md2rst/.venv/
+md2rst/misc/
 md2rst/mynotes
 md2rst/.idea/
 md2rst/__pycache__/*

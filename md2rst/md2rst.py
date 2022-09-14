@@ -17,8 +17,9 @@ from sphinx.util import ensuredir
 
 from config_constants import *
 from pandocconverter import PandocConverter
-from qubesrstwriter import QubesRstWriter, RstBuilder
-from rstqubespostprocessor import parse_and_validate_rst, qube_links_2
+from qubesrstwriter2 import QubesRstWriter, RstBuilder
+# from qubesrstwriter import QubesRstWriter, RstBuilder
+from rstqubespostprocessor import parse_and_validate_rst, qube_links_2, validate_rst_file
 from utilz import get_mappings
 
 basicConfig(level=DEBUG)
@@ -108,13 +109,16 @@ def run(config_toml: dict) -> None:
         pass
 
     if config_toml[TEST][RUN]:
-        run_single_rst_test(config_toml, external_redirects_mappings, md_doc_permalinks_and_redirects_to_filepath_map,
+        file_name = config_toml[TEST][FILE_NAME]
+        run_single_rst_test(file_name, external_redirects_mappings, md_doc_permalinks_and_redirects_to_filepath_map,
                             md_pages_permalinks_and_redirects_to_filepath_map)
+        if config_toml[TEST]['validate'] and config_toml[RUN][MD_MAP]:
+            validate_rst_file(file_name+'.test')
 
 
-def run_single_rst_test(config_toml, external_redirects_mappings, md_doc_permalinks_and_redirects_to_filepath_map,
+def run_single_rst_test(file_name, external_redirects_mappings, md_doc_permalinks_and_redirects_to_filepath_map,
                         md_pages_permalinks_and_redirects_to_filepath_map):
-    file_name = config_toml[TEST][FILE_NAME]
+
     fileobj = open(file_name, 'r')
     # noinspection PyUnresolvedReferences
     default_settings = docutils.frontend.OptionParser(components=(docutils.parsers.rst.Parser,)).get_default_values()
