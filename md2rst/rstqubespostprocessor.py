@@ -109,3 +109,6 @@ def validate_rst_file(filepath):
     qubes_parser = docutils.parsers.rst.Parser()
     qubes_parser.parse(fileobj.read(), rst_document)
     fileobj.close()
+
+def post_process_leftover_markdown_links(rstdirectory):
+    pass

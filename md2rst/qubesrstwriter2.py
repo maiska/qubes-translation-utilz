@@ -102,17 +102,24 @@ SPACE = ' '
 CODE_BLOCK_IDENT = SPACE * STDINDENT * 2
 LIST_ITEM_IDENT = SPACE * STDINDENT
 
+
 def is_c_code_block(codestr):
-    return 'while(' in codestr or 'for(' in codestr or \
-    'while (' in codestr or 'for (' in codestr or \
-    '#if' in codestr or '#endif' in codestr or \
-    'int ' in codestr or 'struct' in codestr
+    return ' while(' in codestr or ' for(' in codestr or \
+           ' while (' in codestr or ' for (' in codestr or \
+           ' #if ' in codestr or ' #endif ' in codestr or \
+           ' int ' in codestr or ' struct ' in codestr
+
 
 def is_node_a_code_block(parent):
     return isinstance(parent, docutils.nodes.literal_block) and parent.hasattr('language') or parent.hasattr(
         'classes') and 'code' in parent['classes']
 
+
 # noinspection PyPep8Naming,PyMethodMayBeStatic
+def is_shell_code_block(node):
+    return "shell_session" in node or "bash_session" in node
+
+
 class QubesRstTranslator(nodes.NodeVisitor):
     sectionchars = '*=-~"+`'
 
@@ -169,6 +176,7 @@ class QubesRstTranslator(nodes.NodeVisitor):
     def depart_document(self, node):
         # print(node.astext())
         pass
+
     def visit_block_quote(self, node):
         print(node)
         pass
@@ -180,6 +188,7 @@ class QubesRstTranslator(nodes.NodeVisitor):
     def visit_comment(self, node):
         print(node)
         pass
+
     def depart_comment(self, node):
         print(node)
         pass
@@ -201,7 +210,6 @@ class QubesRstTranslator(nodes.NodeVisitor):
         self.body += '`` '
         pass
 
-
     def visit_literal_block(self, node):
         print(node)
         print(node.attributes)
@@ -216,26 +224,33 @@ class QubesRstTranslator(nodes.NodeVisitor):
         #     pass
 
         if node.hasattr('xml:space'):
-            if is_c_code_block(node.astext()):
+            astext = node.astext()
+            if is_shell_code_block(astext):
+                for i in ['shell_session', 'bash_session', '.. code::']:
+                    code_section = astext.replace(i, '')
+                    code_section = code_section.lstrip()
+                    self.body += self.nl + self.get_code_text_block(code_section)
+                    raise nodes.SkipNode
+            if is_c_code_block(astext):
                 node['language'] = 'c'
-                self.body += self.nl + '.. code:: c' + self.nl + self.nl #+ SPACE * STDINDENT * 2
+                self.body += self.nl + '.. code:: c' + self.nl + self.nl  # + SPACE * STDINDENT * 2
             elif not node.hasattr('language'):
                 node['language'] = 'bash'
-                self.body += self.nl + '.. code:: bash' + self.nl + self.nl #+ SPACE * STDINDENT * 2
+                self.body += self.nl + '.. code:: bash' + self.nl + self.nl  # + SPACE * STDINDENT * 2
             elif node['language'] in ["shell_session", "bash_session"]:
                 node['language'] = 'bash'
                 self.body += self.nl + '.. code:: bash' + self.nl + self.nl
-                             # + SPACE * STDINDENT * 2
+                # + SPACE * STDINDENT * 2
             else:
-                self.body += self.nl + '.. code:: ' + node['language'] + self.nl + self.nl\
-                             # + SPACE * STDINDENT * 2
+                self.body += self.nl + '.. code:: ' + node['language'] + self.nl + self.nl \
+                    # + SPACE * STDINDENT * 2
 
         pass
 
     def depart_literal_block(self, node):
         print("depart")
         # print(node)
-        self.body += self.nl
+        self.body += self.nl + self.nl
         pass
 
     # def visit_target(self, node):
@@ -245,6 +260,7 @@ class QubesRstTranslator(nodes.NodeVisitor):
     def visit_subsection(self, node):
         print(node)
         pass
+
     def visit_section(self, node):
         print(node)
         pass
@@ -257,11 +273,12 @@ class QubesRstTranslator(nodes.NodeVisitor):
     # def depart_section(self, node):
     #     pass
     def visit_title(self, node):
+        parent = node.parent
+        # subsections TODO
         if self.title_count == 0:
             self.body += '=' * len(node.astext()) + self.nl
         else:
             self.body += self.nl
-        parent = node.parent
         pass
 
     def depart_title(self, node):
@@ -352,9 +369,8 @@ class QubesRstTranslator(nodes.NodeVisitor):
     def visit_inline(self, node):
         parent = node.parent
         if is_node_a_code_block(parent) and node.hasattr('classes') and 'single' in node['classes']:
-            self.body += self.nl + CODE_BLOCK_IDENT #+ self.get_code_text_block(node.astext())
+            self.body += self.nl + CODE_BLOCK_IDENT  # + self.get_code_text_block(node.astext())
         print(node)
-
 
         pass
 

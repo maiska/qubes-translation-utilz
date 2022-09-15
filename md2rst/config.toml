@@ -29,6 +29,11 @@ rst_file_names = ['requirements.txt', 'conf.py', '.readthedocs.yaml'] # TODO nic
 directory_to_remove = 'external' # TODO nice to have
 hidden_files_to_remove = ['.gitlab-ci.yml', '.travis.yml'] # TODO nice to have
 
+[svg]
+# should reside in the rst_directory or subdirectories
+svg_files_to_png = ['admin-api-architecture.svg']
+#replace_svg_with_png_in_rst_files = false
+replace_svg_with_png_in_rst_files = true
 
 [run]
 md_map = true
@@ -50,6 +55,9 @@ docutils_validate = false
 qubes_rst = false
 #qubes_rst = true
 
+#svg_png_conversion_replacement = false # TODO
+svg_png_conversion_replacement = true # TODO
+markdown_links_leftover = false # TODO
 redirect_markdown = false # TODO
 
 #git reset --hard && find . ! -not -name 'README.md' -o ! -not -name 'CONTRIBUTING.md' -o -type f -name '*.rst' -delete
@@ -70,9 +78,9 @@ output = 'mapping.txt'
 logfile = '/tmp/md2rst.log'
 
 [test]
-##run = false
-run = true
-validate = true
+run = false
+#run = true
+#validate = true
 
 #file_name = '/home/user/testingfilez/qubes-template-configs.rst' # TODO empty?
 #file_name = '/home/user/testingfilez/source-code.rst'

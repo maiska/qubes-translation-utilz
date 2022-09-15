@@ -1,11 +1,15 @@
+import fnmatch
 import json
 import os
+from logging import basicConfig, getLogger, DEBUG
+
+from reportlab.graphics import renderPM
+from svglib.svglib import svg2rlg
 
 from config_constants import URL_MAPPING, SAVE_TO_JSON, DUMP_DIRECTORY, DUMP_EXTERNAL_FILENAME, DUMP_DOCS_FILENAME, \
-    DUMP_PAGES_FILENAME, MARKDOWN, ROOT_DIRECTORY
+    DUMP_PAGES_FILENAME, MARKDOWN, ROOT_DIRECTORY, RST_DIRECTORY, SVG_FILES_TO_PNG, RST, SVG, PNG_IN_RST_FILES
 from permalinks2filepath import Permalinks2Filepath
 
-from logging import basicConfig, getLogger, DEBUG
 basicConfig(level=DEBUG)
 logger = getLogger(__name__)
 
@@ -77,3 +81,40 @@ def check_mappings_dump(config_toml: dict) -> bool:
            check_file(url_mapping_dump_directory + config_toml[URL_MAPPING][DUMP_EXTERNAL_FILENAME]) and \
            check_file(url_mapping_dump_directory + config_toml[URL_MAPPING][DUMP_DOCS_FILENAME]) and \
            check_file(url_mapping_dump_directory + config_toml[URL_MAPPING][DUMP_PAGES_FILENAME])
+
+
+def convert_svg_to_png(config_toml):
+    root_directory = config_toml[RST][RST_DIRECTORY]
+    svg_files = config_toml[SVG][SVG_FILES_TO_PNG]
+    run = config_toml[SVG][PNG_IN_RST_FILES]
+    svg_filepatterns = {}
+
+    for path, dirs, files in os.walk(os.path.abspath(root_directory)):
+        for file_pattern in svg_files:
+            for filename in fnmatch.filter(files, file_pattern):
+                filepath = os.path.join(path, filename)
+                png_filepath = filepath.replace('.svg', '.png')
+                svg_filepatterns[file_pattern] = os.path.basename(png_filepath)
+                drawing = svg2rlg(filepath)
+                renderPM.drawToFile(drawing, png_filepath, fmt='PNG')
+
+    if run:
+        if len(svg_filepatterns) == 0:
+            for svg in svg_files:
+                png_filepath = svg.replace('.svg', '.png')
+                svg_filepatterns[svg] = os.path.basename(png_filepath)
+
+        for path, dirs, files in os.walk(os.path.abspath(root_directory)):
+            for filename in fnmatch.filter(files, '*.rst'):
+                filepath = os.path.join(path, filename)
+                written = False
+                with open(filepath, 'r') as f:
+                    data = f.read()
+                    for svg in svg_filepatterns.keys():
+                        if svg in data:
+                            data = data.replace(svg, svg_filepatterns[svg])
+                            written = True
+
+                if written:
+                    with open(filepath, "w") as f:
+                        f.write(data)

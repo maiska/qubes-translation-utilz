@@ -11,6 +11,12 @@ RST_FILE_NAMES = "rst_file_names"
 DIRECTORY_TO_REMOVE = "directory_to_remove"
 HIDDEN_FILES_TO_REMOVE = 'hidden_files_to_remove'
 
+SVG = 'svg'
+# ------
+SVG_FILES_TO_PNG = 'svg_files_to_png'
+PNG_IN_RST_FILES = 'replace_svg_with_png_in_rst_files'
+
+
 RUN = 'run'
 # ------
 PYPANDOC = 'pypandoc'
@@ -20,6 +26,9 @@ REMOVE_RST_DIRECTORY = "remove_rst_directory"
 REMOVE_HIDDEN_FILES = "remove_hidden_files"
 DOCUTILS_VALIDATE = 'docutils_validate'
 QUBES_RST = 'qubes_rst'
+
+SVG_PNG_CONVERSION_REPLACEMENT = 'svg_png_conversion_replacement'
+
 
 URL_MAPPING = 'url_mapping'
 # ------

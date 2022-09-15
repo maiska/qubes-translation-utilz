@@ -20,7 +20,8 @@ from pandocconverter import PandocConverter
 from qubesrstwriter2 import QubesRstWriter, RstBuilder
 # from qubesrstwriter import QubesRstWriter, RstBuilder
 from rstqubespostprocessor import parse_and_validate_rst, qube_links_2, validate_rst_file
-from utilz import get_mappings
+from utilz import get_mappings, convert_svg_to_png
+
 
 basicConfig(level=DEBUG)
 logger = getLogger(__name__)
@@ -107,6 +108,9 @@ def run(config_toml: dict) -> None:
                                 md_pages_permalinks_and_redirects_to_filepath_map,
                                 external_redirects_mappings)
         pass
+
+    if config_toml[RUN][SVG_PNG_CONVERSION_REPLACEMENT]:
+        convert_svg_to_png(config_toml)
 
     if config_toml[TEST][RUN]:
         file_name = config_toml[TEST][FILE_NAME]
