@@ -126,11 +126,11 @@ class QubesRstTranslator(nodes.NodeVisitor):
     def __init__(self, document, builder,
                  md_doc_permalinks_and_redirects_to_filepath_map,
                  md_pages_permalinks_and_redirects_to_filepath_map,
-                 external_redirects_mappings):
+                 external_redirects_map):
         nodes.NodeVisitor.__init__(self, document)
 
         self.md_pages_permalinks_and_redirects_to_filepath_map = md_pages_permalinks_and_redirects_to_filepath_map
-        self.external_redirects_mappings = external_redirects_mappings
+        self.external_redirects_map = external_redirects_map
         self.md_doc_permalinks_and_redirects_to_filepath_map = md_doc_permalinks_and_redirects_to_filepath_map
         self.body = ""
         self.document = document
@@ -158,7 +158,7 @@ class QubesRstTranslator(nodes.NodeVisitor):
         elif uri.startswith('/') and '#' in uri and not uri.startswith('/attachment'):
             role = ':ref:'
         elif uri.startswith('/') and not uri.startswith(
-                '/attachment') and uri not in self.external_redirects_mappings.keys():
+                '/attachment') and uri not in self.external_redirects_map.keys():
             role = ':doc:'
         elif BASE_SITE in uri:
             role = ''
@@ -491,7 +491,7 @@ class QubesRstTranslator(nodes.NodeVisitor):
         if map == 'all':
             path = get_path_from(perm, self.md_doc_permalinks_and_redirects_to_filepath_map)
             if len(path) == 0:
-                path = get_path_from(perm, self.external_redirects_mappings)
+                path = get_path_from(perm, self.external_redirects_map)
         return path
 
     def check_cross_referencing_escape_uri(self, uri: str) -> str:

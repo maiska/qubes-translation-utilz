@@ -19,9 +19,9 @@ from config_constants import *
 from pandocconverter import PandocConverter
 from qubesrstwriter2 import QubesRstWriter, RstBuilder
 # from qubesrstwriter import QubesRstWriter, RstBuilder
-from rstqubespostprocessor import parse_and_validate_rst, qube_links_2, validate_rst_file
+from rstqubespostprocessor import parse_and_validate_rst, qube_links_2, validate_rst_file, search_replace_md_links, \
+    search_replace_md_links_single
 from utilz import get_mappings, convert_svg_to_png
-
 
 basicConfig(level=DEBUG)
 logger = getLogger(__name__)
@@ -105,8 +105,8 @@ def run(config_toml: dict) -> None:
     if config_toml[RUN][QUBES_RST] and config_toml[RUN][MD_MAP]:
         # TODO Maya FIRST
         qube_links_2(config_toml[RST][RST_DIRECTORY], md_doc_permalinks_and_redirects_to_filepath_map,
-                                md_pages_permalinks_and_redirects_to_filepath_map,
-                                external_redirects_mappings)
+                     md_pages_permalinks_and_redirects_to_filepath_map,
+                     external_redirects_mappings)
         pass
 
     if config_toml[RUN][SVG_PNG_CONVERSION_REPLACEMENT]:
@@ -114,15 +114,19 @@ def run(config_toml: dict) -> None:
 
     if config_toml[TEST][RUN]:
         file_name = config_toml[TEST][FILE_NAME]
+        file_name_converted = file_name + '.test'
         run_single_rst_test(file_name, external_redirects_mappings, md_doc_permalinks_and_redirects_to_filepath_map,
                             md_pages_permalinks_and_redirects_to_filepath_map)
         if config_toml[TEST]['validate'] and config_toml[RUN][MD_MAP]:
-            validate_rst_file(file_name+'.test')
+            validate_rst_file(file_name_converted)
+        if config_toml[RUN]['markdown_links_leftover'] and config_toml[RUN][MD_MAP]:
+            search_replace_md_links_single(file_name_converted, md_doc_permalinks_and_redirects_to_filepath_map,
+                     md_pages_permalinks_and_redirects_to_filepath_map,
+                     external_redirects_mappings)
 
 
 def run_single_rst_test(file_name, external_redirects_mappings, md_doc_permalinks_and_redirects_to_filepath_map,
                         md_pages_permalinks_and_redirects_to_filepath_map):
-
     fileobj = open(file_name, 'r')
     # noinspection PyUnresolvedReferences
     default_settings = docutils.frontend.OptionParser(components=(docutils.parsers.rst.Parser,)).get_default_values()

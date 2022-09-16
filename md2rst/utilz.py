@@ -7,7 +7,8 @@ from reportlab.graphics import renderPM
 from svglib.svglib import svg2rlg
 
 from config_constants import URL_MAPPING, SAVE_TO_JSON, DUMP_DIRECTORY, DUMP_EXTERNAL_FILENAME, DUMP_DOCS_FILENAME, \
-    DUMP_PAGES_FILENAME, MARKDOWN, ROOT_DIRECTORY, RST_DIRECTORY, SVG_FILES_TO_PNG, RST, SVG, PNG_IN_RST_FILES
+    DUMP_PAGES_FILENAME, MARKDOWN, ROOT_DIRECTORY, RST_DIRECTORY, SVG_FILES_TO_PNG, RST, SVG, PNG_IN_RST_FILES, \
+    BASE_SITE, INTERNAL_BASE_PATH, DOC_BASE_PATH, FEED_XML
 from permalinks2filepath import Permalinks2Filepath
 
 basicConfig(level=DEBUG)
@@ -108,13 +109,121 @@ def convert_svg_to_png(config_toml):
             for filename in fnmatch.filter(files, '*.rst'):
                 filepath = os.path.join(path, filename)
                 written = False
-                with open(filepath, 'r') as f:
-                    data = f.read()
-                    for svg in svg_filepatterns.keys():
-                        if svg in data:
-                            data = data.replace(svg, svg_filepatterns[svg])
-                            written = True
+                data = read_from(filepath)
+                for svg in svg_filepatterns.keys():
+                    if svg in data:
+                        data = data.replace(svg, svg_filepatterns[svg])
+                        written = True
 
                 if written:
-                    with open(filepath, "w") as f:
-                        f.write(data)
+                    write_to(data, filepath)
+
+
+def write_to(data, filepath):
+    with open(filepath, "w") as f:
+        f.write(data)
+
+
+def read_from(filepath):
+    with open(filepath, 'r') as f:
+        data = f.read()
+    return data
+
+
+def check_cross_referencing_escape_uri(uri: str, md_doc_permalinks_and_redirects_to_filepath_map: dict,
+                                       md_pages_permalinks_and_redirects_to_filepath_map: dict,
+                                       external_redirects_map) -> str:
+    if uri.startswith('/news/'):
+        uri = BASE_SITE + uri[1:len(uri)]
+    elif uri.startswith('#'):
+        uri = uri.replace('-', ' ')
+        # TODO inline section
+    elif uri in INTERNAL_BASE_PATH:
+        uri = BASE_SITE
+    elif uri in DOC_BASE_PATH:
+        uri = 'index'
+    elif uri in FEED_XML:
+        uri = BASE_SITE + FEED_XML[1:len(FEED_XML)]
+    elif '#' in uri and uri.startswith('/') and not uri.startswith('/attachment'):
+        # sections
+        # perm_match = uri
+        perm = uri[0:uri.index('#')]
+        section = uri[uri.index('#') + 1:len(uri)]
+        if perm in DOC_BASE_PATH:
+            uri = '/' + uri[uri.index('#'):len(uri)]
+        else:
+            path = get_path_from_md_internal_mapping(perm, md_doc_permalinks_and_redirects_to_filepath_map,
+                                                     md_pages_permalinks_and_redirects_to_filepath_map,
+                                                     external_redirects_map, 'pages')
+            if len(path) > 0:
+                uri = replace_page_aux(uri, path)
+            else:
+                path = get_path_from_md_internal_mapping(perm, md_doc_permalinks_and_redirects_to_filepath_map,
+                                                         md_pages_permalinks_and_redirects_to_filepath_map,
+                                                         external_redirects_map, 'doc')
+                internal_section = section.replace('-', ' ').replace('#', '')
+
+                if len(path) > 0:
+                    uri = path + ':' + internal_section
+        # print('sections')
+        # print(uri)
+    elif '/attachment/' in uri and '.pdf' in uri and uri.startswith('/'):
+        to_replace = uri[uri.find('/'):uri.rfind('/') + 1]
+        uri = uri.replace(to_replace, '/_static/')
+    elif uri.startswith('/'):
+        path = get_path_from_md_internal_mapping(uri, md_doc_permalinks_and_redirects_to_filepath_map,
+                                                 md_pages_permalinks_and_redirects_to_filepath_map,
+                                                 external_redirects_map, 'pages')
+        if len(path) > 0:
+            uri = get_url(path)
+        else:
+            uri = get_path_from_md_internal_mapping(uri, md_doc_permalinks_and_redirects_to_filepath_map,
+                                                    md_pages_permalinks_and_redirects_to_filepath_map,
+                                                    external_redirects_map, 'all')
+    elif uri.endswith('_'):
+        logger.debug('ends with uri %s', uri)
+        uri = uri[:-1] + '\\_'
+    else:
+        logger.debug(uri)
+        logger.debug(" it should be an external link")
+    return uri
+
+
+def get_path_from(perm, mapping):
+    path = ''
+    if perm in mapping.keys():
+        path = mapping[perm]
+    elif perm + '/' in mapping.keys():
+        path = mapping[perm + '/']
+    elif perm[0:len(perm) - 1] in mapping.keys():
+        path = mapping[perm[0:len(perm) - 1]]
+    return path
+
+
+def get_path_from_md_internal_mapping(perm, md_doc_permalinks_and_redirects_to_filepath_map,
+                                      md_pages_permalinks_and_redirects_to_filepath_map,
+                                      external_redirects_map, map='all'):
+    path = ''
+    if map == 'pages':
+        return get_path_from(perm, md_pages_permalinks_and_redirects_to_filepath_map)
+    if map == 'doc':
+        return get_path_from(perm, md_doc_permalinks_and_redirects_to_filepath_map)
+    if map == 'all':
+        path = get_path_from(perm, md_doc_permalinks_and_redirects_to_filepath_map)
+        if len(path) == 0:
+            path = get_path_from(perm, external_redirects_map)
+    return path
+
+
+def replace_page_aux(perm_match, path):
+    return BASE_SITE + path + '/' + perm_match[perm_match.index('#'):len(perm_match)] if not path.startswith(
+        '/') else BASE_SITE[0:len(BASE_SITE) - 1] + path + '/' + perm_match[perm_match.index('#'):len(perm_match)]
+
+
+def get_url(path):
+    logger.debug('>>>> pages path %s ' % path)
+    if path.startswith('/'):
+        url = BASE_SITE + path[1:len(path)] + '/'
+    else:
+        url = BASE_SITE + path + '/'
+    return url

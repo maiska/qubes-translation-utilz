@@ -59,3 +59,11 @@ BASE_SITE = 'https://www.qubes-os.org/'
 INTERNAL_BASE_PATH = '/home/'
 DOC_BASE_PATH = '/doc/'
 FEED_XML = '/feed.xml'
+
+
+# REGEX
+
+PATTERN_MD_INTERNAL_LINKS = '(\[[\w\d\s#@\“\”\_\)\(/\.\’&:,\\-]{1,50}\])(\((/[\w]{1,50}){1,8}/\))'
+
+PATTERN_MD_EXTERNAL_LINKS = '(\[[\w#@\d\s\“\”\[\]\_\)\(/\.\’&:,\\-]{1,50}\])(\(https{0,1}:/(/[\w\.\-\/\d]{1,50}){1,10}\))'
+
