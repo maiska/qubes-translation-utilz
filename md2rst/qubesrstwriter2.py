@@ -13,7 +13,7 @@ from sphinx.util import ensuredir
 from sphinx.writers.text import MAXWIDTH, STDINDENT
 
 from config_constants import INTERNAL_BASE_PATH, BASE_SITE, DOC_BASE_PATH, FEED_XML
-from utilz import is_dict_empty
+from utilz import is_dict_empty, CheckRSTLinks
 
 basicConfig(level=DEBUG)
 logger = getLogger(__name__)
@@ -82,15 +82,15 @@ def get_url(path):
     return url
 
 
-def get_path_from(perm, mapping):
-    path = ''
-    if perm in mapping.keys():
-        path = mapping[perm]
-    elif perm + '/' in mapping.keys():
-        path = mapping[perm + '/']
-    elif perm[0:len(perm) - 1] in mapping.keys():
-        path = mapping[perm[0:len(perm) - 1]]
-    return path
+# def get_path_from(perm, mapping):
+#     path = ''
+#     if perm in mapping.keys():
+#         path = mapping[perm]
+#     elif perm + '/' in mapping.keys():
+#         path = mapping[perm + '/']
+#     elif perm[0:len(perm) - 1] in mapping.keys():
+#         path = mapping[perm[0:len(perm) - 1]]
+#     return path
 
 
 def replace_page_aux(perm_match, path):
@@ -129,9 +129,12 @@ class QubesRstTranslator(nodes.NodeVisitor):
                  external_redirects_map):
         nodes.NodeVisitor.__init__(self, document)
 
-        self.md_pages_permalinks_and_redirects_to_filepath_map = md_pages_permalinks_and_redirects_to_filepath_map
-        self.external_redirects_map = external_redirects_map
-        self.md_doc_permalinks_and_redirects_to_filepath_map = md_doc_permalinks_and_redirects_to_filepath_map
+        self.checkRSTLinks = CheckRSTLinks(md_doc_permalinks_and_redirects_to_filepath_map,
+                                      md_pages_permalinks_and_redirects_to_filepath_map,
+                                      external_redirects_map)
+        # self.md_pages_permalinks_and_redirects_to_filepath_map = md_pages_permalinks_and_redirects_to_filepath_map
+        # self.external_redirects_map = external_redirects_map
+        # self.md_doc_permalinks_and_redirects_to_filepath_map = md_doc_permalinks_and_redirects_to_filepath_map
         self.body = ""
         self.document = document
         self.builder = builder
@@ -151,19 +154,19 @@ class QubesRstTranslator(nodes.NodeVisitor):
         self.indent = STDINDENT
         self.wrapper = textwrap.TextWrapper(width=MAXWIDTH, break_long_words=False, break_on_hyphens=False)
 
-    def get_cross_referencing_role(self, uri):
-        role = ''
-        if uri.startswith('/news'):
-            role = ''
-        elif uri.startswith('/') and '#' in uri and not uri.startswith('/attachment'):
-            role = ':ref:'
-        elif uri.startswith('/') and not uri.startswith(
-                '/attachment') and uri not in self.external_redirects_map.keys():
-            role = ':doc:'
-        elif BASE_SITE in uri:
-            role = ''
-
-        return role
+    # def get_cross_referencing_role(self, uri):
+    #     role = ''
+    #     if uri.startswith('/news'):
+    #         role = ''
+    #     elif uri.startswith('/') and '#' in uri and not uri.startswith('/attachment'):
+    #         role = ':ref:'
+    #     elif uri.startswith('/') and not uri.startswith(
+    #             '/attachment') and uri not in self.external_redirects_map.keys():
+    #         role = ':doc:'
+    #     elif BASE_SITE in uri:
+    #         role = ''
+    #
+    #     return role
 
     def wrap(self, text, width=MAXWIDTH):
         self.wrapper.width = width
@@ -411,35 +414,44 @@ class QubesRstTranslator(nodes.NodeVisitor):
             # perhaps with the bash skript TODO
             pass
         else:
-            role = self.get_cross_referencing_role(refuri)
+            self.checkRSTLinks.set_uri(refuri)
+            role = self.checkRSTLinks.get_cross_referencing_role()
             self.body += SPACE + role + '`'
         pass
 
     def depart_reference(self, node):
         refname = node.get('name')
         refuri = node.get('refuri')
-        if refname is None and refuri.startswith('http'):
-            # the case of license.rst and markdown link with qubes os have to be converted manually
-            # perhaps with the bash skript TODO
-            pass
-            # raise nodes.SkipNode
+        if refuri.startswith('/') and '#' in refuri:
+            perm = refuri[0:refuri.index('#')]
+            section = refuri[refuri.index('#') + 1:len(refuri)]
+            self.checkRSTLinks.set_uri(perm)
+            self.checkRSTLinks.set_section(section)
+        elif refuri.startswith('#'):
+            section = refuri[refuri.index('#') + 1:len(refuri)]
+            self.checkRSTLinks.set_uri('/index')
+            self.checkRSTLinks.set_section(section)
         else:
-            refuri = node.get('refuri')
-            role = self.get_cross_referencing_role(refuri)
-            if len(role) == 0:
-                # self.body += refuri
-                url = self.check_cross_referencing_escape_uri(refuri)
-                self.body += SPACE + '<' + url + '>'
+            self.checkRSTLinks.set_section('')
+            self.checkRSTLinks.set_uri(refuri)
+        role = self.checkRSTLinks.get_cross_referencing_role()
+        # role = self.get_cross_referencing_role(refuri)
+        if len(role) == 0:
+            # self.body += refuri
+            url = self.checkRSTLinks.check_cross_referencing_escape_uri()
+            # url = self.check_cross_referencing_escape_uri(refuri)
+            self.body += SPACE + '<' + url + '>'
+        else:
+            url = self.checkRSTLinks.check_cross_referencing_escape_uri()
+            # url = self.check_cross_referencing_escape_uri(refuri)
+            if role == ':ref:':
+                self.body += SPACE + '<' + url[1:len(url)] + '>'
             else:
-                url = self.check_cross_referencing_escape_uri(refuri)
-                if role == ':ref:':
-                    self.body += SPACE + '<' + url[1:len(url)] + '>'
-                else:
-                    self.body += SPACE + '<' + url + '>'
-            underscore = ''
-            if len(role) == 0:
-                underscore = '__'
-            self.body += '`' + underscore + SPACE
+                self.body += SPACE + '<' + url + '>'
+        underscore = ''
+        if len(role) == 0:
+            underscore = '__'
+        self.body += '`' + underscore + SPACE
         pass
 
     def visit_strong(self, node):
@@ -482,65 +494,65 @@ class QubesRstTranslator(nodes.NodeVisitor):
     #         path = perm_mappings[perm[0:len(perm) - 1]]
     #     return path
     #
-    def get_path_from_md_internal_mapping(self, perm, map='all'):
-        path = ''
-        if map == 'pages':
-            return get_path_from(perm, self.md_pages_permalinks_and_redirects_to_filepath_map)
-        if map == 'doc':
-            return get_path_from(perm, self.md_doc_permalinks_and_redirects_to_filepath_map)
-        if map == 'all':
-            path = get_path_from(perm, self.md_doc_permalinks_and_redirects_to_filepath_map)
-            if len(path) == 0:
-                path = get_path_from(perm, self.external_redirects_map)
-        return path
+    # def get_path_from_md_internal_mapping(self, perm, map='all'):
+    #     path = ''
+    #     if map == 'pages':
+    #         return get_path_from(perm, self.md_pages_permalinks_and_redirects_to_filepath_map)
+    #     if map == 'doc':
+    #         return get_path_from(perm, self.md_doc_permalinks_and_redirects_to_filepath_map)
+    #     if map == 'all':
+    #         path = get_path_from(perm, self.md_doc_permalinks_and_redirects_to_filepath_map)
+    #         if len(path) == 0:
+    #             path = get_path_from(perm, self.external_redirects_map)
+    #     return path
 
-    def check_cross_referencing_escape_uri(self, uri: str) -> str:
-        if uri.startswith('/news/'):
-            uri = BASE_SITE + uri[1:len(uri)]
-        elif uri.startswith('#'):
-            uri = uri.replace('-', ' ')
-            # TODO inline section
-        elif uri in INTERNAL_BASE_PATH:
-            uri = BASE_SITE
-        elif uri in DOC_BASE_PATH:
-            uri = 'index'
-        elif uri in FEED_XML:
-            uri = BASE_SITE + FEED_XML[1:len(FEED_XML)]
-        elif '#' in uri and uri.startswith('/') and not uri.startswith('/attachment'):
-            # sections
-            # perm_match = uri
-            perm = uri[0:uri.index('#')]
-            section = uri[uri.index('#') + 1:len(uri)]
-            if perm in DOC_BASE_PATH:
-                uri = '/' + uri[uri.index('#'):len(uri)]
-            else:
-                path = self.get_path_from_md_internal_mapping(perm, 'pages')
-                if len(path) > 0:
-                    uri = replace_page_aux(uri, path)
-                else:
-                    path = self.get_path_from_md_internal_mapping(perm, 'doc')
-                    internal_section = section.replace('-', ' ').replace('#', '')
-
-                    if len(path) > 0:
-                        uri = path + ':' + internal_section
-            # print('sections')
-            # print(uri)
-        elif '/attachment/' in uri and '.pdf' in uri and uri.startswith('/'):
-            to_replace = uri[uri.find('/'):uri.rfind('/') + 1]
-            uri = uri.replace(to_replace, '/_static/')
-        elif uri.startswith('/'):
-            path = self.get_path_from_md_internal_mapping(uri, 'pages')
-            if len(path) > 0:
-                uri = get_url(path)
-            else:
-                uri = self.get_path_from_md_internal_mapping(uri, 'all')
-        elif uri.endswith('_'):
-            logger.debug('ends with uri %s', uri)
-            uri = uri[:-1] + '\\_'
-        else:
-            logger.debug(uri)
-            logger.debug(" it should be an external link")
-        return uri
+    # def check_cross_referencing_escape_uri(self, uri: str) -> str:
+    #     if uri.startswith('/news/'):
+    #         uri = BASE_SITE + uri[1:len(uri)]
+    #     elif uri.startswith('#'):
+    #         uri = uri.replace('-', ' ')
+    #         # TODO inline section
+    #     elif uri in INTERNAL_BASE_PATH:
+    #         uri = BASE_SITE
+    #     elif uri in DOC_BASE_PATH:
+    #         uri = 'index'
+    #     elif uri in FEED_XML:
+    #         uri = BASE_SITE + FEED_XML[1:len(FEED_XML)]
+    #     elif '#' in uri and uri.startswith('/') and not uri.startswith('/attachment'):
+    #         # sections
+    #         # perm_match = uri
+    #         perm = uri[0:uri.index('#')]
+    #         section = uri[uri.index('#') + 1:len(uri)]
+    #         if perm in DOC_BASE_PATH:
+    #             uri = '/' + uri[uri.index('#'):len(uri)]
+    #         else:
+    #             path = self.get_path_from_md_internal_mapping(perm, 'pages')
+    #             if len(path) > 0:
+    #                 uri = replace_page_aux(uri, path)
+    #             else:
+    #                 path = self.get_path_from_md_internal_mapping(perm, 'doc')
+    #                 internal_section = section.replace('-', ' ').replace('#', '')
+    #
+    #                 if len(path) > 0:
+    #                     uri = path + ':' + internal_section
+    #         # print('sections')
+    #         # print(uri)
+    #     elif '/attachment/' in uri and '.pdf' in uri and uri.startswith('/'):
+    #         to_replace = uri[uri.find('/'):uri.rfind('/') + 1]
+    #         uri = uri.replace(to_replace, '/_static/')
+    #     elif uri.startswith('/'):
+    #         path = self.get_path_from_md_internal_mapping(uri, 'pages')
+    #         if len(path) > 0:
+    #             uri = get_url(path)
+    #         else:
+    #             uri = self.get_path_from_md_internal_mapping(uri, 'all')
+    #     elif uri.endswith('_'):
+    #         logger.debug('ends with uri %s', uri)
+    #         uri = uri[:-1] + '\\_'
+    #     else:
+    #         logger.debug(uri)
+    #         logger.debug(" it should be an external link")
+    #     return uri
 
     # def unknown_visit(self, node):
     #     print(node)

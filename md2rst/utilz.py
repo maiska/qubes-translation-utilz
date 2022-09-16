@@ -130,63 +130,116 @@ def read_from(filepath):
     return data
 
 
-def check_cross_referencing_escape_uri(uri: str, md_doc_permalinks_and_redirects_to_filepath_map: dict,
-                                       md_pages_permalinks_and_redirects_to_filepath_map: dict,
-                                       external_redirects_map) -> str:
-    if uri.startswith('/news/'):
-        uri = BASE_SITE + uri[1:len(uri)]
-    elif uri.startswith('#'):
-        uri = uri.replace('-', ' ')
-        # TODO inline section
-    elif uri in INTERNAL_BASE_PATH:
-        uri = BASE_SITE
-    elif uri in DOC_BASE_PATH:
-        uri = 'index'
-    elif uri in FEED_XML:
-        uri = BASE_SITE + FEED_XML[1:len(FEED_XML)]
-    elif '#' in uri and uri.startswith('/') and not uri.startswith('/attachment'):
-        # sections
-        # perm_match = uri
-        perm = uri[0:uri.index('#')]
-        section = uri[uri.index('#') + 1:len(uri)]
-        if perm in DOC_BASE_PATH:
-            uri = '/' + uri[uri.index('#'):len(uri)]
-        else:
-            path = get_path_from_md_internal_mapping(perm, md_doc_permalinks_and_redirects_to_filepath_map,
-                                                     md_pages_permalinks_and_redirects_to_filepath_map,
-                                                     external_redirects_map, 'pages')
-            if len(path) > 0:
-                uri = replace_page_aux(uri, path)
-            else:
-                path = get_path_from_md_internal_mapping(perm, md_doc_permalinks_and_redirects_to_filepath_map,
-                                                         md_pages_permalinks_and_redirects_to_filepath_map,
-                                                         external_redirects_map, 'doc')
-                internal_section = section.replace('-', ' ').replace('#', '')
+class CheckRSTLinks:
+    def __init__(self, uri: str, md_doc_permalinks_and_redirects_to_filepath_map: dict,
+                 md_pages_permalinks_and_redirects_to_filepath_map: dict, external_redirects_map: dict) -> None:
+        self.section = ''
+        self.uri = uri
+        if is_dict_empty(md_pages_permalinks_and_redirects_to_filepath_map):
+            raise ValueError("md_pages_permalinks_and_redirects_to_filepath_map is not set")
+        self.md_pages_permalinks_and_redirects_to_filepath_map = md_pages_permalinks_and_redirects_to_filepath_map
 
+        if is_dict_empty(md_doc_permalinks_and_redirects_to_filepath_map):
+            raise ValueError("md_doc_permalinks_and_redirects_to_filepath_map is not set")
+        self.md_doc_permalinks_and_redirects_to_filepath_map = md_doc_permalinks_and_redirects_to_filepath_map
+
+        if is_dict_empty(external_redirects_map):
+            raise ValueError("external_redirects_map is not set")
+        self.external_redirects_map = external_redirects_map
+
+    def __init__(self, md_doc_permalinks_and_redirects_to_filepath_map: dict,
+                 md_pages_permalinks_and_redirects_to_filepath_map: dict, external_redirects_map: dict) -> None:
+        if is_dict_empty(md_pages_permalinks_and_redirects_to_filepath_map):
+            raise ValueError("md_pages_permalinks_and_redirects_to_filepath_map is not set")
+        self.md_pages_permalinks_and_redirects_to_filepath_map = md_pages_permalinks_and_redirects_to_filepath_map
+
+        if is_dict_empty(md_doc_permalinks_and_redirects_to_filepath_map):
+            raise ValueError("md_doc_permalinks_and_redirects_to_filepath_map is not set")
+        self.md_doc_permalinks_and_redirects_to_filepath_map = md_doc_permalinks_and_redirects_to_filepath_map
+
+        if is_dict_empty(external_redirects_map):
+            raise ValueError("external_redirects_map is not set")
+        self.external_redirects_map = external_redirects_map
+
+    def set_uri(self, uri):
+        self.uri = uri
+
+    def check_cross_referencing_escape_uri(self) -> str:
+        uri = self.uri
+        if self.uri.startswith('/news/'):
+            uri = BASE_SITE + self.uri[1:len(self.uri)]
+        elif self.uri.startswith('#'):
+            uri = self.uri.replace('-', ' ')
+            # TODO inline section
+        elif self.uri in INTERNAL_BASE_PATH:
+            uri = BASE_SITE
+        elif self.uri in DOC_BASE_PATH:
+            uri = 'index'
+        elif self.uri in FEED_XML:
+            uri = BASE_SITE + FEED_XML[1:len(FEED_XML)]
+        elif len(self.section) > 0 and self.uri.startswith('/') and not self.uri.startswith('/attachment'):
+            # sections
+            # perm_match = uri
+            perm = self.uri
+            # section = self.uri[self.uri.index('#') + 1:len(self.uri)]
+            if perm in DOC_BASE_PATH:
+                uri = '/' + self.uri[self.uri.index('#'):len(self.uri)]
+            else:
+                path = self.get_path_from_md_internal_mapping('pages')
                 if len(path) > 0:
-                    uri = path + ':' + internal_section
-        # print('sections')
-        # print(uri)
-    elif '/attachment/' in uri and '.pdf' in uri and uri.startswith('/'):
-        to_replace = uri[uri.find('/'):uri.rfind('/') + 1]
-        uri = uri.replace(to_replace, '/_static/')
-    elif uri.startswith('/'):
-        path = get_path_from_md_internal_mapping(uri, md_doc_permalinks_and_redirects_to_filepath_map,
-                                                 md_pages_permalinks_and_redirects_to_filepath_map,
-                                                 external_redirects_map, 'pages')
-        if len(path) > 0:
-            uri = get_url(path)
+                    uri = replace_page_aux(self.uri, path)
+                else:
+                    path = self.get_path_from_md_internal_mapping('all')
+                    internal_section = self.section.replace('-', ' ').replace('#', '')
+                    if path.startswith('/'):
+                        path = path[1:len(path)]
+                    if len(path) > 0:
+                        uri = path + ':' + internal_section
+        elif '/attachment/' in self.uri and '.pdf' in self.uri and self.uri.startswith('/'):
+            to_replace = self.uri[self.uri.find('/'):self.uri.rfind('/') + 1]
+            uri = self.uri.replace(to_replace, '/_static/')
+        elif self.uri.startswith('/'):
+            path = self.get_path_from_md_internal_mapping('pages')
+            if len(path) > 0:
+                uri = get_url(path)
+            else:
+                uri = self.get_path_from_md_internal_mapping('all')
+        elif self.uri.endswith('_'):
+            logger.debug('ends with uri %s', self.uri)
+            uri = self.uri[:-1] + '\\_'
         else:
-            uri = get_path_from_md_internal_mapping(uri, md_doc_permalinks_and_redirects_to_filepath_map,
-                                                    md_pages_permalinks_and_redirects_to_filepath_map,
-                                                    external_redirects_map, 'all')
-    elif uri.endswith('_'):
-        logger.debug('ends with uri %s', uri)
-        uri = uri[:-1] + '\\_'
-    else:
-        logger.debug(uri)
-        logger.debug(" it should be an external link")
-    return uri
+            logger.debug(self.uri)
+            logger.debug(" it should be an external link")
+        return uri
+
+    def get_path_from_md_internal_mapping(self, map='all'):
+        path = ''
+        if map == 'pages':
+            return get_path_from(self.uri, self.md_pages_permalinks_and_redirects_to_filepath_map)
+        if map == 'doc':
+            return get_path_from(self.uri, self.md_doc_permalinks_and_redirects_to_filepath_map)
+        if map == 'all':
+            path = get_path_from(self.uri, self.md_doc_permalinks_and_redirects_to_filepath_map)
+            if len(path) == 0:
+                path = get_path_from(self.uri, self.external_redirects_map)
+        return path
+
+    def get_cross_referencing_role(self):
+        role = ''
+        if self.uri.startswith('/news'):
+            role = ''
+        elif self.uri.startswith('/') and '#' in self.uri and not self.uri.startswith('/attachment'):
+            role = ':ref:'
+        elif self.uri.startswith('/') and not self.uri.startswith(
+                '/attachment') and self.uri not in self.external_redirects_map.keys():
+            role = ':doc:'
+        elif BASE_SITE in self.uri:
+            role = ''
+
+        return role
+
+    def set_section(self, section):
+        self.section = section
 
 
 def get_path_from(perm, mapping):
@@ -197,21 +250,6 @@ def get_path_from(perm, mapping):
         path = mapping[perm + '/']
     elif perm[0:len(perm) - 1] in mapping.keys():
         path = mapping[perm[0:len(perm) - 1]]
-    return path
-
-
-def get_path_from_md_internal_mapping(perm, md_doc_permalinks_and_redirects_to_filepath_map,
-                                      md_pages_permalinks_and_redirects_to_filepath_map,
-                                      external_redirects_map, map='all'):
-    path = ''
-    if map == 'pages':
-        return get_path_from(perm, md_pages_permalinks_and_redirects_to_filepath_map)
-    if map == 'doc':
-        return get_path_from(perm, md_doc_permalinks_and_redirects_to_filepath_map)
-    if map == 'all':
-        path = get_path_from(perm, md_doc_permalinks_and_redirects_to_filepath_map)
-        if len(path) == 0:
-            path = get_path_from(perm, external_redirects_map)
     return path
 
 

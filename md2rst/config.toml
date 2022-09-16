@@ -89,11 +89,13 @@ validate = true
 #file_name = '/home/user/testingfilez/code-signing.rst'
 
 #file_name = '/home/user/testingfilez/gsoc.rst'
-file_name = '/home/user/testingfilez/license.rst'
+#file_name = '/home/user/testingfilez/license.rst' # OK
 #file_name = '/home/user/testingfilez/development-workflow.rst'
-#file_name = '/home/user/testingfilez/qubes-builder-details.rst'
-#file_name = '/home/user/testingfilez/qubes-builder.rst'
+#file_name = '/home/user/testingfilez/qubes-builder-details.rst' # OK
 #file_name = '/home/user/testingfilez/qubes-iso-building.rst'
+#file_name = '/home/user/testingfilez/qubes-builder.rst' # TODO debug
+#< SYSTEM MESSAGE  for: /home/user/testingfilez/qubes-builder.rst:3: (INFO/1) Enumerated list start value not ordinal-1: "3" (ordinal 3)
+
 
 # DONE
 
