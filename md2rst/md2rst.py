@@ -19,9 +19,10 @@ from sphinx.util import ensuredir
 
 from config_constants import *
 from pandocconverter import PandocConverter
-from qubesrstwriter import QubesRstWriter, RstBuilder
-from rstqubespostprocessor import parse_and_validate_rst, qube_links_2
-from utilz import get_mappings
+from qubesrstwriter2 import QubesRstWriter, RstBuilder
+# from qubesrstwriter import QubesRstWriter, RstBuilder
+from rstqubespostprocessor import validate_rst_file, RSTDirectoryPostProcessor
+from utilz import get_mappings, convert_svg_to_png, is_not_readable
 
 basicConfig(level=DEBUG)
 logger = getLogger(__name__)
@@ -93,10 +94,16 @@ def convert_md_to_rst(config_toml: dict) -> None:
 
 def run(config_toml: dict) -> None:
     # gather the mappings before converting
-    if config_toml[RUN][MD_MAP]:
-        md_doc_permalinks_and_redirects_to_filepath_map, md_pages_permalinks_and_redirects_to_filepath_map, \
-        external_redirects_mappings = get_mappings(config_toml)
+    if not config_toml[RUN][MD_MAP] and not is_not_readable(config_toml[MARKDOWN][ROOT_DIRECTORY]):
+        print("Please configure gathering of markdown url mapping")
+        return
 
+    md_doc_permalinks_and_redirects_to_filepath_map, md_pages_permalinks_and_redirects_to_filepath_map, \
+    external_redirects_mappings = get_mappings(config_toml)
+    rstDirectoryPostProcessor = RSTDirectoryPostProcessor(config_toml[RST][RST_DIRECTORY],
+                                                          md_doc_permalinks_and_redirects_to_filepath_map,
+                                                          md_pages_permalinks_and_redirects_to_filepath_map,
+                                                          external_redirects_mappings)
     logger.debug("md_doc_permalinks_and_redirects_to_filepath_map")
     logger.debug(md_doc_permalinks_and_redirects_to_filepath_map)
     logger.debug("md_pages_permalinks_and_redirects_to_filepath_map")
@@ -104,30 +111,36 @@ def run(config_toml: dict) -> None:
     logger.debug("external_redirects_mappings")
     logger.debug(external_redirects_mappings)
 
-    if config_toml[RUN][PYPANDOC] and config_toml[RUN][MD_MAP]:
+    if config_toml[RUN][PYPANDOC]:
         convert_md_to_rst(config_toml)
 
-    if config_toml[RUN][DOCUTILS_VALIDATE] and config_toml[RUN][MD_MAP]:
-        parse_and_validate_rst(config_toml[RST][RST_DIRECTORY])
+    if config_toml[RUN][DOCUTILS_VALIDATE]:
+        rstDirectoryPostProcessor.parse_and_validate_rst()
 
-    if config_toml[RUN][QUBES_RST] and config_toml[RUN][MD_MAP]:
+    if config_toml[RUN][QUBES_RST]:
         # TODO Maya FIRST
-        qube_links_2(config_toml[RST][RST_DIRECTORY], md_doc_permalinks_and_redirects_to_filepath_map,
-                                md_pages_permalinks_and_redirects_to_filepath_map,
-                                external_redirects_mappings)
+        rstDirectoryPostProcessor.qube_links_2()
         pass
 
+    if config_toml[RUN][SVG_PNG_CONVERSION_REPLACEMENT]:
+        convert_svg_to_png(config_toml)
+
     if config_toml[TEST][RUN]:
-        run_single_rst_test(config_toml, external_redirects_mappings, md_doc_permalinks_and_redirects_to_filepath_map,
+        file_name = config_toml[TEST][FILE_NAME]
+        file_name_converted = file_name + '.test'
+        run_single_rst_test(file_name, external_redirects_mappings, md_doc_permalinks_and_redirects_to_filepath_map,
                             md_pages_permalinks_and_redirects_to_filepath_map)
+        if config_toml[TEST]['validate']:
+            validate_rst_file(file_name_converted)
+        if config_toml[RUN]['markdown_links_leftover']:
+            rstDirectoryPostProcessor.search_replace_md_links_single(file_name_converted)
 
     if config_toml[RUN][COPY_RST_FILES]:
         copy_manual_rst(config_toml)
 
 
-def run_single_rst_test(config_toml, external_redirects_mappings, md_doc_permalinks_and_redirects_to_filepath_map,
+def run_single_rst_test(file_name, external_redirects_mappings, md_doc_permalinks_and_redirects_to_filepath_map,
                         md_pages_permalinks_and_redirects_to_filepath_map):
-    file_name = config_toml[TEST][FILE_NAME]
     fileobj = open(file_name, 'r')
     # noinspection PyUnresolvedReferences
     default_settings = docutils.frontend.OptionParser(components=(docutils.parsers.rst.Parser,)).get_default_values()

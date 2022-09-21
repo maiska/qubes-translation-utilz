@@ -785,6 +785,8 @@ class QubesRstTranslator(nodes.NodeVisitor):
             is_code_block = True
             if node.get('language', 'default') == 'default' and len(node['classes']) >= 2:
                 node['language'] = node['classes'][1]
+        if '::' in node.get('classes', []):
+            is_code_block = True
         # highlight_args is the only way to distinguish between :: and .. code:: in Sphinx 2 or higher.
         if node.get('highlight_args') is not None:
             is_code_block = True
