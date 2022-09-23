@@ -94,21 +94,21 @@ class RSTDirectoryPostProcessor:
                 data = data.replace(url_name + external_url_md, url_name_to_replace + external_url)
         return data, found
 
-        def qube_links_2(file_pattern: str = '*.rst') -> None:
-            for path, dirs, files in os.walk(os.path.abspath(self.rst_directory)):
-                for filename in fnmatch.filter(files, file_pattern):
-                    filepath = os.path.join(path, filename)
-                    rstfilepostprocesr = RSTFilePostProcessor(filepath,
-                                                              self.md_doc_permalinks_and_redirects_to_filepath_map,
-                                                              self.md_pages_permalinks_and_redirects_to_filepath_map,
-                                                              self.external_redirects_map)
-                    rstfilepostprocesr.find_and_qube_links()
+    def qube_links_2(self, file_pattern: str = '*.rst') -> None:
+        for path, dirs, files in os.walk(os.path.abspath(self.rst_directory)):
+            for filename in fnmatch.filter(files, file_pattern):
+                filepath = os.path.join(path, filename)
+                rstfilepostprocesr = RSTFilePostProcessor(filepath,
+                                                          self.md_doc_permalinks_and_redirects_to_filepath_map,
+                                                          self.md_pages_permalinks_and_redirects_to_filepath_map,
+                                                          self.external_redirects_map)
+                rstfilepostprocesr.find_and_qube_links()
 
-        def parse_and_validate_rst(self, file_pattern: str = '*.rst') -> None:
-            for path, dirs, files in os.walk(os.path.abspath(self.rst_directory)):
-                for filename in fnmatch.filter(files, file_pattern):
-                    filepath = os.path.join(path, filename)
-                    validate_rst_file(filepath)
+    def parse_and_validate_rst(self, file_pattern: str = '*.rst') -> None:
+        for path, dirs, files in os.walk(os.path.abspath(self.rst_directory)):
+            for filename in fnmatch.filter(files, file_pattern):
+                filepath = os.path.join(path, filename)
+                validate_rst_file(filepath)
 
 
 class RSTFilePostProcessor:

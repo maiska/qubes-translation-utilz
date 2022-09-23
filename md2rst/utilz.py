@@ -187,6 +187,7 @@ class CheckRSTLinks:
             else:
                 path = self.get_path_from_md_internal_mapping('pages')
                 if len(path) > 0:
+                    print(self.uri, " *** ", path, " *** ", self.section, ' *** ')
                     uri = replace_page_aux(self.uri, path)
                 else:
                     path = self.get_path_from_md_internal_mapping('all')
@@ -254,8 +255,12 @@ def get_path_from(perm, mapping):
 
 
 def replace_page_aux(perm_match, path):
-    return BASE_SITE + path + '/' + perm_match[perm_match.index('#'):len(perm_match)] if not path.startswith(
-        '/') else BASE_SITE[0:len(BASE_SITE) - 1] + path + '/' + perm_match[perm_match.index('#'):len(perm_match)]
+    if '#' in perm_match:
+        section = perm_match[perm_match.index('#'):]
+    else:
+        section = ''
+    return BASE_SITE + path + '/' + section if not path.startswith(
+        '/') else BASE_SITE[:-1] + path + '/' + section
 
 
 def get_url(path):

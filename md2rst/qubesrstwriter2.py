@@ -473,6 +473,7 @@ class QubesRstTranslator(nodes.NodeVisitor):
         self.body += '* '
         pass
 
+
     # def visit_substitution_reference(self, node):
     #     print(node)
     #     pass
@@ -557,7 +558,7 @@ class QubesRstTranslator(nodes.NodeVisitor):
     # def unknown_visit(self, node):
     #     print(node)
     #     print("unknown_visit end")
-    #     self.add_text('[UNKOWN NODE %s]' % node.astext())
+    #     self.body += ('[UNKOWN NODE (%s) %s]' % (node.__class__.__name__, node.astext()))
     #     log_unknown(node.__class__.__name__, node)
     #
     # def unknown_departure(self, node):

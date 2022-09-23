@@ -1002,6 +1002,12 @@ class QubesRstTranslator(nodes.NodeVisitor):
                         uri = path + ':' + internal_section
             # print('sections')
             # print(uri)
+        elif uri.startswith('#'):
+            uri = uri.replace('#', '')
+            if uri == 'how-to-guides':
+                uri = 'how-to guides'
+            else:
+                uri = uri.replace('-', ' ')
         elif '/attachment/' in uri and '.pdf' in uri:
             to_replace = uri[uri.find('/'):uri.rfind('/') + 1]
             uri = uri.replace(to_replace, '/_static/')
