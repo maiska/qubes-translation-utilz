@@ -14,7 +14,7 @@ from sphinx.locale import admonitionlabels, _
 from sphinx.util import ensuredir
 from sphinx.writers.text import MAXWIDTH, STDINDENT
 
-from config_constants import INTERNAL_BASE_PATH, BASE_SITE, DOC_BASE_PATH, FEED_XML
+from config_constants import INTERNAL_BASE_PATH, QUBESOS_SITE, DOC_BASE_PATH, FEED_XML
 from utilz import is_dict_empty
 
 basicConfig(level=DEBUG)
@@ -78,28 +78,25 @@ def log_unknown(typed, node):
 def get_url(path):
     logger.debug('>>>> pages path %s ' % path)
     if path.startswith('/'):
-        url = BASE_SITE + path[1:len(path)] + '/'
+        url = QUBESOS_SITE + path[1:len(path)] + '/'
     else:
-        url = BASE_SITE + path + '/'
+        url = QUBESOS_SITE + path + '/'
     return url
 
 
 def get_cross_referencing_role(uri):
-    
     if uri.startswith('/') and '#' in uri and not uri.startswith('/attachment'):
         return ':ref:'
     elif uri.startswith('/') and not uri.startswith('/attachment'):
         return ':doc:'
-    elif uri.startswith('#'):
-        return 'inline-section'
     else:
         return ''
     return ''
 
 
 def replace_page_aux(perm_match, path):
-    return BASE_SITE + path + '/' + perm_match[perm_match.index('#'):len(perm_match)] if not path.startswith(
-        '/') else BASE_SITE[0:len(BASE_SITE) - 1] + path + '/' + perm_match[perm_match.index('#'):len(perm_match)]
+    return QUBESOS_SITE + path + '/' + perm_match[perm_match.index('#'):len(perm_match)] if not path.startswith(
+        '/') else QUBESOS_SITE[0:len(QUBESOS_SITE) - 1] + path + '/' + perm_match[perm_match.index('#'):len(perm_match)]
 
 
 # noinspection PyPep8Naming,PyMethodMayBeStatic
@@ -788,6 +785,8 @@ class QubesRstTranslator(nodes.NodeVisitor):
             is_code_block = True
             if node.get('language', 'default') == 'default' and len(node['classes']) >= 2:
                 node['language'] = node['classes'][1]
+        if '::' in node.get('classes', []):
+            is_code_block = True
         # highlight_args is the only way to distinguish between :: and .. code:: in Sphinx 2 or higher.
         if node.get('highlight_args') is not None:
             is_code_block = True
@@ -900,13 +899,11 @@ class QubesRstTranslator(nodes.NodeVisitor):
         raise nodes.SkipNode
 
     def visit_substitution_definition(self, node):
-        print("subst", node)
-        print(node.children)
-        if len(node)==1:
-            child_tmp = node.children[0]
-            if isinstance(child_tmp, nodes.reference):
-                refuri = child_tmp.get('refuri')
-                self.add_text(_('|%s| image:: %s') % (refuri[refuri.rfind('/') + 1:len(refuri)], refuri))
+        print(node)
+        # if len(node)==1:
+        #     child_tmp = node.children[0]
+        #     if isinstance(child_tmp, docutils.nodes.refernce):
+        #         self.add_text(_('|%s| image:: %s') % (refuri[refuri.rfind('/') + 1:len(refuri)], refuri))
         raise nodes.SkipNode
 
     def depart_substitution_definition(self, node):
@@ -950,23 +947,13 @@ class QubesRstTranslator(nodes.NodeVisitor):
                 self.add_text(self.check_cross_referencing_escape_uri(refuri))
             else:
                 role = get_cross_referencing_role(refuri)
-                ref_tmp = self.check_cross_referencing_escape_uri(refuri)
                 if refuri.startswith('/attachment') and "png" in refuri:
                     self.add_text(_('|%s| image:: %s') % (refuri[refuri.rfind('/') + 1:len(refuri)], refuri))
                     return
                 if role == ':doc:' or role == ':ref:':
                     underscore = ''
-                if role == ':ref:' and ref_tmp.startswith('/'):
-                    ref_tmp = ref_tmp[1:len(ref_tmp)]
-                if role == 'inline-section':
-                    underscore = '_'
-                    self.add_text('`%s`%s' % (ref_tmp, underscore))
-                else:
-                    uri = self.check_cross_referencing_escape_uri(refuri)
-                    if role == ':ref:':
-                        uri = uri.lstrip('/')
-                    self.add_text(
-                        '%s`%s <%s>`%s' % (role, refname, uri, underscore))
+                self.add_text(
+                    '%s`%s <%s>`%s' % (role, refname, self.check_cross_referencing_escape_uri(refuri), underscore))
             print('raise2')
             raise nodes.SkipNode
 
@@ -985,31 +972,22 @@ class QubesRstTranslator(nodes.NodeVisitor):
         return path
 
     def check_cross_referencing_escape_uri(self, uri: str) -> str:
-        if uri.startswith('#'):
-            # inline section
-            section = uri[uri.index('#') + 1:len(uri)]
-            uri = section.replace('-', ' ').replace('#', '')
         if '#' in uri and uri.startswith('/') and not uri.startswith('/attachment'):
             # sections
             # perm_match = uri
             perm = uri[0:uri.index('#')]
             section = uri[uri.index('#') + 1:len(uri)]
-            internal_section = section.replace('#', '')
-            if internal_section == 'how-to-guides':
-                internal_section = 'how-to guides'
-            elif internal_section not in (
-            'qubes-devel', 'qubes-users', 'qubes-announce', 'qubes-project', 'qubes-translation'):
-                internal_section = internal_section.replace('-', ' ')
             if perm in DOC_BASE_PATH:
-                uri = 'index:' + internal_section
+                uri = '/' + uri[uri.index('#'):len(uri)]
             elif perm.startswith('/news/'):
-                uri = BASE_SITE + uri[1:len(uri)]
+                uri = QUBESOS_SITE + uri[1:len(uri)]
             else:
                 path = self.get_path_from_md_internal_mapping(perm, 'pages')
                 if len(path) > 0:
                     uri = replace_page_aux(uri, path)
                 else:
                     path = self.get_path_from_md_internal_mapping(perm, 'doc')
+                    internal_section = section.replace('-', ' ').replace('#', '')
                     if len(path) > 0:
                         uri = path + ':' + internal_section
             # print('sections')
@@ -1018,13 +996,13 @@ class QubesRstTranslator(nodes.NodeVisitor):
             to_replace = uri[uri.find('/'):uri.rfind('/') + 1]
             uri = uri.replace(to_replace, '/_static/')
         elif uri in INTERNAL_BASE_PATH:
-            uri = BASE_SITE
+            uri = QUBESOS_SITE
         elif uri.startswith('/news/'):
-            uri = BASE_SITE + uri[1:len(uri)]
+            uri = QUBESOS_SITE + uri[1:len(uri)]
         elif uri in DOC_BASE_PATH:
-            uri = '/index'
+            uri = '/'
         elif uri in FEED_XML:
-            uri = BASE_SITE + FEED_XML[1:len(FEED_XML)]
+            uri = QUBESOS_SITE + FEED_XML[1:len(FEED_XML)]
         elif uri in self.md_pages_permalinks_and_redirects_to_filepath_map.keys():
             path = self.md_pages_permalinks_and_redirects_to_filepath_map[uri]
             uri = get_url(path)
@@ -1213,10 +1191,7 @@ class QubesRstTranslator(nodes.NodeVisitor):
     #     raise nodes.SkipNode
     def visit_substitution_reference(self, node):
         print(node)
-        print("****")
-        refname = node.get('refname')
-        self.add_text(_('|%s|') % (refname))
-        raise nodes.SkipNode
+        pass
 
     def depart_substitution_reference(self, node):
         pass
