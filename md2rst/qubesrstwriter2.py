@@ -233,7 +233,7 @@ class QubesRstTranslator(RstTranslator):
         if refname is None and refuri.startswith('http'):
             # the case of license.rst and markdown link with qubes os have to be converted manually
             # perhaps with the bash skript TODO
-            pass
+            super().visit_reference(node)
         else:
             self.checkRSTLinks.set_uri(refuri)
             role = self.checkRSTLinks.get_cross_referencing_role()
@@ -244,21 +244,12 @@ class QubesRstTranslator(RstTranslator):
         result = ""
         refname = node.get('name')
         refuri = node.get('refuri')
-        if refuri.startswith('/') and '#' in refuri:
-            perm = refuri[0:refuri.index('#')]
-            section = refuri[refuri.index('#') + 1:len(refuri)]
-            self.checkRSTLinks.set_uri(perm)
-            self.checkRSTLinks.set_section(section)
-        elif refuri.startswith('#'):
-            section = refuri[refuri.index('#') + 1:len(refuri)]
-            self.checkRSTLinks.set_uri('/index')
-            self.checkRSTLinks.set_section(section)
-        else:
-            self.checkRSTLinks.set_section('')
-            self.checkRSTLinks.set_uri(refuri)
+        self.checkRSTLinks.set_uri(refuri)
         role = self.checkRSTLinks.get_cross_referencing_role()
         # role = self.get_cross_referencing_role(refuri)
-        if len(role) == 0:
+        if refname is None and refuri.startswith('http'):
+            return super().depart_reference(node)
+
             # self.body += refuri
             url = self.checkRSTLinks.check_cross_referencing_escape_uri()
             # url = self.check_cross_referencing_escape_uri(refuri)
