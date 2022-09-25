@@ -15,8 +15,11 @@ from sphinx.writers.text import MAXWIDTH, STDINDENT
 from config_constants import INTERNAL_BASE_PATH, BASE_SITE, DOC_BASE_PATH, FEED_XML
 from utilz import is_dict_empty, CheckRSTLinks
 
+from docutils_rst_writer.writer import RstTranslator
+
 basicConfig(level=DEBUG)
 logger = getLogger(__name__)
+
 
 
 class QubesRstWriter(writers.Writer):
@@ -120,14 +123,14 @@ def is_shell_code_block(node):
     return "shell_session" in node or "bash_session" in node
 
 
-class QubesRstTranslator(nodes.NodeVisitor):
+class QubesRstTranslator(RstTranslator):
     sectionchars = '*=-~"+`'
 
     def __init__(self, document, builder,
                  md_doc_permalinks_and_redirects_to_filepath_map,
                  md_pages_permalinks_and_redirects_to_filepath_map,
                  external_redirects_map):
-        nodes.NodeVisitor.__init__(self, document)
+        super().__init__(document)
 
         self.checkRSTLinks = CheckRSTLinks(md_doc_permalinks_and_redirects_to_filepath_map,
                                       md_pages_permalinks_and_redirects_to_filepath_map,
@@ -151,7 +154,6 @@ class QubesRstTranslator(nodes.NodeVisitor):
         else:
             self.nl = '\n'
         self.sectionchars = '=-~"+`'
-        self.indent = STDINDENT
         self.wrapper = textwrap.TextWrapper(width=MAXWIDTH, break_long_words=False, break_on_hyphens=False)
 
     # def get_cross_referencing_role(self, uri):
@@ -168,33 +170,10 @@ class QubesRstTranslator(nodes.NodeVisitor):
     #
     #     return role
 
-    def wrap(self, text, width=MAXWIDTH):
-        self.wrapper.width = width
-        return self.wrapper.wrap(text)
-
-    def visit_document(self, node):
-        # print(node)
-        pass
-
     def depart_document(self, node):
         # print(node.astext())
-        pass
-
-    def visit_block_quote(self, node):
-        print(node)
-        pass
-
-    def depart_block_quote(self, node):
-        print(node)
-        pass
-
-    def visit_comment(self, node):
-        print(node)
-        pass
-
-    def depart_comment(self, node):
-        print(node)
-        pass
+        super().depart_document(node)
+        self.body += '\n'.join(self.lines)
 
     def visit_system_message(self, node):
         # print(node)
@@ -205,17 +184,10 @@ class QubesRstTranslator(nodes.NodeVisitor):
         print(node)
         pass
 
-    def visit_literal(self, node):
-        self.body += ' ``'
-        pass
 
-    def depart_literal(self, node):
-        self.body += '`` '
-        pass
-
-    def visit_literal_block(self, node):
+    def visit_literal_block(self, node, language=None):
         print(node)
-        print(node.attributes)
+        print(f'attrs {node.attributes!r}, lang {language}')
         # if node['classes'] in ['code bash', 'code shell']:
         #     print(node)
 
@@ -225,184 +197,34 @@ class QubesRstTranslator(nodes.NodeVisitor):
         # if is_node_a_code_block(node) and set(classes) == set('inline', 'Text'):
         #     self.body += self.get_code_text_block(node.astext())
         #     pass
+        if language is None:
+            language = node.get('language')
+        if language is None:
+            classes = node.get('classes') or []
+            classes = [c for c in classes if c not in ('code',)]
+            if len(classes) == 1:
+                language = classes[0]
 
-        if node.hasattr('xml:space'):
+        if node.hasattr('xml:space') or language is not None:
             astext = node.astext()
             if is_shell_code_block(astext):
                 for i in ['shell_session', 'bash_session', '.. code::']:
                     code_section = astext.replace(i, '')
                     code_section = code_section.lstrip()
-                    self.body += self.nl + self.get_code_text_block(code_section)
-                    raise nodes.SkipNode
+                self.write(self.nl + self.get_code_text_block(code_section))
+                raise nodes.SkipNode
             if is_c_code_block(astext):
-                node['language'] = 'c'
-                self.body += self.nl + '.. code:: c' + self.nl + self.nl  # + SPACE * STDINDENT * 2
-            elif not node.hasattr('language'):
-                node['language'] = 'bash'
-                self.body += self.nl + '.. code:: bash' + self.nl + self.nl  # + SPACE * STDINDENT * 2
-            elif node['language'] in ["shell_session", "bash_session"]:
-                node['language'] = 'bash'
-                self.body += self.nl + '.. code:: bash' + self.nl + self.nl
-                # + SPACE * STDINDENT * 2
-            else:
-                self.body += self.nl + '.. code:: ' + node['language'] + self.nl + self.nl \
-                    # + SPACE * STDINDENT * 2
-
-        pass
-
-    def depart_literal_block(self, node):
-        print("depart")
-        # print(node)
-        self.body += self.nl + self.nl
-        pass
-
-    # def visit_target(self, node):
-    #     pass
-    # def depart_target(self, node):elf,
-    #     pass
-    def visit_subsection(self, node):
-        print(node)
-        pass
-
-    def visit_section(self, node):
-        print(node)
-        pass
-
-    def depart_section(self, node):
-        self.section_count += 1
-        print(node)
-        pass
-
-    # def depart_section(self, node):
-    #     pass
-    def visit_title(self, node):
-        parent = node.parent
-        # subsections TODO
-        if self.title_count == 0:
-            self.body += '=' * len(node.astext()) + self.nl
-        else:
-            self.body += self.nl
-        pass
-
-    def depart_title(self, node):
-        # self.body += node.astext() + self.nl
-        parent = node.parent
-        if self.title_count >= 0 or isinstance(parent, docutils.nodes.section):
-            self.body += self.nl + '=' * len(node.astext()) + self.nl + self.nl
-        self.title_count += 1
-        pass
-
-    def visit_line_block(self, node):
-        print("line 123")
-        print(node)
-        pass
-
-    def visit_Text(self, node):
-        print('visit text')
-        parent = node.parent
-        if is_node_a_code_block(parent):
-            self.body += CODE_BLOCK_IDENT
-        print(node)  # Qubes ISO building
-        # print(node.parent) #<title>Qubes ISO building</title>
-        pass
+                language = 'c'
+            elif False and language is None:
+                language = 'bash'
+            elif language in ["shell_session", "bash_session"]:
+                language = 'shell-session'
+        super().visit_literal_block(node, language=language)
 
     def get_code_text_block(self, nodeasstr):
         x = nodeasstr.splitlines()
         ident = self.nl + CODE_BLOCK_IDENT
         return ident.join(x)
-
-    def get_list_item_ident(self, nodeasstr):
-        x = nodeasstr.splitlines()
-        ident = self.nl + LIST_ITEM_IDENT
-        return ident.join(x)
-
-    def depart_Text(self, node):
-        print('depart text')
-        parent = node.parent
-        print(type(parent))
-        print(node)  # Qubes ISO building
-        if is_node_a_code_block(parent):
-            self.body += self.get_code_text_block(node.astext())
-        else:
-            self.body += node.astext().lstrip()
-        pass
-
-    def visit_enumerated_list(self, node):
-        print(node)
-        if self.enumerated_lists_count > 2:
-            logger.debug('no more verschlachtelung')
-            self.visit_system_message(node)
-        self.enumerated_lists_count += 1
-        pass
-
-    def depart_enumerated_list(self, node):
-        print(node)
-        self.enumerated_lists_count -= 1
-        self.enumerated_count = 0
-        self.body += self.nl
-        pass
-
-    def visit_bullet_list(self, node):
-        print(node)
-        self.body += self.nl
-        pass
-
-    def depart_bullet_list(self, node):
-        print(node)
-        self.body += self.nl + self.nl
-        pass
-
-    def visit_list_item(self, node):
-        parent = node.parent
-        if isinstance(parent, docutils.nodes.bullet_list):
-            self.body += '-  '
-        if isinstance(parent, docutils.nodes.enumerated_list):
-            self.enumerated_count += 1
-            self.body += self.nl + str(self.enumerated_count) + '.' + SPACE
-        print(node)
-        pass
-
-    def depart_list_item(self, node):
-        parent = node.parent
-        print(node)
-        if isinstance(parent, docutils.nodes.bullet_list):
-            self.body += self.nl
-        pass
-
-    def visit_inline(self, node):
-        parent = node.parent
-        if is_node_a_code_block(parent) and node.hasattr('classes') and 'single' in node['classes']:
-            self.body += self.nl + CODE_BLOCK_IDENT  # + self.get_code_text_block(node.astext())
-        print(node)
-
-        pass
-
-    def depart_inline(self, node):
-        print(node)
-        pass
-
-    def visit_paragraph(self, node):
-        parent = node.parent
-        if not isinstance(parent, docutils.nodes.list_item):
-            self.body += self.nl
-        # print(node)
-        pass
-
-    def depart_paragraph(self, node):
-        self.body += self.nl
-        pass
-
-    # def visit_role(self, node):
-    #     print(node)
-    #     pass
-
-    def visit_refui(self, node):
-        t = 'd'
-        pass
-
-    def visit_Refuri(self, node):
-        t = 'd'
-        pass
 
     def visit_reference(self, node):
         refname = node.get('name')
@@ -416,10 +238,11 @@ class QubesRstTranslator(nodes.NodeVisitor):
         else:
             self.checkRSTLinks.set_uri(refuri)
             role = self.checkRSTLinks.get_cross_referencing_role()
-            self.body += SPACE + role + '`'
+            self.write(SPACE + role + '`')
         pass
 
     def depart_reference(self, node):
+        result = ""
         refname = node.get('name')
         refuri = node.get('refuri')
         if refuri.startswith('/') and '#' in refuri:
@@ -440,125 +263,28 @@ class QubesRstTranslator(nodes.NodeVisitor):
             # self.body += refuri
             url = self.checkRSTLinks.check_cross_referencing_escape_uri()
             # url = self.check_cross_referencing_escape_uri(refuri)
-            self.body += SPACE + '<' + url + '>'
+            result += (SPACE + '<' + url + '>')
         else:
             url = self.checkRSTLinks.check_cross_referencing_escape_uri()
             # url = self.check_cross_referencing_escape_uri(refuri)
             if role == ':ref:':
-                self.body += SPACE + '<' + url[1:len(url)] + '>'
+                result += (SPACE + '<' + url.lstrip('/') + '>')
             else:
-                self.body += SPACE + '<' + url + '>'
+                result += (SPACE + '<' + url + '>')
         underscore = ''
         if len(role) == 0:
             underscore = '__'
-        self.body += '`' + underscore + SPACE
-        pass
 
-    def visit_strong(self, node):
-        self.body += '**'
-        #     print(node)
-        pass
-
-    def depart_strong(self, node):
-        #     self.body += node.astext()
-        self.body += '** '
-        pass
-
-    def visit_emphasis(self, node):
-        #     print(node)
-        self.body += '*'
-        pass
-
-    def depart_emphasis(self, node):
-        self.body += '* '
-        pass
-
-
-    # def visit_substitution_reference(self, node):
-    #     print(node)
-    #     pass
-    #
-    # def depart_substitution_reference(self, node):
-    #     pass
-
-    # def get_path_from_md_internal_mapping(self, perm, map='doc'):
-    #     path = ''
-    #     if map is 'doc':
-    #         perm_mappings = self.md_doc_permalinks_and_redirects_to_filepath_map
-    #     if map is 'pages':
-    #         perm_mappings = self.md_pages_permalinks_and_redirects_to_filepath_map
-    #     if perm in perm_mappings.keys():
-    #         path = perm_mappings[perm]
-    #     elif perm + '/' in perm_mappings.keys():
-    #         path = perm_mappings[perm + '/']
-    #     elif perm[0:len(perm) - 1] in perm_mappings.keys():
-    #         path = perm_mappings[perm[0:len(perm) - 1]]
-    #     return path
-    #
-    # def get_path_from_md_internal_mapping(self, perm, map='all'):
-    #     path = ''
-    #     if map == 'pages':
-    #         return get_path_from(perm, self.md_pages_permalinks_and_redirects_to_filepath_map)
-    #     if map == 'doc':
-    #         return get_path_from(perm, self.md_doc_permalinks_and_redirects_to_filepath_map)
-    #     if map == 'all':
-    #         path = get_path_from(perm, self.md_doc_permalinks_and_redirects_to_filepath_map)
-    #         if len(path) == 0:
-    #             path = get_path_from(perm, self.external_redirects_map)
-    #     return path
-
-    # def check_cross_referencing_escape_uri(self, uri: str) -> str:
-    #     if uri.startswith('/news/'):
-    #         uri = BASE_SITE + uri[1:len(uri)]
-    #     elif uri.startswith('#'):
-    #         uri = uri.replace('-', ' ')
-    #         # TODO inline section
-    #     elif uri in INTERNAL_BASE_PATH:
-    #         uri = BASE_SITE
-    #     elif uri in DOC_BASE_PATH:
-    #         uri = 'index'
-    #     elif uri in FEED_XML:
-    #         uri = BASE_SITE + FEED_XML[1:len(FEED_XML)]
-    #     elif '#' in uri and uri.startswith('/') and not uri.startswith('/attachment'):
-    #         # sections
-    #         # perm_match = uri
-    #         perm = uri[0:uri.index('#')]
-    #         section = uri[uri.index('#') + 1:len(uri)]
-    #         if perm in DOC_BASE_PATH:
-    #             uri = '/' + uri[uri.index('#'):len(uri)]
-    #         else:
-    #             path = self.get_path_from_md_internal_mapping(perm, 'pages')
-    #             if len(path) > 0:
-    #                 uri = replace_page_aux(uri, path)
-    #             else:
-    #                 path = self.get_path_from_md_internal_mapping(perm, 'doc')
-    #                 internal_section = section.replace('-', ' ').replace('#', '')
-    #
-    #                 if len(path) > 0:
-    #                     uri = path + ':' + internal_section
-    #         # print('sections')
-    #         # print(uri)
-    #     elif '/attachment/' in uri and '.pdf' in uri and uri.startswith('/'):
-    #         to_replace = uri[uri.find('/'):uri.rfind('/') + 1]
-    #         uri = uri.replace(to_replace, '/_static/')
-    #     elif uri.startswith('/'):
-    #         path = self.get_path_from_md_internal_mapping(uri, 'pages')
-    #         if len(path) > 0:
-    #             uri = get_url(path)
-    #         else:
-    #             uri = self.get_path_from_md_internal_mapping(uri, 'all')
-    #     elif uri.endswith('_'):
-    #         logger.debug('ends with uri %s', uri)
-    #         uri = uri[:-1] + '\\_'
-    #     else:
-    #         logger.debug(uri)
-    #         logger.debug(" it should be an external link")
-    #     return uri
+        result += ('`' + underscore + SPACE)
+        # self.write(result)
+        node['refuri'] = url
+        self.write(result)
+        # super().depart_reference(node)
 
     # def unknown_visit(self, node):
     #     print(node)
     #     print("unknown_visit end")
-    #     self.body += ('[UNKOWN NODE (%s) %s]' % (node.__class__.__name__, node.astext()))
+    #     self.write('[UNKOWN NODE (%s) %s]' % (node.__class__.__name__, node.astext()))
     #     log_unknown(node.__class__.__name__, node)
     #
     # def unknown_departure(self, node):
