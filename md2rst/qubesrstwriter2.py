@@ -271,8 +271,46 @@ class QubesRstTranslator(RstTranslator):
         self.write(result)
         # super().depart_reference(node)
 
-    # def unknown_visit(self, node):
-    #     print(node)
+    def visit_figure(self, node):
+        # there is 'image' node inside, that will be actually handled
+        pass
+
+    def depart_figure(self, node):
+        pass
+
+    def visit_caption(self, node):
+        # TODO: caption to a fiture
+        pass
+
+    def depart_caption(self, node):
+        pass
+
+    def visit_container(self, node):
+        attrs = ''
+        if 'alert-warning' in node.get('classes'):
+            directive = 'warning'
+        elif 'alert-info' in node.get('classes'):
+            directive = 'note'
+        else:
+            directive = 'container'
+            attrs = ' ' + ' '.join(node['classes'])
+        self.write(f'.. {directive}::{attrs}\n')
+        self.indent += 4
+
+    def depart_container(self, node):
+        self.write('\n\n')
+        self.indent -= 4
+
+    def visit_raw(self, node):
+        self.write(f'.. raw:: {node["format"]}')
+        self.indent += 4
+
+    def depart_raw(self, node):
+        self.indent -= 4
+
+    def unknown_visit(self, node):
+        print(node)
+        super().unknown_visit(node)
     #     print("unknown_visit end")
     #     self.write('[UNKOWN NODE (%s) %s]' % (node.__class__.__name__, node.astext()))
     #     log_unknown(node.__class__.__name__, node)
