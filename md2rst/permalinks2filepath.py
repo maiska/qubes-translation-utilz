@@ -11,6 +11,7 @@ basicConfig(level=DEBUG)
 logger = getLogger(__name__)
 
 
+# noinspection PyDefaultArgument
 class Permalinks2Filepath:
 
     def __init__(self, root_qubes_directory: str) -> None:
@@ -20,9 +21,9 @@ class Permalinks2Filepath:
             raise ValueError("Directory parameter containing the markdown documentation does not point to a directory")
         if not os.access(self.root_qubes_directory, os.R_OK):
             raise PermissionError("Directory parameter containing the markdown documentation could not be read")
-        # holds _doc mappings for official Qubes OS documenation
+        # holds _doc mappings for official Qubes OS documentation
         self.md_permalinks_and_redirects_to_filepath_mapping = None
-        # holds pages mappings for official Qubes OS documenation
+        # holds pages mappings for official Qubes OS documentation
         self.md_permalinks_and_redirects_to_filepath_mapping_pages = None
         # holds the external documentation redirects mapping
         self.external_mappings = None
@@ -32,13 +33,17 @@ class Permalinks2Filepath:
                                                  subdir: str = '_doc') -> dict:
         self.md_permalinks_and_redirects_to_filepath_mapping = {}
 
-        for path, dirs, files in os.walk(os.path.join(self.root_qubes_directory, subdir)):
+        doc_path = os.path.join(self.root_qubes_directory, subdir)
+        for path, dirs, files in os.walk(doc_path):
             for file_pattern in file_patterns:
                 for file_name in fnmatch.filter(files, file_pattern):
-                    logger.info('\t%s' % file_name)
+                    file_path = os.path.join(path, file_name)
+                    logger.info(
+                        'Traversing markdown _doc directory [%s] and '
+                        'creating mapping permalink -> relative doc path for [%s]' %
+                        (doc_path, file_path))
                     if file_name == 'README.md' or file_name == 'CONTRIBUTING.md':
                         continue
-                    file_path = os.path.join(path, file_name)
                     relative_path = file_path[file_path.index(subdir) + len(subdir):file_path.index(
                         file_pattern[1:len(file_pattern)])]
                     if relative_path.startswith(exclude_pattern):
@@ -62,11 +67,13 @@ class Permalinks2Filepath:
     def collect_external_redirects(self, single_dir: str = '/external', file_patterns: list = ['*.md'],
                                    subdir: str = '_doc') -> dict:
         self.external_mappings = {}
-        for path, dirs, files in os.walk(os.path.join(self.root_qubes_directory, subdir)):
+        docs_path = os.path.join(self.root_qubes_directory, subdir)
+        for path, dirs, files in os.walk(docs_path):
             for file_pattern in file_patterns:
                 for file_name in fnmatch.filter(files, file_pattern):
-                    logger.info('\t%s' % file_name)
                     file_path = os.path.join(path, file_name)
+                    logger.info('Collecting external mapping permalink -> relative doc path for [%s] in [%s]' %
+                                (docs_path, file_path))
                     relative_path = file_path[file_path.index(subdir) + len(subdir):file_path.index(
                         file_pattern[1:len(file_pattern)])]
                     if relative_path.startswith(single_dir):
