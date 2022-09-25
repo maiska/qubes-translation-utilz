@@ -35,7 +35,8 @@ class PandocConverter:
                 with io.open(filepath, 'r') as fp:
                     md = load(fp)
                     title = md.get('title')
-                convert_file(filepath, outputfile=rst_name, to='rst', format='md')
+                convert_file(filepath, outputfile=rst_name, to='rst', format='md',
+                             extra_args=['--wrap=preserve', '--columns=360'])
                 with io.open(rst_name, 'r+') as fp:
                     lines = fp.readlines()
                     fp.seek(0)
