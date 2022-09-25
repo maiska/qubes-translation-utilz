@@ -176,9 +176,8 @@ class QubesRstTranslator(RstTranslator):
         self.body += '\n'.join(self.lines)
 
     def visit_system_message(self, node):
-        # print(node)
-        self.body += 'SYSTEM MESSAGE  for: ' + node.astext()
-        pass
+        print('SYSTEM MESSAGE: ' + str(node))
+        raise nodes.SkipNode
 
     def depart_system_message(self, node):
         print(node)
