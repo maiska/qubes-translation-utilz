@@ -27,9 +27,10 @@ rst_directory = '/home/user/qubes-translation-utilz/md2rst/refactor_test/TEST/rs
 copy_from_dir = '/home/user/qubes-translation-utilz/md2rst/preparation/'
 md_file_names = ['admin-api-table.md', 'admin-api.md', 'doc.md']
 rst_config_files = ['requirements.txt', 'conf.py', '.readthedocs.yaml']
-rst_files = ['intro.rst']
-skip_files = ['gui.rst']
+rst_files = ['research.rst']
+skip_files = ['gui.rst', 'research.rst']
 directory_to_remove = 'external'
+# TODO
 files_to_remove = [
     '.gitlab-ci.yml',
     '.travis.yml',
@@ -40,7 +41,7 @@ files_to_remove = [
     'qubes-template-configs.rst',
     'community-recommended-hardware.rst']
 # TODO hcl.rst downloads.rst etc the redirects
-# either exclude them when converting or use redirects plugin.
+# TODO either exclude them when converting or use redirects plugin.
 #Better use redirects plugin with empty rst files that can be populated in a later stage
 old_uri = ['/hcl', '/downloads']
 
@@ -53,30 +54,30 @@ replace_svg_with_png_in_rst_files = true
 [run]
 md_map = true
 
-#pypandoc = false
-pypandoc = true
-#copy_md_files = false
-copy_md_files = true
-#copy_rst_files = false
-copy_rst_files = true
-#remove_rst_directory = false
-remove_rst_directory = true
-#remove_rst_files = false
-remove_rst_files = true
-
-#docutils_validate = false
-docutils_validate = true
+pypandoc = false
+#pypandoc = true
+copy_md_files = false
+#copy_md_files = true
+copy_rst_files = false
+#copy_rst_files = true
+remove_rst_directory = false
+#remove_rst_directory = true
+remove_rst_files = false
+#remove_rst_files = true
 #
-#qubes_rst = false
-qubes_rst = true
+docutils_validate = false
+#docutils_validate = true
 
-#svg_png_conversion_replacement = false
-svg_png_conversion_replacement = true
-#markdown_links_leftover = false
-markdown_links_leftover = true
+qubes_rst = false
+#qubes_rst = true
+#
+svg_png_conversion_replacement = false
+#svg_png_conversion_replacement = true
+markdown_links_leftover = false
+#markdown_links_leftover = true
 
-#redirect_markdown = true
 redirect_markdown = false
+#redirect_markdown = true
 
 #git reset --hard && find . ! -not -name 'README.md' -o ! -not -name 'CONTRIBUTING.md' -o -type f -name '*.rst' -delete
 
@@ -96,8 +97,8 @@ output = 'mapping.txt'
 logfile = '/tmp/md2rst.log'
 
 [test]
-run = false
-#run = true
+#run = false
+run = true
 docutils_validate = true
 
 
@@ -116,26 +117,28 @@ docutils_validate = true
 # can be deleted, is referenced only via url in the index
 #file_name = '/home/user/testingfilez/community-recommended-hardware.rst'
 
+# Will be copied
+#file_name = '/home/user/testingfilez/research.rst'
+
+
+#file_name = '/home/user/testingfilez/intro.rst' # TODO jsut replace the container directives with custom directives and
+# you will not need to copy this
+
 # TODO those who have no origin file in testingfilez dir -> have to be filled in or otherwise processed!
 
 
 # wrap rst text? really? 80 characters per line? standard? why?
-
-#file_name = '/home/user/testingfilez/admin-api.rst' # TODO
+# Try out the new table writer
+#file_name = '/home/user/testingfilez/admin-api.rst' # TODO cannot be read by a parser !!!
+#docutils.parsers.rst.Parser().parse(fileobj.read(), rst_document)
+#docutils.utils.SystemMessage: /home/user/testingfilez/admin-api.rst:74: (SEVERE/4) Unexpected section title
 
 #https://gist.github.com/dbrgn/2922648
-#file_name = '/home/user/testingfilez/4_1/release-notes.rst' # TODO
-#file_name = '/home/user/testingfilez/4_1/schedule.rst' # TODO
-#file_name = '/home/user/testingfilez/video-tours.rst' # TODO
-#file_name = '/home/user/testingfilez/research.rst' # TODO
 #file_name = '/home/user/testingfilez/hcl.rst' # TODO
 #file_name = '/home/user/testingfilez/downloads.rst' # TODO
-#file_name = '/home/user/testingfilez/intro.rst' # TODO
-#file_name = '/home/user/testingfilez/index.rst' # TODO
 #only one usability-ux has a reference to the /doc/visual style guide
 file_name = '/home/user/testingfilez/visual-style-guide.rst' # TODO empty,
 
-# TODO toctree example
 
 
 

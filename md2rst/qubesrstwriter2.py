@@ -11,6 +11,7 @@ from docutils import nodes, writers
 
 from sphinx.writers.text import MAXWIDTH, STDINDENT
 
+from docutils_rst_writer.writer import RstTranslator
 from utilz import is_dict_empty, CheckRSTLinks
 
 PUNCTUATION_SET = {'!', ',', '.', ':', ';', '?', '__'}
@@ -77,7 +78,6 @@ class QubesRstWriter(writers.Writer):
                  md_pages_permalinks_and_redirects_to_filepath_map,
                  external_redirects_map):
         writers.Writer.__init__(self)
-        # self.builder = builder
         if is_dict_empty(md_pages_permalinks_and_redirects_to_filepath_map):
             raise ValueError("md_pages_permalinks_and_redirects_to_filepath_mapping is not set")
         self.md_pages_permalinks_and_redirects_to_filepath_map = md_pages_permalinks_and_redirects_to_filepath_map
@@ -93,11 +93,11 @@ class QubesRstWriter(writers.Writer):
         self.md_doc_permalinks_and_redirects_to_filepath_map = md_doc_permalinks_and_redirects_to_filepath_map
 
     def translate(self):
-        # visitor = QubesRstTranslator(self.document, self.builder,
         visitor = QubesRstTranslator(self.document,
                                      self.md_doc_permalinks_and_redirects_to_filepath_map,
                                      self.md_pages_permalinks_and_redirects_to_filepath_map,
                                      self.external_redirects_map)
+        # visitor = RstTranslator(self.document) new rsttranslator
         self.document.walkabout(visitor)
         self.output = visitor.body
 
@@ -194,6 +194,7 @@ class QubesRstTranslator(nodes.NodeVisitor):
         self.enumerated_count = 0
         self.enumerated_lists_count = 0
         self.ident_count = 0
+        self.video_container_summit_count = 0
 
         newlines = 'native'
         if newlines == 'windows':
@@ -325,10 +326,10 @@ class QubesRstTranslator(nodes.NodeVisitor):
 
     def get_custom_videotours_directive(self, directive_name, vidid):
         spacing = self.nl + SPACE * len(directive_name)
-        return directive_name + vidid + spacing + \
+        return self.nl + directive_name + vidid + spacing + \
                ':height: 315' + spacing + \
                ':width: 560' + spacing + \
-               ':align: left'
+               ':align: left' + self.nl
 
     def depart_literal(self, node):
         parent = node.parent
@@ -356,25 +357,30 @@ class QubesRstTranslator(nodes.NodeVisitor):
             raise nodes.SkipNode
         if node_as_text.lstrip().rstrip() == '.. container:: video more-bottom' and \
                 self.document['source'].endswith('video-tours.rst') and \
-                isinstance(node.parent, docutils.nodes.paragraph) and \
-                'Qubes OS Summit 2022' in node.parents.astext():
+                isinstance(node.parent, docutils.nodes.system_message) and \
+                isinstance(node.parent.parent, docutils.nodes.section) and \
+                'Qubes OS Summit 2022' in node.parent.parent.astext():
             youtube_directive = '.. youtube:: '
-            self.body += self.get_custom_videotours_directive(youtube_directive, 'hkWWz3xGqS8')
-            self.body += self.get_custom_videotours_directive(youtube_directive, 'A9GrlQsQc7Q')
-            self.body += self.get_custom_videotours_directive(youtube_directive, 'gnWHjv-9_YM')
+            if self.video_container_summit_count == 0:
+                self.body += self.get_custom_videotours_directive(youtube_directive, 'hkWWz3xGqS8')
+                self.body += self.get_custom_videotours_directive(youtube_directive, 'A9GrlQsQc7Q')
+                self.body += self.get_custom_videotours_directive(youtube_directive, 'gnWHjv-9_YM')
+                self.video_container_summit_count += 1
             raise nodes.SkipNode
         if node_as_text.lstrip().rstrip() == '.. container:: video more-bottom' and \
                 self.document['source'].endswith('video-tours.rst') and \
-                isinstance(node.parent, docutils.nodes.paragraph) and \
-                'Micah Lee' in node.parents.astext():
+                isinstance(node.parent, docutils.nodes.system_message) and \
+                isinstance(node.parent.parent, docutils.nodes.section) and \
+                'Micah Lee' in node.parent.parent.astext():
             generalvid_directive = '.. generalvid:: '
             self.body += self.get_custom_videotours_directive(generalvid_directive,
                                                               'https://livestream.com/accounts/9197973/events/8286152/videos/178431606/player?autoPlay=false')
             raise nodes.SkipNode
         if node_as_text.lstrip().rstrip() == '.. container:: video' and \
                 self.document['source'].endswith('video-tours.rst') and \
-                isinstance(node.parent, docutils.nodes.section) and \
-                'Explaining Computers' in node.parents.astext():
+                isinstance(node.parent, docutils.nodes.system_message) and \
+                isinstance(node.parent.parent, docutils.nodes.section) and \
+                'Explaining Computers' in node.parent.parent.astext():
             youtube_directive = '.. youtube:: '
             self.body += self.get_custom_videotours_directive(youtube_directive, 'hWDvS_Mp6gc')
             raise nodes.SkipNode
@@ -614,9 +620,9 @@ class QubesRstTranslator(nodes.NodeVisitor):
         elif isinstance(node.parent, docutils.nodes.substitution_reference):
             self.body += node_as_text
         else:
-            if ']~' in node_as_text and '~[STRIKEOUT:' in node_as_text:
-                node_as_text = node_as_text.replace('~[STRIKEOUT:', '')
-                node_as_text = node_as_text.replace(']~', '')
+            # if ']~' in node_as_text and '~[STRIKEOUT:' in node_as_text:
+            #     node_as_text = node_as_text.replace('~[STRIKEOUT:', '')
+            #     node_as_text = node_as_text.replace(']~', '')
             self.add_space_to_body_if_needed(node_as_text, node)
         pass
 
@@ -647,6 +653,9 @@ class QubesRstTranslator(nodes.NodeVisitor):
         pass
 
     def visit_bullet_list(self, node):
+        if self.document["source"].endswith('index.rst'):
+            toctree_directive = self.nl + '.. toctree::' + self.nl + LIST_ITEM_IDENT + ':maxdepth: 1'
+            self.body += toctree_directive + self.nl
         self.body += self.nl
         self.ident_count += 1
         pass
@@ -658,7 +667,9 @@ class QubesRstTranslator(nodes.NodeVisitor):
 
     def visit_list_item(self, node):
         parent = node.parent
-        if isinstance(parent, docutils.nodes.list_item) or isinstance(parent.parent, docutils.nodes.list_item):
+        if isinstance(parent, docutils.nodes.bullet_list) and self.document["source"].endswith('index.rst'):
+            self.body += LIST_ITEM_IDENT
+        elif isinstance(parent, docutils.nodes.list_item) or isinstance(parent.parent, docutils.nodes.list_item):
             self.body += LIST_ITEM_IDENT + '-  '
         elif isinstance(parent, docutils.nodes.bullet_list):
             self.body += '-  '
@@ -885,6 +896,8 @@ class QubesRstTranslator(nodes.NodeVisitor):
     def visit_reference(self, node):
         refname = node.get('name')
         refuri = node.get('refuri')
+        if self.document['source'].endswith('index.rst'):
+            return
         if refname is None and refuri.startswith('http'):
             self.body += refuri
             raise nodes.SkipNode
@@ -933,18 +946,19 @@ class QubesRstTranslator(nodes.NodeVisitor):
         role = self.qubes_rst_links_checker.get_cross_referencing_role()
         if len(role) == 0:
             url = self.qubes_rst_links_checker.check_cross_referencing_escape_uri()
-            self.add_space_to_body_if_needed('<' + url + '>', node)
+            url_to_add = '<' + url + '>'
         else:
             url = self.qubes_rst_links_checker.check_cross_referencing_escape_uri()
             url_to_add = '<' + url + '>'
             if role == ':ref:' and url.startswith('/'):
                 url_to_add = '<' + url[1:len(url)] + '>'
-            self.add_space_to_body_if_needed(url_to_add, node)
+        self.add_space_to_body_if_needed(url_to_add, node)
         underscore = ''
         if len(role) == 0:
             underscore = '__'
 
-        self.body += '`' + underscore
+        if not self.document['source'].endswith('index.rst'):
+            self.body += '`' + underscore
         pass
 
     def visit_strong(self, node):

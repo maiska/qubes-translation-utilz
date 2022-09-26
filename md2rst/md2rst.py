@@ -16,6 +16,7 @@ from docutils.io import StringOutput
 from sphinx.util import ensuredir
 
 from config_constants import *
+from docutils_rst_writer import Writer
 from markdownredirector import MarkdownRedirector
 
 from pandocconverter import PandocConverter
@@ -173,6 +174,7 @@ def run_single_rst_test(file_name, external_redirects_mappings, md_doc_permalink
     writer = QubesRstWriter(md_doc_permalinks_and_redirects_to_filepath_map,
                             md_pages_permalinks_and_redirects_to_filepath_map,
                             external_redirects_mappings)
+    # writer = Writer() new writer
     destination = StringOutput(encoding='utf-8')
     writer.write(rst_document, destination)
     ensuredir(os.path.dirname(file_name))
