@@ -250,26 +250,19 @@ class QubesRstTranslator(RstTranslator):
         else:
             self.checkRSTLinks.set_uri(refuri)
             role = self.checkRSTLinks.get_cross_referencing_role()
-            self.write(SPACE + role + '`')
+            self.write(role + '`')
         pass
 
     def depart_reference(self, node):
         result = ""
         refname = node.get('name')
         refuri = node.get('refuri')
-        self.checkRSTLinks.set_uri(refuri)
-        role = self.checkRSTLinks.get_cross_referencing_role()
-        # role = self.get_cross_referencing_role(refuri)
         if refname is None and refuri.startswith('http'):
             return super().depart_reference(node)
-
-            # self.body += refuri
-            url = self.checkRSTLinks.check_cross_referencing_escape_uri()
-            # url = self.check_cross_referencing_escape_uri(refuri)
-            result += (SPACE + '<' + url + '>')
         else:
+            self.checkRSTLinks.set_uri(refuri)
+            role = self.checkRSTLinks.get_cross_referencing_role()
             url = self.checkRSTLinks.check_cross_referencing_escape_uri()
-            # url = self.check_cross_referencing_escape_uri(refuri)
             if role == ':ref:':
                 result += (SPACE + '<' + url.lstrip('/') + '>')
             else:
@@ -278,7 +271,7 @@ class QubesRstTranslator(RstTranslator):
         if len(role) == 0:
             underscore = '__'
 
-        result += ('`' + underscore + SPACE)
+        result += ('`' + underscore)
         # self.write(result)
         node['refuri'] = url
         self.write(result)
