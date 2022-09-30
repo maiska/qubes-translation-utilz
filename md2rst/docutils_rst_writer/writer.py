@@ -710,6 +710,8 @@ class RstTranslator(nodes.NodeVisitor):
     def depart_reference(self, node: Node) -> None:
         reference = _Reference(self.document, node)
         if reference.text_only:
+            if reference.target:
+                self.write(' <{reference.target}>')
             if reference.anonymous:
                 self.write("`__")
             elif reference.refname is not None:
