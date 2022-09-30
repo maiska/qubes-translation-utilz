@@ -129,7 +129,7 @@ def run(config_toml: dict) -> None:
         file_name = config_toml[TEST][FILE_NAME]
         file_name_converted = file_name + '.test'
         run_single_rst_test(file_name, external_redirects_mappings, md_doc_permalinks_and_redirects_to_filepath_map,
-                            md_pages_permalinks_and_redirects_to_filepath_map)
+                            md_pages_permalinks_and_redirects_to_filepath_map, config_toml[RST][RST_DIRECTORY])
         if config_toml[TEST]['validate']:
             validate_rst_file(file_name_converted)
         if config_toml[RUN]['markdown_links_leftover']:
@@ -140,7 +140,7 @@ def run(config_toml: dict) -> None:
 
 
 def run_single_rst_test(file_name, external_redirects_mappings, md_doc_permalinks_and_redirects_to_filepath_map,
-                        md_pages_permalinks_and_redirects_to_filepath_map):
+                        md_pages_permalinks_and_redirects_to_filepath_map, rst_directory):
     fileobj = open(file_name, 'r')
     # noinspection PyUnresolvedReferences
     default_settings = docutils.frontend.OptionParser(components=(docutils.parsers.rst.Parser,)).get_default_values()
@@ -151,7 +151,8 @@ def run_single_rst_test(file_name, external_redirects_mappings, md_doc_permalink
     fileobj.close()
     writer = QubesRstWriter(RstBuilder(), md_doc_permalinks_and_redirects_to_filepath_map,
                             md_pages_permalinks_and_redirects_to_filepath_map,
-                            external_redirects_mappings)
+                            external_redirects_mappings,
+                            rst_directory)
     destination = StringOutput(encoding='utf-8')
     writer.write(rst_document, destination)
     ensuredir(os.path.dirname(file_name))

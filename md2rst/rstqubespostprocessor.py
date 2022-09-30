@@ -101,7 +101,8 @@ class RSTDirectoryPostProcessor:
                 rstfilepostprocesr = RSTFilePostProcessor(filepath,
                                                           self.md_doc_permalinks_and_redirects_to_filepath_map,
                                                           self.md_pages_permalinks_and_redirects_to_filepath_map,
-                                                          self.external_redirects_map)
+                                                          self.external_redirects_map,
+                                                          self.rst_directory)
                 rstfilepostprocesr.find_and_qube_links()
 
     def parse_and_validate_rst(self, file_pattern: str = '*.rst') -> None:
@@ -113,7 +114,8 @@ class RSTDirectoryPostProcessor:
 
 class RSTFilePostProcessor:
     def __init__(self, file_path: str, md_doc_permalinks_and_redirects_to_filepath_map: dict,
-                 md_pages_permalinks_and_redirects_to_filepath_map: dict, external_redirects_map: dict) -> None:
+                 md_pages_permalinks_and_redirects_to_filepath_map: dict, external_redirects_map: dict,
+                 rst_directory: str) -> None:
         if not check_file(file_path):
             print(file_path)
             raise ValueError("Directory parameter does not point to a directory")
@@ -132,12 +134,15 @@ class RSTFilePostProcessor:
             raise ValueError("external_redirects_map is not set")
         self.external_redirects_map = external_redirects_map
 
+        self.rst_directory = rst_directory
+
     def find_and_qube_links(self) -> None:
         # TODO Maya with
         rst_document = self.get_rst_document()
         writer = QubesRstWriter(RstBuilder(), self.md_doc_permalinks_and_redirects_to_filepath_map,
                                 self.md_pages_permalinks_and_redirects_to_filepath_map,
-                                self.external_redirects_map)
+                                self.external_redirects_map,
+                                rst_directory=self.rst_directory)
         self.write_rst_file(rst_document, writer)
 
     def get_rst_document(self):

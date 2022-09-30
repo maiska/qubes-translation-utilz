@@ -131,8 +131,12 @@ def read_from(filepath):
 
 
 class CheckRSTLinks:
-    def __init__(self, md_doc_permalinks_and_redirects_to_filepath_map: dict,
-                 md_pages_permalinks_and_redirects_to_filepath_map: dict, external_redirects_map: dict) -> None:
+    def __init__(self,
+                 md_doc_permalinks_and_redirects_to_filepath_map: dict,
+                 md_pages_permalinks_and_redirects_to_filepath_map: dict,
+                 external_redirects_map: dict,
+                 docname: str) -> None:
+        self.docname = docname
         self.section = ''
         self.uri = None
         if is_dict_empty(md_pages_permalinks_and_redirects_to_filepath_map):
@@ -176,7 +180,7 @@ class CheckRSTLinks:
             internal_section = internal_section.replace('-', ' ')
 
         if self.uri == '' and self.section:
-            return self.section
+            return self.docname + ':' + internal_section
         elif self.uri.startswith('/news/'):
             uri = BASE_SITE + self.uri[1:len(self.uri)]
         elif self.uri.startswith('#'):
@@ -188,7 +192,9 @@ class CheckRSTLinks:
         elif self.uri in INTERNAL_BASE_PATH:
             uri = BASE_SITE
         elif self.uri in DOC_BASE_PATH:
-            uri = 'index'
+            uri = '/index'
+            if internal_section:
+                uri = 'index:' + internal_section
         elif self.uri in FEED_XML:
             uri = BASE_SITE + FEED_XML[1:len(FEED_XML)]
         elif len(self.section) > 0 and self.uri.startswith('/') and not self.uri.startswith('/attachment'):
@@ -244,15 +250,18 @@ class CheckRSTLinks:
             role = ''
         elif uri == '/index':
             role = ':doc:'
-        elif '#' in uri and not uri.startswith('/attachment'):
+        elif not uri.startswith('http') and ':' in uri and not uri.startswith('/attachment'):
             role = ':ref:'
         elif uri.startswith('/') and not uri.startswith(
                 '/attachment') and uri not in self.external_redirects_map.keys():
             role = ':doc:'
+        elif self.uri == '' and self.section:
+            role = ':ref:'
         elif BASE_SITE in uri:
             role = ''
 
         return role
+
 
     def set_section(self, section):
         self.section = section

@@ -31,8 +31,10 @@ class QubesRstWriter(writers.Writer):
 
     def __init__(self, builder, md_doc_permalinks_and_redirects_to_filepath_map,
                  md_pages_permalinks_and_redirects_to_filepath_map,
-                 external_redirects_map):
+                 external_redirects_map,
+                 rst_directory):
         writers.Writer.__init__(self)
+        self.rst_directory = rst_directory
         self.builder = builder
         if is_dict_empty(md_pages_permalinks_and_redirects_to_filepath_map):
             raise ValueError("md_pages_permalinks_and_redirects_to_filepath_mapping is not set")
@@ -52,7 +54,8 @@ class QubesRstWriter(writers.Writer):
         visitor = QubesRstTranslator(self.document, self.builder,
                                      self.md_doc_permalinks_and_redirects_to_filepath_map,
                                      self.md_pages_permalinks_and_redirects_to_filepath_map,
-                                     self.external_redirects_map)
+                                     self.external_redirects_map,
+                                     self.rst_directory)
         self.document.walkabout(visitor)
         self.output = visitor.body
 
@@ -129,12 +132,12 @@ class QubesRstTranslator(RstTranslator):
     def __init__(self, document, builder,
                  md_doc_permalinks_and_redirects_to_filepath_map,
                  md_pages_permalinks_and_redirects_to_filepath_map,
-                 external_redirects_map):
+                 external_redirects_map,
+                 rst_directory):
         super().__init__(document)
 
-        self.checkRSTLinks = CheckRSTLinks(md_doc_permalinks_and_redirects_to_filepath_map,
-                                      md_pages_permalinks_and_redirects_to_filepath_map,
-                                      external_redirects_map)
+        self.rst_directory = rst_directory
+        self.docname = self.get_self_docname()
         # self.md_pages_permalinks_and_redirects_to_filepath_map = md_pages_permalinks_and_redirects_to_filepath_map
         # self.external_redirects_map = external_redirects_map
         # self.md_doc_permalinks_and_redirects_to_filepath_map = md_doc_permalinks_and_redirects_to_filepath_map
@@ -145,6 +148,10 @@ class QubesRstTranslator(RstTranslator):
         self.section_count = 0
         self.enumerated_count = 0
         self.enumerated_lists_count = 0
+
+        self.checkRSTLinks = CheckRSTLinks(md_doc_permalinks_and_redirects_to_filepath_map,
+                                      md_pages_permalinks_and_redirects_to_filepath_map,
+                                      external_redirects_map, self.docname)
 
         newlines = 'native'
         if newlines == 'windows':
@@ -169,6 +176,12 @@ class QubesRstTranslator(RstTranslator):
     #         role = ''
     #
     #     return role
+    def get_self_docname(self):
+        source = self.document['source']
+        if source.startswith(self.rst_directory + '/') and source.endswith('.rst'):
+            return source.replace(self.rst_directory + '/', '').replace('.rst', '')
+        return None
+
 
     def depart_document(self, node):
         # print(node.astext())
