@@ -36,7 +36,7 @@ class CellContent:
 
     @property
     def content_height(self) -> int:
-        return len(self.lines)
+        return len([l for l in self.lines if l.strip()])
 
 
 @dataclass(eq=False)
