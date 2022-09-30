@@ -315,7 +315,7 @@ class RstTranslator(nodes.NodeVisitor):
         node: Node,
         name: str,
     ) -> None:
-        if isinstance(node.parent, nodes.substitution_definition):
+        if isinstance(node.parent, (nodes.substitution_definition, nodes.reference)):
             self.write(f"{name}::")
         else:
             # TODO: Should we assert self.lines[-1] is blank here?
@@ -817,7 +817,7 @@ class RstTranslator(nodes.NodeVisitor):
         if is_unicode:
             self.write("unicode:: ")
         else:
-            self.write("replace:: ")
+            self.write("")
 
     def depart_substitution_definition(self, node: Node) -> None:
         self.write("\n")
