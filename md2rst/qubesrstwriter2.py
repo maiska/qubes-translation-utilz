@@ -247,7 +247,10 @@ class QubesRstTranslator(RstTranslator):
         refbody = node.astext()
         refid = node.get('refid')
         refuri = node.get('refuri')
-        if refname is None and refuri.startswith('http'):
+        self.checkRSTLinks.set_uri(refuri)
+        role = self.checkRSTLinks.get_cross_referencing_role()
+        has_image = any(isinstance(c, nodes.image) for c in node.children)
+        if not role or has_image:
             # the case of license.rst and markdown link with qubes os have to be converted manually
             # perhaps with the bash skript TODO
             super().visit_reference(node)
@@ -261,11 +264,12 @@ class QubesRstTranslator(RstTranslator):
         result = ""
         refname = node.get('name')
         refuri = node.get('refuri')
-        if refname is None and refuri.startswith('http'):
+        self.checkRSTLinks.set_uri(refuri)
+        role = self.checkRSTLinks.get_cross_referencing_role()
+        has_image = any(isinstance(c, nodes.image) for c in node.children)
+        if not role or has_image:
             return super().depart_reference(node)
         else:
-            self.checkRSTLinks.set_uri(refuri)
-            role = self.checkRSTLinks.get_cross_referencing_role()
             url = self.checkRSTLinks.check_cross_referencing_escape_uri()
             if role == ':ref:':
                 result += (SPACE + '<' + url.lstrip('/') + '>')
@@ -289,8 +293,7 @@ class QubesRstTranslator(RstTranslator):
         pass
 
     def visit_caption(self, node):
-        # TODO: caption to a fiture
-        pass
+        raise nodes.SkipNode
 
     def depart_caption(self, node):
         pass
