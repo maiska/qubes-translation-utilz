@@ -135,6 +135,7 @@ class CheckRSTLinks:
                  md_doc_permalinks_and_redirects_to_filepath_map: dict,
                  md_pages_permalinks_and_redirects_to_filepath_map: dict,
                  external_redirects_map: dict,
+                 internal_labels: dict,
                  docname: str) -> None:
         self.docname = docname
         self.section = ''
@@ -150,6 +151,8 @@ class CheckRSTLinks:
         if is_dict_empty(external_redirects_map):
             raise ValueError("external_redirects_map is not set")
         self.external_redirects_map = external_redirects_map
+
+        self.internal_labels = internal_labels
 
         self._translated_uri = None
 

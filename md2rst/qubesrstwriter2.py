@@ -32,6 +32,7 @@ class QubesRstWriter(writers.Writer):
     def __init__(self, builder, md_doc_permalinks_and_redirects_to_filepath_map,
                  md_pages_permalinks_and_redirects_to_filepath_map,
                  external_redirects_map,
+                 internal_labels,
                  rst_directory):
         writers.Writer.__init__(self)
         self.rst_directory = rst_directory
@@ -49,12 +50,14 @@ class QubesRstWriter(writers.Writer):
         self.external_redirects_map = external_redirects_map
         self.md_pages_permalinks_and_redirects_to_filepath_map = md_pages_permalinks_and_redirects_to_filepath_map
         self.md_doc_permalinks_and_redirects_to_filepath_map = md_doc_permalinks_and_redirects_to_filepath_map
+        self.internal_labels = internal_labels
 
     def translate(self):
         visitor = QubesRstTranslator(self.document, self.builder,
                                      self.md_doc_permalinks_and_redirects_to_filepath_map,
                                      self.md_pages_permalinks_and_redirects_to_filepath_map,
                                      self.external_redirects_map,
+                                     self.internal_labels,
                                      self.rst_directory)
         self.document.walkabout(visitor)
         self.output = visitor.body
@@ -133,6 +136,7 @@ class QubesRstTranslator(RstTranslator):
                  md_doc_permalinks_and_redirects_to_filepath_map,
                  md_pages_permalinks_and_redirects_to_filepath_map,
                  external_redirects_map,
+                 internal_labels,
                  rst_directory):
         super().__init__(document)
 
@@ -151,7 +155,7 @@ class QubesRstTranslator(RstTranslator):
 
         self.checkRSTLinks = CheckRSTLinks(md_doc_permalinks_and_redirects_to_filepath_map,
                                       md_pages_permalinks_and_redirects_to_filepath_map,
-                                      external_redirects_map, self.docname)
+                                      external_redirects_map, internal_labels, self.docname)
 
         newlines = 'native'
         if newlines == 'windows':

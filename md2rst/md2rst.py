@@ -1,8 +1,11 @@
 #! /usr/bin/env python3
 import codecs
+import json
 import os
 import shutil
+import subprocess
 import sys
+import tempfile
 from argparse import ArgumentParser
 from logging import basicConfig, getLogger, DEBUG, Formatter, FileHandler
 
@@ -18,6 +21,7 @@ from docutils.io import StringOutput
 from sphinx.util import ensuredir
 
 from config_constants import *
+from convert_inventory import convert_inventory
 from pandocconverter import PandocConverter
 from qubesrstwriter2 import QubesRstWriter, RstBuilder
 # from qubesrstwriter import QubesRstWriter, RstBuilder
@@ -91,6 +95,25 @@ def convert_md_to_rst(config_toml: dict) -> None:
 
     logger.info("Conversion and cleaning done")
 
+def generate_sphinx_refs(config_toml):
+    with tempfile.TemporaryDirectory() as d:
+        subprocess.check_call(['sphinx-build', config_toml[RST][RST_DIRECTORY], d])
+        labels = convert_inventory(os.path.join(d, 'objects.inv'))
+    filename = os.path.join(config_toml[URL_MAPPING][DUMP_DIRECTORY],
+        config_toml[URL_MAPPING][DUMP_LOCALREFS_FILENAME])
+    with open(filename, 'w') as f:
+        f.write(json.dumps(labels))
+    return labels
+
+def load_sphinx_refs(config_toml):
+    filename = os.path.join(config_toml[URL_MAPPING][DUMP_DIRECTORY],
+        config_toml[URL_MAPPING][DUMP_LOCALREFS_FILENAME])
+    try:
+        with open(filename) as f:
+            return json.load(f)
+    except FileNotFoundError:
+        print("WARNING: sphinx internal refs not found, set sphinx_refs=true")
+        return {}
 
 def run(config_toml: dict) -> None:
     # gather the mappings before converting
@@ -117,9 +140,14 @@ def run(config_toml: dict) -> None:
     if config_toml[RUN][DOCUTILS_VALIDATE]:
         rstDirectoryPostProcessor.parse_and_validate_rst()
 
+    if config_toml[RUN][SPHINX_REFS]:
+        labels = generate_sphinx_refs(config_toml)
+    else:
+        labels = load_sphinx_refs(config_toml)
+
     if config_toml[RUN][QUBES_RST]:
         # TODO Maya FIRST
-        rstDirectoryPostProcessor.qube_links_2()
+        rstDirectoryPostProcessor.qube_links_2(labels=labels)
         pass
 
     if config_toml[RUN][SVG_PNG_CONVERSION_REPLACEMENT]:
@@ -129,7 +157,7 @@ def run(config_toml: dict) -> None:
         file_name = config_toml[TEST][FILE_NAME]
         file_name_converted = file_name + '.test'
         run_single_rst_test(file_name, external_redirects_mappings, md_doc_permalinks_and_redirects_to_filepath_map,
-                            md_pages_permalinks_and_redirects_to_filepath_map, config_toml[RST][RST_DIRECTORY])
+                            md_pages_permalinks_and_redirects_to_filepath_map, labels, config_toml[RST][RST_DIRECTORY])
         if config_toml[TEST]['validate']:
             validate_rst_file(file_name_converted)
         if config_toml[RUN]['markdown_links_leftover']:
@@ -140,7 +168,7 @@ def run(config_toml: dict) -> None:
 
 
 def run_single_rst_test(file_name, external_redirects_mappings, md_doc_permalinks_and_redirects_to_filepath_map,
-                        md_pages_permalinks_and_redirects_to_filepath_map, rst_directory):
+                        md_pages_permalinks_and_redirects_to_filepath_map, internal_labels, rst_directory):
     fileobj = open(file_name, 'r')
     # noinspection PyUnresolvedReferences
     default_settings = docutils.frontend.OptionParser(components=(docutils.parsers.rst.Parser,)).get_default_values()
@@ -152,6 +180,7 @@ def run_single_rst_test(file_name, external_redirects_mappings, md_doc_permalink
     writer = QubesRstWriter(RstBuilder(), md_doc_permalinks_and_redirects_to_filepath_map,
                             md_pages_permalinks_and_redirects_to_filepath_map,
                             external_redirects_mappings,
+                            internal_labels,
                             rst_directory)
     destination = StringOutput(encoding='utf-8')
     writer.write(rst_document, destination)

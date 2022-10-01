@@ -54,6 +54,10 @@ remove_hidden_files = false
 docutils_validate = false
 #docutils_validate = true
 #
+
+sphinx_refs = true
+#sphinx_refs = false
+
 qubes_rst = false
 #qubes_rst = true
 
@@ -73,6 +77,7 @@ dump_directory_name = '/home/user/qubes-translation-utilz/md2rst/refactor_test/m
 dump_external_filename = 'external_redirects_mappings.json'
 dump_docs_filename = 'md_doc_permalinks_and_redirects_to_filepath_map.json'
 dump_pages_filename = 'md_pages_permalinks_and_redirects_to_filepath_map.json'
+dump_localrefs_filename = 'internal_refs.json'
 
 [log]
 # TODO it was just a string now it is a list !!!

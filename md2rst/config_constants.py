@@ -27,6 +27,8 @@ COPY_RST_FILES = "copy_rst_files"
 REMOVE_RST_DIRECTORY = "remove_rst_directory"
 REMOVE_HIDDEN_FILES = "remove_hidden_files"
 DOCUTILS_VALIDATE = 'docutils_validate'
+# build sphinx site to extract html section refs - to be used to convert back to rst refs
+SPHINX_REFS = 'sphinx_refs'
 QUBES_RST = 'qubes_rst'
 
 SVG_PNG_CONVERSION_REPLACEMENT = 'svg_png_conversion_replacement'
@@ -39,6 +41,7 @@ DUMP_DIRECTORY = 'dump_directory_name'
 DUMP_PAGES_FILENAME = 'dump_pages_filename'
 DUMP_DOCS_FILENAME = 'dump_docs_filename'
 DUMP_EXTERNAL_FILENAME = 'dump_external_filename'
+DUMP_LOCALREFS_FILENAME = 'dump_localrefs_filename'
 
 TEST = 'test'
 # ------

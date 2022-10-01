@@ -94,7 +94,7 @@ class RSTDirectoryPostProcessor:
                 data = data.replace(url_name + external_url_md, url_name_to_replace + external_url)
         return data, found
 
-    def qube_links_2(self, file_pattern: str = '*.rst') -> None:
+    def qube_links_2(self, file_pattern: str = '*.rst', labels: dict = {}) -> None:
         for path, dirs, files in os.walk(os.path.abspath(self.rst_directory)):
             for filename in fnmatch.filter(files, file_pattern):
                 filepath = os.path.join(path, filename)
@@ -102,6 +102,7 @@ class RSTDirectoryPostProcessor:
                                                           self.md_doc_permalinks_and_redirects_to_filepath_map,
                                                           self.md_pages_permalinks_and_redirects_to_filepath_map,
                                                           self.external_redirects_map,
+                                                          labels,
                                                           self.rst_directory)
                 rstfilepostprocesr.find_and_qube_links()
 
@@ -115,6 +116,7 @@ class RSTDirectoryPostProcessor:
 class RSTFilePostProcessor:
     def __init__(self, file_path: str, md_doc_permalinks_and_redirects_to_filepath_map: dict,
                  md_pages_permalinks_and_redirects_to_filepath_map: dict, external_redirects_map: dict,
+                 internal_labels: dict,
                  rst_directory: str) -> None:
         if not check_file(file_path):
             print(file_path)
@@ -134,6 +136,8 @@ class RSTFilePostProcessor:
             raise ValueError("external_redirects_map is not set")
         self.external_redirects_map = external_redirects_map
 
+        self.internal_labels = internal_labels
+
         self.rst_directory = rst_directory
 
     def find_and_qube_links(self) -> None:
@@ -142,6 +146,7 @@ class RSTFilePostProcessor:
         writer = QubesRstWriter(RstBuilder(), self.md_doc_permalinks_and_redirects_to_filepath_map,
                                 self.md_pages_permalinks_and_redirects_to_filepath_map,
                                 self.external_redirects_map,
+                                self.internal_labels,
                                 rst_directory=self.rst_directory)
         self.write_rst_file(rst_document, writer)
 
