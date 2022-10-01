@@ -717,7 +717,7 @@ class RstTranslator(nodes.NodeVisitor):
         reference = _Reference(self.document, node)
         if reference.text_only:
             if reference.target:
-                self.write(' <{reference.target}>')
+                self.write(f' <{reference.target}>')
             if reference.anonymous:
                 self.write("`__")
             elif reference.refname is not None:
