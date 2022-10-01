@@ -2,9 +2,6 @@
 Documentation
 =============
 
-Table of contents
-=================
-
 Introduction
 ------------
 
