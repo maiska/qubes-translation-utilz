@@ -10,6 +10,8 @@ MD_FILE_NAMES = 'md_file_names'
 RST_FILE_NAMES = "rst_file_names"
 DIRECTORY_TO_REMOVE = "directory_to_remove"
 HIDDEN_FILES_TO_REMOVE = 'hidden_files_to_remove'
+# files that should remain in md, to be moved to qubesos.github.io repo
+SKIP_MD = 'skip_md'
 
 SVG = 'svg'
 # ------

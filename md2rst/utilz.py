@@ -39,12 +39,12 @@ def load_mappings(filename: str) -> dict:
         return json.loads(data)
 
 
-def get_mappings(config_toml: dict) -> (dict, dict, dict):
+def get_mappings(config_toml: dict, skip_md: list) -> (dict, dict, dict):
     """
 
     :rtype: object
     """
-    permalinks2filepath = Permalinks2Filepath(config_toml[MARKDOWN][ROOT_DIRECTORY])
+    permalinks2filepath = Permalinks2Filepath(config_toml[MARKDOWN][ROOT_DIRECTORY], skip_md)
     dump_dir = config_toml[URL_MAPPING][DUMP_DIRECTORY]
     external_url_mapping_dump_filename = config_toml[URL_MAPPING][DUMP_EXTERNAL_FILENAME]
     docs_url_mapping_dump_filename = config_toml[URL_MAPPING][DUMP_DOCS_FILENAME]

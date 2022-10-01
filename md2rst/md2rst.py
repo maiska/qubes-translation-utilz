@@ -66,7 +66,7 @@ def convert_md_to_rst(config_toml: dict) -> None:
     rst_dir_to_remove = config_toml[RST][DIRECTORY_TO_REMOVE]
 
     logger.info("Converting from Markdown to RST")
-    rst_converter = PandocConverter(rst_directory)
+    rst_converter = PandocConverter(rst_directory, config_toml[RST][SKIP_MD])
 
     if config_toml[RUN][COPY_MD_FILES]:
         logger.info("Copy from %s directory to %s", copy_from_dir, md_file_names_to_copy)
@@ -99,7 +99,7 @@ def run(config_toml: dict) -> None:
         return
 
     md_doc_permalinks_and_redirects_to_filepath_map, md_pages_permalinks_and_redirects_to_filepath_map, \
-    external_redirects_mappings = get_mappings(config_toml)
+    external_redirects_mappings = get_mappings(config_toml, config_toml[RST][SKIP_MD])
     rstDirectoryPostProcessor = RSTDirectoryPostProcessor(config_toml[RST][RST_DIRECTORY],
                                                           md_doc_permalinks_and_redirects_to_filepath_map,
                                                           md_pages_permalinks_and_redirects_to_filepath_map,

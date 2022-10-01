@@ -16,7 +16,8 @@ logger = getLogger(__name__)
 
 class PandocConverter:
 
-    def __init__(self, directory):
+    def __init__(self, directory, skip_md=()):
+        self.skip_md = skip_md
         if os.path.isdir(directory):
             self.directory_to_convert = directory
         else:
@@ -29,6 +30,8 @@ class PandocConverter:
             for filename in fnmatch.filter(files, file_pattern):
                 filepath = os.path.join(path, filename)
                 if filename == 'README.md' or filename == 'CONTRIBUTING.md':
+                    continue
+                if filepath.replace(self.directory_to_convert, '').lstrip('/') in self.skip_md:
                     continue
                 rst_name = os.path.splitext(filepath)[0] + '.rst'
                 logger.info('Converting [%s] to [%s]', filepath, rst_name)
@@ -50,7 +53,9 @@ class PandocConverter:
             for path, dirs, files in os.walk(os.path.abspath(self.directory_to_convert)):
                 for filename in fnmatch.filter(files, file_pattern):
                     filepath = os.path.join(path, filename)
-                    os.remove(filepath)
+                    rst_name = os.path.splitext(filepath)[0] + '.rst'
+                    if os.path.exists(rst_name):
+                        os.remove(filepath)
 
     def remove_whole_directory(self, path_pattern='/external/'):
         # TODO Maya test
