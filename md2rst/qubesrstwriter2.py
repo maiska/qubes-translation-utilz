@@ -304,7 +304,7 @@ class QubesRstTranslator(RstTranslator):
         else:
             directive = 'container'
             attrs = ' ' + ' '.join(node['classes'])
-        self.write(f'.. {directive}::{attrs}\n')
+        self.write(f'.. {directive}::{attrs}\n\n')
         self.indent += 4
 
     def depart_container(self, node):
@@ -312,11 +312,12 @@ class QubesRstTranslator(RstTranslator):
         self.indent -= 4
 
     def visit_raw(self, node):
-        self.write(f'.. raw:: {node["format"]}')
+        self.write(f'.. raw:: {node["format"]}\n\n')
         self.indent += 4
 
     def depart_raw(self, node):
         self.indent -= 4
+        self.write("\n\n")
 
     def unknown_visit(self, node):
         print(node)

@@ -411,7 +411,10 @@ class RstTranslator(nodes.NodeVisitor):
         pass
 
     def depart_paragraph(self, node: Node) -> None:
-        self.write("\n\n")
+        if len(node.parent.children) == 1:
+            self.write("\n")
+        else:
+            self.write("\n\n")
 
     def visit_compound(self, node: Node) -> None:
         self.write(".. compound::\n\n")
@@ -460,6 +463,7 @@ class RstTranslator(nodes.NodeVisitor):
 
     def depart_block_quote(self, node: Node) -> None:
         self.indent -= 3
+        self.write("\n")
 
     def visit_strong(self, node: Node) -> None:
         self.write("**")
@@ -525,7 +529,9 @@ class RstTranslator(nodes.NodeVisitor):
         item = _ListItem(node)
         formatted = item.format() + " "
         self.indent -= len(formatted)
-        self.write("\n")
+        # it there is just one paragraph, the newline was already added
+        if not isinstance(node.next_node(siblings=True, descend=False), nodes.list_item):
+            self.write("\n")
 
     def visit_field_list(self, node: Node) -> None:
         pass  # TODO
@@ -669,7 +675,7 @@ class RstTranslator(nodes.NodeVisitor):
         # TODO: Account for ellipsis/strong/... in title length
         length = sum(len(str(x)) for x in node.children)
         underline = self.title_underline[self.section_depth] * length
-        self.write("\n" + underline + "\n")
+        self.write("\n" + underline + "\n\n")
 
     def visit_image(self, node: Node) -> None:
         if "uri" in node:
