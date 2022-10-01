@@ -175,57 +175,54 @@ class CheckRSTLinks:
         uri = self.uri
         if uri.startswith(BASE_SITE + 'doc'):
             uri = uri[len(BASE_SITE) - 1:]
+
+        doc_name = self.get_path_from_md_internal_mapping(uri, 'doc').lstrip('/')
+        if uri == '':
+            target_labels = self.internal_labels[self.docname]
+        elif doc_name in self.internal_labels:
+            target_labels = self.internal_labels[doc_name]
+        else:
+            target_labels = {}
         internal_section = self.section.replace('#', '')
-        if internal_section == 'how-to-guides':
-            internal_section = 'how-to guides'
-        elif internal_section not in (
-                'qubes-devel', 'qubes-users', 'qubes-announce', 'qubes-project', 'qubes-translation'):
-            internal_section = internal_section.replace('-', ' ')
+        if internal_section in target_labels:
+            internal_section = target_labels[internal_section]
+        elif internal_section and 'http:' not in uri:
+            print(f'unknown label {internal_section} in {uri}, applying heuristic')
+            if internal_section == 'how-to-guides':
+                internal_section = 'how-to guides'
+            elif internal_section not in (
+                    'qubes-devel', 'qubes-users', 'qubes-announce', 'qubes-project', 'qubes-translation'):
+                internal_section = internal_section.replace('-', ' ')
 
         if self.uri == '' and self.section:
             return self.docname + ':' + internal_section
         elif self.uri.startswith('/news/'):
             uri = BASE_SITE + self.uri[1:len(self.uri)]
-        elif self.uri.startswith('#'):
-            if self.uri == 'how-to-guides':
-                uri = 'how-to guides'
-            else:
-                uri = self.uri.replace('-', ' ')
-            # TODO inline section
         elif self.uri in INTERNAL_BASE_PATH:
             uri = BASE_SITE
-        elif self.uri in DOC_BASE_PATH:
+        elif uri in DOC_BASE_PATH:
             uri = '/index'
             if internal_section:
-                uri = 'index:' + internal_section
+                uri = '/index:' + internal_section
         elif self.uri in FEED_XML:
             uri = BASE_SITE + FEED_XML[1:len(FEED_XML)]
-        elif len(self.section) > 0 and self.uri.startswith('/') and not self.uri.startswith('/attachment'):
+        elif doc_name:
             # sections
             # perm_match = uri
-            perm = self.uri
-            # section = self.uri[self.uri.index('#') + 1:len(self.uri)]
-            if perm in DOC_BASE_PATH:
-                uri = '/' + self.uri[self.uri.index('#'):len(self.uri)]
-            else:
-                path = self.get_path_from_md_internal_mapping(perm, 'pages')
-                if len(path) > 0:
-                    uri = replace_page_aux(self.uri, path)
-                else:
-                    path = self.get_path_from_md_internal_mapping(perm, 'all')
-                    if path.startswith('/'):
-                        path = path[1:]
-                    if len(path) > 0:
-                        uri = path + ':' + internal_section
-        elif '/attachment/' in self.uri and '.pdf' in self.uri and self.uri.startswith('/'):
-            to_replace = self.uri[self.uri.find('/'):self.uri.rfind('/') + 1]
-            uri = self.uri.replace(to_replace, '/_static/')
+            uri = '/' + doc_name
+            if internal_section:
+                uri += ':' + internal_section
+        elif self.uri.startswith('/attachment/'):
+            uri = self.uri
         elif uri.startswith('/'):
             path = self.get_path_from_md_internal_mapping(uri, 'pages')
-            if len(path) > 0:
+            if path:
                 uri = get_url(path)
             else:
-                uri = self.get_path_from_md_internal_mapping(uri, 'all')
+                uri = get_url(self.get_path_from_md_internal_mapping(uri, 'all'))
+            if self.section:
+                uri += '#' + self.section
+            print(f'non-doc {self.uri} traslated to {uri}')
         elif self.uri.endswith('_'):
             logger.debug('ends with uri %s', self.uri)
             uri = self.uri[:-1] + '\\_'
@@ -253,10 +250,11 @@ class CheckRSTLinks:
             role = ''
         elif uri == '/index':
             role = ':doc:'
-        elif not uri.startswith('http') and ':' in uri and not uri.startswith('/attachment'):
+        elif uri.startswith('/attachment'):
+            role = ':download:'
+        elif not uri.startswith('http') and ':' in uri:
             role = ':ref:'
-        elif uri.startswith('/') and not uri.startswith(
-                '/attachment') and uri not in self.external_redirects_map.keys():
+        elif uri.startswith('/') and uri not in self.external_redirects_map.keys():
             role = ':doc:'
         elif self.uri == '' and self.section:
             role = ':ref:'
