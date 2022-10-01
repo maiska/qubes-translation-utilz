@@ -304,6 +304,10 @@ class QubesRstTranslator(RstTranslator):
             directive = 'warning'
         elif 'alert-info' in node.get('classes'):
             directive = 'note'
+        elif 'alert-danger' in node.get('classes'):
+            directive = 'warning'
+        elif 'alert-success' in node.get('classes'):
+            directive = 'note'
         else:
             directive = 'container'
             attrs = ' ' + ' '.join(node['classes'])
