@@ -1,6 +1,25 @@
 ===========
 Video tours
 ===========
+
+Qubes OS Summit 2022
+--------------------
+
+Watch all the talks from Qubes OS Summit 2022, which took place September 9-11, 2022 in Berlin, Germany.
+
+.. raw:: html
+
+   <div class="video more-bottom">
+     <iframe class="responsive" referrerpolicy="no-referrer" scrolling="no" allowfullscreen src="https://www.youtube-nocookie.com/embed/hkWWz3xGqS8"></iframe>
+   </div>
+   <div class="video more-bottom">
+     <iframe class="responsive" referrerpolicy="no-referrer" scrolling="no" allowfullscreen src="https://www.youtube-nocookie.com/embed/A9GrlQsQc7Q"></iframe>
+   </div>
+   <div class="video more-bottom">
+     <iframe class="responsive" referrerpolicy="no-referrer" scrolling="no" allowfullscreen src="https://www.youtube-nocookie.com/embed/gnWHjv-9_YM"></iframe>
+   </div>
+
+
 Micah Lee presents “Qubes OS: The Operating System That Can Protect You Even If You Get Hacked”
 -----------------------------------------------------------------------------------------------
 
