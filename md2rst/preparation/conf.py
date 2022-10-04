@@ -32,9 +32,15 @@ release = '0.1'
 
 html_static_path = ['attachment/doc']
 extensions = [
-        'sphinx.ext.autosectionlabel',
-        'sphinxnotes.strike',
+    'sphinx.ext.autosectionlabel',
+    'sphinxnotes.strike',
+    'sphinx_reredirects'
 ]
+
+# redirects = {
+#      "<source>": "<target>"
+# }
+
 autosectionlabel_prefix_document = True
 
 source_suffix = {
@@ -44,17 +50,16 @@ templates_path = ['_templates']
 
 root_doc = "index"
 exclude_patterns = [
-            '_dev/*', 
-            'attachment/*',
-            '**/*.txt'
-            ]
-
+    '_dev/*',
+    'attachment/*',
+    '**/*.txt'
+]
 
 html_theme = 'default'
-#html_theme = 'classic'
+# html_theme = 'classic'
 
 html_theme_options = {
-    'externalrefs': True, 
+    'externalrefs': True,
     'bgcolor': 'white',
     'linkcolor': '#99bfff',
     'textcolor': '#000000',
@@ -66,12 +71,11 @@ html_theme_options = {
     'body_max_width': '90%',
 }
 
-gettext_uuid=True
-gettext_compact=False
+gettext_uuid = True
+gettext_compact = False
 
-
-#epub_show_urls = 'footnote'
-#latex_show_urls ='footnote'
+# epub_show_urls = 'footnote'
+# latex_show_urls ='footnote'
 
 
 locale_dirs = ['_translated']
@@ -108,6 +112,7 @@ class IframeVideo(Directive):
 
 class GeneralVid(IframeVideo):
     html = '<iframe src="%(video_id)s" width="%(width)u" height="%(height)u" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowfullscreen class="responsive" referrerpolicy="no-referrer" scrolling="no"></iframe>'
+
 
 class Youtube(IframeVideo):
     html = '<iframe src="https://www.youtube-nocookie.com/embed/%(video_id)s" \

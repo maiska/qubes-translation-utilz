@@ -19,16 +19,15 @@ author = "m"
 [markdown]
 root_directory = '/home/user/qubes-translation-utilz/md2rst/refactor_test/TEST/markdown/qubesos.github.io.rtd'
 redirect_base_url = 'https://foo.bar' # TODO
-#excluded_files_from_redirect = ['README.md', 'CONTRIBUTING.md', 'hcl.md', 'downdloads.md']
 
 [rst]
 # TODO delete if we are going with just one directory
 rst_directory = '/home/user/qubes-translation-utilz/md2rst/refactor_test/TEST/rst-convert/qubesos.github.io.rtd/_doc/'
 copy_from_dir = '/home/user/qubes-translation-utilz/md2rst/preparation/'
-md_file_names = ['admin-api-table.md', 'admin-api.md', 'doc.md']
+md_file_names = ['admin-api.md', 'doc.md']
 rst_config_files = ['requirements.txt', 'conf.py', '.readthedocs.yaml']
-rst_files = ['research.rst']
-skip_files = ['gui.rst', 'research.rst']
+rst_files = ['research.rst', 'intro.rst', 'admin-api.rst']
+skip_files = ['gui.rst', 'research.rst', 'intro.rst', 'admin-api.rst']
 directory_to_remove = 'external'
 # TODO
 files_to_remove = [
@@ -43,17 +42,18 @@ files_to_remove = [
 # TODO hcl.rst downloads.rst etc the redirects
 # TODO either exclude them when converting or use redirects plugin.
 #Better use redirects plugin with empty rst files that can be populated in a later stage
-old_uri = ['/hcl', '/downloads']
+old_uri = ['/hcl', '/downloads', 'visual-style-guide']
 
 [svg]
 # should reside in the rst_directory or subdirectories
-svg_files_to_png = ['admin-api-architecture.svg']
+svg_files_to_png = ['admin-api-architecture.svg', 'u2f.svg', 'update_table-20140424-170010.svg', 'release-cycle.svg']
 #replace_svg_with_png_in_rst_files = false
 replace_svg_with_png_in_rst_files = true
 
 [run]
 md_map = true
 
+# 1-st stage all true
 pypandoc = false
 #pypandoc = true
 copy_md_files = false
@@ -64,18 +64,19 @@ remove_rst_directory = false
 #remove_rst_directory = true
 remove_rst_files = false
 #remove_rst_files = true
-#
+
+
+# 2nd stage all true
 docutils_validate = false
 #docutils_validate = true
-
 qubes_rst = false
 #qubes_rst = true
-#
 svg_png_conversion_replacement = false
 #svg_png_conversion_replacement = true
 markdown_links_leftover = false
 #markdown_links_leftover = true
 
+# 3rd stage
 redirect_markdown = false
 #redirect_markdown = true
 
@@ -97,11 +98,12 @@ output = 'mapping.txt'
 logfile = '/tmp/md2rst.log'
 
 [test]
-#run = false
-run = true
+run = false
+#run = true
 docutils_validate = true
 
-
+#file_name = '/home/user/testingfilez/index.rst' # toctree incorporated, given that doc.md is the right one
+#file_name = '/home/user/testingfilez/video-tours.rst' # directives in conf.py, see the conf.py in preparation
 
 # DONE
 # can be deleted, is referenced only via url in the index
@@ -119,12 +121,11 @@ docutils_validate = true
 
 # Will be copied
 #file_name = '/home/user/testingfilez/research.rst'
+#just copy it
+#file_name = '/home/user/testingfilez/intro.rst'
 
-
-#file_name = '/home/user/testingfilez/intro.rst' # TODO jsut replace the container directives with custom directives and
-# you will not need to copy this
-
-# TODO those who have no origin file in testingfilez dir -> have to be filled in or otherwise processed!
+# strikethrough for rst https://sphinx.silverrainz.me/strike/ and in conf.py
+# https://github.com/sphinx-notes/strike
 
 
 # wrap rst text? really? 80 characters per line? standard? why?
@@ -134,10 +135,53 @@ docutils_validate = true
 #docutils.utils.SystemMessage: /home/user/testingfilez/admin-api.rst:74: (SEVERE/4) Unexpected section title
 
 #https://gist.github.com/dbrgn/2922648
-#file_name = '/home/user/testingfilez/hcl.rst' # TODO
-#file_name = '/home/user/testingfilez/downloads.rst' # TODO
+#file_name = '/home/user/testingfilez/hcl.rst' # TODO redirect
+#file_name = '/home/user/testingfilez/downloads.rst' # TODO redirect
 #only one usability-ux has a reference to the /doc/visual style guide
-file_name = '/home/user/testingfilez/visual-style-guide.rst' # TODO empty,
+#file_name = '/home/user/testingfilez/visual-style-guide.rst' # TODO empty, redirect
+
+
+#--------------------------
+# TODO As default codign block language is bash -> one should alter that, as in gsoc.rst
+# there are long text passages that should be how rst formatted exactly??
+
+
+# TODO roles
+#https://docutils.sourceforge.io/docs/ref/rst/roles.html
+#https://docutils.sourceforge.io/docs/howto/rst-roles.html
+#https://stackoverflow.com/questions/65255845/unknown-custom-interpreted-text-role-warning
+# https://gist.github.com/tk0miya/2495330
+#https://gist.github.com/osmatsuda/29c37f31ac7f5bbae90b8890baf16e2e
+#https://stackoverflow.com/questions/6518788/rest-strikethrough
+#https://www.anycodings.com/1questions/2353906/how-to-do-strikethrough-in-a-restructuredtext-file-hosted-on-github
+
+# TODO redirects
+#https://docs.readthedocs.io/en/stable/user-defined-redirects.html
+#https://github.com/sphinx-contrib/redirects
+#https://gitlab.com/documatt/sphinx-reredirects
+#https://documatt.gitlab.io/sphinx-reredirects/usage.html
+
+#Redirects:
+#    How to edit the documentation <https://www.qubes-os.org/doc/how-to-edit-the-documentation/>
+#   Documentation style guide <https://www.qubes-os.org/doc/documentation-style-guide/>
+#   Website style guide <https://www.qubes-os.org/doc/website-style-guide/>
+#   Visual style guide <https://www.qubes-os.org/doc/visual-style-guide/>
+#user/downloading-installing-upgrading/download-mirrors.rst: WARNING: document isn't included in any toctree
+#user/downloading-installing-upgrading/downloads.rst: WARNING: document isn't included in any toctree
+# user/hardware/hcl.rst: WARNING: document isn't included in any toctree
+
+
+# TODO attachment as a submodule
+# TODO new rst-directory bc of redirects in old markdown documentation
+# TODO latex pdf and epub generation
+# TODO include toctree directive with
+# http://localhost:5656/developer/releases/notes.html
+# http://localhost:5656/developer/releases/schedules.html
+# http://localhost:5656/user/downloading-installing-upgrading/upgrade/upgrade.html
+#http://localhost:5656/user/how-to-guides/how-to-back-up-restore-and-migrate.html
+# index?
+#developer/services/disposablevm-implementation.rst: WARNING: document isn't included in any toctree
+#user/downloading-installing-upgrading/install-security.rst: WARNING: document isn't included in any toctree
 
 
 

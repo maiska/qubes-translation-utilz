@@ -18,7 +18,6 @@ SVG = 'svg'
 SVG_FILES_TO_PNG = 'svg_files_to_png'
 PNG_IN_RST_FILES = 'replace_svg_with_png_in_rst_files'
 
-
 RUN = 'run'
 # ------
 PYPANDOC = 'pypandoc'
@@ -33,7 +32,6 @@ SVG_PNG_CONVERSION_REPLACEMENT = 'svg_png_conversion_replacement'
 HANDLE_LEFTOVER_MARKDOWN_LINKS = 'markdown_links_leftover'
 
 REDIRECT_MARKDOWN = 'redirect_markdown'
-
 
 URL_MAPPING = 'url_mapping'
 # ------
@@ -65,8 +63,6 @@ INTERNAL_BASE_PATH = '/home/'
 DOC_BASE_PATH = '/doc/'
 FEED_XML = '/feed.xml'
 
-
-
 # REGEX
 
 PATTERN_MD_INTERNAL_LINKS = '(\[[\w\d\s#@\“\”\_\)\(/\.\’&:,\\-]{1,50}\])(\((/[\w]{1,50}){1,8}/\))'
@@ -75,6 +71,8 @@ PATTERN_MD_INTERNAL_LINKS_SPACEY = '(\[[\w\d\s#@\“\”\_\)\(/\.\’&:,\\-]{1,5
 PATTERN_MD_EXTERNAL_LINKS = '(\[[\w#@\d\s\“\”\[\]\_\)\(/\.\’&:,\\-]{1,50}\])(\(https{0,1}:/(/[\w\.\-\/\d]{1,50}){1,10}\))'
 PATTERN_MD_EXTERNAL_LINKS_SPACEY = '(\[[\w#@\d\s\“\”\[\]\_\)\(/\.\’&:,\\-]{1,50}\])(\(https{0,1}:/(/[\w\.\-\/\d]{1,50}){1,10}\s\))'
 
-PATTERN_MD_MAILTO_LINKS = '(\[[\w\d\s#@\“\”\_\)\(/\.\’&:,\\-]{1,50}\])(mailto:\((/[\w]{1,50}){1,8}/\))'
+PATTERN_MD_MAILTO_LINKS = '(\[(.*)\])(\(mailto:(.*@.*)\))'
+# PATTERN_MD_MAILTO_LINKS = '(\[.*\])(\(mailto:(.*@.*)\))'
 
-
+PATTERN_STRIKEOUT_1 = '((~\[STRIKEOUT:)(.*)(\]~))'
+PATTERN_STRIKEOUT_2 = '((\[STRIKEOUT:)(.*)(\]))'
