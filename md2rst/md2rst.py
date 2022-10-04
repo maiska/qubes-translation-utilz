@@ -22,9 +22,7 @@ from markdownredirector import MarkdownRedirector
 from pandocconverter import PandocConverter
 from qubesrstwriter2 import QubesRstWriter
 from rstqubespostprocessor import validate_rst_file, RSTDirectoryPostProcessor
-from utilz import get_mappings, convert_svg_to_png, is_not_readable
-
-
+from utilz import get_mappings, convert_svg_to_png, is_not_readable, CheckRSTLinks
 
 basicConfig(level=DEBUG)
 logger = getLogger(__name__)
@@ -53,7 +51,6 @@ def get_configuration(configuration: str) -> dict:
 
 def convert_md_to_rst(config_toml: dict) -> None:
     rst_directory = config_toml[RST][RST_DIRECTORY]
-    # TODO Maya test
     copy_from_dir = config_toml[RST][COPY_FROM_DIR]
     md_file_names_to_copy = config_toml[RST][MD_FILE_NAMES]
     rst_config_files_to_copy = config_toml[RST][RST_CONFIG_FILES]
@@ -97,11 +94,13 @@ def run(config_toml: dict) -> None:
         return
 
     md_doc_permalinks_and_redirects_to_filepath_map, md_pages_permalinks_and_redirects_to_filepath_map, \
-    external_redirects_mappings = get_mappings(config_toml)
+    external_redirects_map, md_sections_id_name_map = get_mappings(config_toml)
+    qubes_rst_links_checker = CheckRSTLinks('', md_doc_permalinks_and_redirects_to_filepath_map,
+                                            md_pages_permalinks_and_redirects_to_filepath_map,
+                                            external_redirects_map, md_sections_id_name_map)
+
     rst_directory_post_processor = RSTDirectoryPostProcessor(config_toml[RST][RST_DIRECTORY],
-                                                             md_doc_permalinks_and_redirects_to_filepath_map,
-                                                             md_pages_permalinks_and_redirects_to_filepath_map,
-                                                             external_redirects_mappings,
+                                                             qubes_rst_links_checker,
                                                              config_toml[RST][SKIP_FILES])
 
     logger.debug("md_doc_permalinks_and_redirects_to_filepath_map")
@@ -109,7 +108,10 @@ def run(config_toml: dict) -> None:
     logger.debug("md_pages_permalinks_and_redirects_to_filepath_map")
     logger.debug(md_pages_permalinks_and_redirects_to_filepath_map)
     logger.debug("external_redirects_mappings")
-    logger.debug(external_redirects_mappings)
+    logger.debug(external_redirects_map)
+    logger.debug("md_sections_id_name_map")
+    logger.debug(md_sections_id_name_map)
+    logger.debug(len(md_sections_id_name_map))
 
     if config_toml[RUN][PYPANDOC]:
         logger.debug("------------------------------------------------")
@@ -124,7 +126,6 @@ def run(config_toml: dict) -> None:
         rst_directory_post_processor.parse_and_validate_rst()
 
     if config_toml[RUN][QUBES_RST]:
-        # TODO Maya FIRST
         logger.debug("------------------------------------------------")
         logger.debug("------------------------------------------------")
         logger.debug("-------------------- QUBES_RST ----------------------------")
@@ -151,8 +152,8 @@ def run(config_toml: dict) -> None:
         logger.debug("-------------------- RUN TEST ----------------------------")
         file_name = config_toml[TEST][FILE_NAME]
         file_name_converted = file_name + '.test'
-        run_single_rst_test(file_name, external_redirects_mappings, md_doc_permalinks_and_redirects_to_filepath_map,
-                            md_pages_permalinks_and_redirects_to_filepath_map)
+        run_single_rst_test(file_name, external_redirects_map, md_doc_permalinks_and_redirects_to_filepath_map,
+                            md_pages_permalinks_and_redirects_to_filepath_map, md_sections_id_name_map)
         if config_toml[TEST][DOCUTILS_VALIDATE]:
             logger.debug("-------------------- VALIDATE TEST ----------------------------")
             validate_rst_file(file_name_converted)
@@ -162,7 +163,7 @@ def run(config_toml: dict) -> None:
 
 
 def run_single_rst_test(file_name, external_redirects_mappings, md_doc_permalinks_and_redirects_to_filepath_map,
-                        md_pages_permalinks_and_redirects_to_filepath_map):
+                        md_pages_permalinks_and_redirects_to_filepath_map, md_sections_id_name_map):
     fileobj = open(file_name, 'r')
     # noinspection PyUnresolvedReferences
     default_settings = docutils.frontend.OptionParser(components=(docutils.parsers.rst.Parser,)).get_default_values()
@@ -171,10 +172,12 @@ def run_single_rst_test(file_name, external_redirects_mappings, md_doc_permalink
     qubes_parser = docutils.parsers.rst.Parser()
     qubes_parser.parse(fileobj.read(), rst_document)
     fileobj.close()
-    writer = QubesRstWriter(md_doc_permalinks_and_redirects_to_filepath_map,
-                            md_pages_permalinks_and_redirects_to_filepath_map,
-                            external_redirects_mappings)
-    # writer = Writer() new writer
+    qubes_rst_links_checker = CheckRSTLinks('', md_doc_permalinks_and_redirects_to_filepath_map,
+                                            md_pages_permalinks_and_redirects_to_filepath_map,
+                                            external_redirects_mappings, md_sections_id_name_map)
+    writer = QubesRstWriter(qubes_rst_links_checker)
+
+    # # writer = Writer() new writer
     destination = StringOutput(encoding='utf-8')
     writer.write(rst_document, destination)
     ensuredir(os.path.dirname(file_name))

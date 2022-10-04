@@ -4,7 +4,7 @@ import os
 from logging import basicConfig, getLogger, DEBUG
 
 from frontmatter import load
-
+import markdown
 from config_constants import PERMALINK_KEY, REDIRECT_FROM_KEY, REDIRECT_TO_KEY
 
 basicConfig(level=DEBUG)
@@ -27,6 +27,8 @@ class Permalinks2Filepath:
         self.md_permalinks_and_redirects_to_filepath_mapping_pages = None
         # holds the external documentation redirects mapping
         self.external_mappings = None
+        # holds the sections' ids - names mapping
+        self.section_names = None
 
     def traverse_md_directory_and_create_mapping(self, exclude_pattern: str = '/external',
                                                  file_patterns: list = ['*.md'],
@@ -93,10 +95,34 @@ class Permalinks2Filepath:
                                     self.external_mappings[redirect_from] = redirect_to
         return self.external_mappings
 
+    def collect_section_names(self, file_patterns: list = ['*.md'], subdir: str = '_doc') -> dict:
+        self.section_names = {}
+        docs_path = os.path.join(self.root_qubes_directory, subdir)
+        for path, dirs, files in os.walk(docs_path):
+            for file_pattern in file_patterns:
+                for file_name in fnmatch.filter(files, file_pattern):
+                    file_path = os.path.join(path, file_name)
+                    logger.info('Collecting section mapping ids -> name doc path for [%s] in [%s]' %
+                                (docs_path, file_path))
+                    with io.open(file_path) as fp:
+                        md = load(fp)
+                        if not md.metadata:
+                            continue
+                        text = md.content
+                        md = markdown.Markdown(extensions=['toc'])
+                        md.convert(text)
+                        self.section_names.update(get_section_mappings(md.toc_tokens))
+        return self.section_names
+
     def get_external_mapppings(self) -> dict:
         if self.external_mappings is None:
             return self.collect_external_redirects()
         return self.external_mappings
+
+    def get_section_mapppings(self) -> dict:
+        if self.section_names is None:
+            return self.collect_section_names()
+        return self.section_names
 
     def get_md_permalinks_and_redirects_to_filepath_mapping(self) -> dict:
         if self.md_permalinks_and_redirects_to_filepath_mapping is None:
@@ -109,3 +135,13 @@ class Permalinks2Filepath:
             self.md_permalinks_and_redirects_to_filepath_mapping_pages = \
                 self.traverse_md_directory_and_create_mapping(file_patterns=file_patterns, subdir=subdir)
         return self.md_permalinks_and_redirects_to_filepath_mapping_pages
+
+
+def get_section_mappings(toc_list):
+    result = {}
+    for item in toc_list:
+        if isinstance(item, dict) and 'children' in item.keys() and len(item['children']) > 0:
+            result.update(get_section_mappings(item['children']))
+        else:
+            result[item['id']] = item['name']
+    return result

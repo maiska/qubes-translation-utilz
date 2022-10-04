@@ -7,12 +7,12 @@ from logging import basicConfig, getLogger, DEBUG
 
 import docutils
 from docutils import nodes, writers
-# from docutils.parsers.rst import Directive, directives
 
 from sphinx.writers.text import MAXWIDTH, STDINDENT
 
+from config_constants import PATTERN_STRIKEOUT_1, PATTERN_STRIKEOUT_2
 from docutils_rst_writer.writer import RstTranslator
-from utilz import is_dict_empty, CheckRSTLinks
+from utilz import CheckRSTLinks
 
 PUNCTUATION_SET = {'!', ',', '.', ':', ';', '?', '__'}
 
@@ -73,30 +73,12 @@ class QubesRstWriter(writers.Writer):
 
     output = None
 
-    # def __init__(self, builder, md_doc_permalinks_and_redirects_to_filepath_map,
-    def __init__(self, md_doc_permalinks_and_redirects_to_filepath_map,
-                 md_pages_permalinks_and_redirects_to_filepath_map,
-                 external_redirects_map):
+    def __init__(self, qubes_rst_links_checker: CheckRSTLinks):
         writers.Writer.__init__(self)
-        if is_dict_empty(md_pages_permalinks_and_redirects_to_filepath_map):
-            raise ValueError("md_pages_permalinks_and_redirects_to_filepath_mapping is not set")
-        self.md_pages_permalinks_and_redirects_to_filepath_map = md_pages_permalinks_and_redirects_to_filepath_map
-
-        if is_dict_empty(md_doc_permalinks_and_redirects_to_filepath_map):
-            raise ValueError("md_doc_permalinks_and_redirects_to_filepath_mapping is not set")
-        self.md_doc_permalinks_and_redirects_to_filepath_map = md_doc_permalinks_and_redirects_to_filepath_map
-
-        if is_dict_empty(external_redirects_map):
-            raise ValueError("external_url_mapping is not set")
-        self.external_redirects_map = external_redirects_map
-        self.md_pages_permalinks_and_redirects_to_filepath_map = md_pages_permalinks_and_redirects_to_filepath_map
-        self.md_doc_permalinks_and_redirects_to_filepath_map = md_doc_permalinks_and_redirects_to_filepath_map
+        self.qubes_rst_links_checker = qubes_rst_links_checker
 
     def translate(self):
-        visitor = QubesRstTranslator(self.document,
-                                     self.md_doc_permalinks_and_redirects_to_filepath_map,
-                                     self.md_pages_permalinks_and_redirects_to_filepath_map,
-                                     self.external_redirects_map)
+        visitor = QubesRstTranslator(self.document, self.qubes_rst_links_checker)
         # visitor = RstTranslator(self.document) new rsttranslator
         self.document.walkabout(visitor)
         self.output = visitor.body
@@ -178,15 +160,9 @@ def is_code_block_to_convert_to_bash(node_as_text):
 class QubesRstTranslator(nodes.NodeVisitor):
     sectionchars = '*=-~"+`'
 
-    def __init__(self, document,
-                 md_doc_permalinks_and_redirects_to_filepath_map,
-                 md_pages_permalinks_and_redirects_to_filepath_map,
-                 external_redirects_map):
+    def __init__(self, document, qubes_rst_links_checker: CheckRSTLinks):
         nodes.NodeVisitor.__init__(self, document)
-
-        self.qubes_rst_links_checker = CheckRSTLinks('', md_doc_permalinks_and_redirects_to_filepath_map,
-                                                     md_pages_permalinks_and_redirects_to_filepath_map,
-                                                     external_redirects_map)
+        self.qubes_rst_links_checker = qubes_rst_links_checker
         self.body = ""
         self.document = document
         self.title_count = 0
@@ -502,6 +478,9 @@ class QubesRstTranslator(nodes.NodeVisitor):
 
     # noinspection PyMethodMayBeStatic
     def visit_section(self, node):
+        # TODO named sections try
+        # if len(self.body) > 0:
+        #     self.body += self.nl + '.. _' + node['ids'][0] + ':' + self.nl + self.nl
         pass
 
     def depart_section(self, node):
@@ -512,11 +491,7 @@ class QubesRstTranslator(nodes.NodeVisitor):
         if self.title_count == 0:
             length = 0
             for child in node.children:
-                length += len(child.astext())
-                if isinstance(child, docutils.nodes.literal) or isinstance(child, docutils.nodes.strong):
-                    length += 4
-                if isinstance(child, docutils.nodes.emphasis):
-                    length += 2
+                length = self.get_title_text_length(child, length)
             self.body += '=' * length + self.nl
         else:
             self.body += self.nl
@@ -526,11 +501,7 @@ class QubesRstTranslator(nodes.NodeVisitor):
         parent = node.parent
         length = 0
         for child in node.children:
-            length += len(child.astext())
-            if isinstance(child, docutils.nodes.literal) or isinstance(child, docutils.nodes.strong):
-                length += 4
-            if isinstance(child, docutils.nodes.emphasis):
-                length += 2
+            length = self.get_title_text_length(child, length)
         # section title
         if self.title_count >= 0 and isinstance(parent, docutils.nodes.section) and not (
                 isinstance(parent.parent, docutils.nodes.section)):
@@ -548,6 +519,16 @@ class QubesRstTranslator(nodes.NodeVisitor):
             pass
         self.title_count += 1
         pass
+
+    def get_title_text_length(self, child, length):
+        length += len(child.astext())
+        if isinstance(child, docutils.nodes.literal) or isinstance(child, docutils.nodes.strong):
+            length += 4
+            # length += 5
+        if isinstance(child, docutils.nodes.emphasis):
+            length += 2
+            # length += 3
+        return length
 
     # noinspection PyMethodMayBeStatic
     def visit_line_block(self, node):
@@ -620,9 +601,24 @@ class QubesRstTranslator(nodes.NodeVisitor):
         elif isinstance(node.parent, docutils.nodes.substitution_reference):
             self.body += node_as_text
         else:
-            # if ']~' in node_as_text and '~[STRIKEOUT:' in node_as_text:
-            #     node_as_text = node_as_text.replace('~[STRIKEOUT:', '')
-            #     node_as_text = node_as_text.replace(']~', '')
+            strikeout1 = re.findall(PATTERN_STRIKEOUT_1, node_as_text)
+            if len(strikeout1) > 0:
+                for item in strikeout1:
+                    to_replace = item[0]
+                    replacing = to_replace.replace('~[STRIKEOUT:', ' ``')
+                    replacing = replacing.replace(']~', '`` ')
+                    node_as_text = node_as_text.replace(to_replace, replacing)
+                self.body += node_as_text
+                return
+            strikeout2 = re.findall(PATTERN_STRIKEOUT_2, node_as_text)
+            if len(strikeout2) > 0:
+                for item in strikeout2:
+                    to_replace = item[0]
+                    replacing = to_replace.replace('[STRIKEOUT:', ' :strike:`')
+                    replacing = replacing.replace(']', '` ')
+                    node_as_text = node_as_text.replace(to_replace, replacing)
+                self.body += node_as_text
+                return
             self.add_space_to_body_if_needed(node_as_text, node)
         pass
 
@@ -653,7 +649,12 @@ class QubesRstTranslator(nodes.NodeVisitor):
         pass
 
     def visit_bullet_list(self, node):
-        if self.document["source"].endswith('index.rst'):
+        if self.document["source"].endswith('index.rst') or \
+                self.document["source"].endswith('releases/notes.rst') or \
+                self.document["source"].endswith('releases/schedules.rst') or \
+                self.document["source"].endswith('downloading-installing-upgrading/upgrade/upgrade.rst') or \
+                (self.document["source"].endswith('how-to-back-up-restore-and-migrate.rst') and
+                 'backup-emergency-restore' in node.astext()):
             toctree_directive = self.nl + '.. toctree::' + self.nl + LIST_ITEM_IDENT + ':maxdepth: 1'
             self.body += toctree_directive + self.nl
         self.body += self.nl
@@ -667,7 +668,14 @@ class QubesRstTranslator(nodes.NodeVisitor):
 
     def visit_list_item(self, node):
         parent = node.parent
-        if isinstance(parent, docutils.nodes.bullet_list) and self.document["source"].endswith('index.rst'):
+        if isinstance(parent, docutils.nodes.bullet_list) and \
+                (self.document["source"].endswith('index.rst') or
+                 self.document["source"].endswith('releases/notes.rst') or
+                 self.document["source"].endswith('releases/schedules.rst') or
+                 self.document["source"].endswith('downloading-installing-upgrading/upgrade/upgrade.rst') or
+                 (self.document["source"].endswith('how-to-back-up-restore-and-migrate.rst') and
+                  'backup-emergency-restore' in node.astext())
+                ):
             self.body += LIST_ITEM_IDENT
         elif isinstance(parent, docutils.nodes.list_item) or isinstance(parent.parent, docutils.nodes.list_item):
             self.body += LIST_ITEM_IDENT + '-  '
@@ -712,10 +720,26 @@ class QubesRstTranslator(nodes.NodeVisitor):
 
     def visit_entry(self, node):
         if isinstance(node.parent, docutils.nodes.row):
+            node_as_text = node.astext().replace(self.nl, ' ').lstrip()
+            # it is a quick fix for tables and a STRIKEOUT markdown directive
+            # remove all children that are system messages
+            strikeout2 = re.findall(PATTERN_STRIKEOUT_2, node_as_text)
+            if len(strikeout2) > 0:
+                for child in node.children:
+                    if isinstance(child, docutils.nodes.system_message):
+                        node.children.remove(child)
+                node_as_text = node.astext().replace(self.nl, ' ').lstrip()
+                strikeout_again = re.findall(PATTERN_STRIKEOUT_2, node_as_text)
+                if len(strikeout_again) > 0:
+                    for item in strikeout_again:
+                        to_replace = item[0]
+                        replacing = to_replace.replace('[STRIKEOUT:', ' :strike:`')
+                        replacing = replacing.replace(']', '` ')
+                        node_as_text = node_as_text.replace(to_replace, replacing)
             if node.parent.children[0] == node:
-                self.body += '* - ' + node.astext().replace(self.nl, ' ').lstrip() + self.nl + LIST_ITEM_IDENT
+                self.body += '* - ' + node_as_text + self.nl + LIST_ITEM_IDENT
             else:
-                self.body += '  - ' + node.astext().replace(self.nl, ' ').lstrip() + self.nl + LIST_ITEM_IDENT
+                self.body += '  - ' + node_as_text + self.nl + LIST_ITEM_IDENT
         raise nodes.SkipNode
 
     # noinspection PyMethodMayBeStatic
@@ -802,7 +826,7 @@ class QubesRstTranslator(nodes.NodeVisitor):
             raise nodes.SkipNode
 
         if '————————————————————————' in node_as_text and '|' in node_as_text:
-            # TODO it is hidious but it works to be refactored
+            # TODO it is hedious but it works to be refactored
             fake_table = node_as_text.split('|')
             header = 0
             headers = []
@@ -896,7 +920,12 @@ class QubesRstTranslator(nodes.NodeVisitor):
     def visit_reference(self, node):
         refname = node.get('name')
         refuri = node.get('refuri')
-        if self.document['source'].endswith('index.rst'):
+        if self.document['source'].endswith('index.rst') or \
+                self.document["source"].endswith('releases/notes.rst') or \
+                self.document["source"].endswith('releases/schedules.rst') or \
+                self.document["source"].endswith('downloading-installing-upgrading/upgrade/upgrade.rst') or \
+                (self.document["source"].endswith('how-to-back-up-restore-and-migrate.rst') and
+                 'backup-emergency-restore' in node.astext()):
             return
         if refname is None and refuri.startswith('http'):
             self.body += refuri
@@ -957,7 +986,13 @@ class QubesRstTranslator(nodes.NodeVisitor):
         if len(role) == 0:
             underscore = '__'
 
-        if not self.document['source'].endswith('index.rst'):
+        if not (self.document['source'].endswith('index.rst') or
+                self.document["source"].endswith('releases/notes.rst') or
+                self.document["source"].endswith('releases/schedules.rst') or
+                self.document["source"].endswith('downloading-installing-upgrading/upgrade/upgrade.rst') or \
+                (self.document["source"].endswith('how-to-back-up-restore-and-migrate.rst') and
+                 'backup-emergency-restore' in node.astext())
+        ):
             self.body += '`' + underscore
         pass
 

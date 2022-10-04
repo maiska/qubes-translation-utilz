@@ -81,6 +81,7 @@ def get_mappings(config_toml: dict) -> (dict, dict, dict):
         external_redirects_mappings = permalinks2filepath.get_external_mapppings()
         md_pages_permalinks_and_redirects_to_filepath_map = \
             permalinks2filepath.get_md_permalinks_and_redirects_to_filepath_mapping_pages()
+        md_sections_id_name_map = permalinks2filepath.get_section_mapppings()
 
     # if needed dump them to a file if you need to reset the dir
     if config_toml[URL_MAPPING][SAVE_TO_JSON]:
@@ -92,7 +93,7 @@ def get_mappings(config_toml: dict) -> (dict, dict, dict):
         dump_mappings(md_pages_permalinks_and_redirects_to_filepath_map, url_mapping_dump_directory +
                       pages_url_mapping_dump_filename)
     return md_doc_permalinks_and_redirects_to_filepath_map, md_pages_permalinks_and_redirects_to_filepath_map, \
-           external_redirects_mappings
+           external_redirects_mappings, md_sections_id_name_map
 
 
 def check_mappings_dump(config_toml: dict) -> bool:
@@ -182,7 +183,9 @@ def get_url(path):
 
 class CheckRSTLinks:
     def __init__(self, uri: str, md_doc_permalinks_and_redirects_to_filepath_map: dict,
-                 md_pages_permalinks_and_redirects_to_filepath_map: dict, external_redirects_map: dict) -> None:
+                 md_pages_permalinks_and_redirects_to_filepath_map: dict, external_redirects_map: dict,
+                 md_sections_ids_names_map: dict
+                 ) -> None:
         self.section = ''
         self.uri = uri
         if is_dict_empty(md_pages_permalinks_and_redirects_to_filepath_map):
@@ -196,9 +199,32 @@ class CheckRSTLinks:
         if is_dict_empty(external_redirects_map):
             raise ValueError("external_redirects_map is not set")
         self.external_redirects_map = external_redirects_map
+        if is_dict_empty(md_sections_ids_names_map):
+            raise ValueError("md_sections_ids_names_map is not set")
+        self.md_sections_ids_names_map = md_sections_ids_names_map
 
     def set_uri(self, uri):
         self.uri = uri
+
+    # TODO create RSTCheckFiles and initialize it first and remove obsolete code
+    def get_custom_section_name(self):
+        result = self.section.replace('#', '')
+        result = result.replace('-', ' ')
+        if self.section in self.md_sections_ids_names_map.keys():
+            name = self.md_sections_ids_names_map[self.section]
+            result = name.lower()
+        else:
+            logger.error("WTF IT IS WRONG FOR SECTION id %s, using this instead=[%s]", self.section, result)
+        result = result.replace(',', '')
+        result = result.replace('.', '')
+        result = result.replace('"', '')
+        result = result.replace('!', '')
+        result = result.replace('/', '')
+        result = result.replace('”', '')
+        result = result.replace('“', '')
+        result = result.replace(':', '')
+        result = result.replace('\'', '')
+        return result
 
     def check_cross_referencing_escape_uri(self) -> str:
         uri = self.uri
@@ -219,7 +245,8 @@ class CheckRSTLinks:
         elif self.uri in FEED_XML:
             uri = QUBESOS_SITE + FEED_XML[1:len(FEED_XML)]
         elif self.uri.startswith('/doc/#'):
-            uri = '/index' + ':' + self.section.replace('-', ' ')
+            uri = '/index' + ':' + self.get_custom_section_name()
+            # uri = '/index' + ':' + self.section.replace('-', ' ')
         elif len(self.section) > 0 and self.uri.startswith('/') and not self.uri.startswith('/attachment'):
             # sections
             # perm_match = uri
@@ -233,11 +260,12 @@ class CheckRSTLinks:
                     uri = replace_page_aux(self.uri, path)
                 else:
                     path = self.get_path_from_md_internal_mapping('all')
-                    internal_section = self.section.replace('-', ' ').replace('#', '')
+                    tmp_section = self.get_custom_section_name()
+                    # internal_section = self.section.replace('-', ' ').replace('#', '')
                     if path.startswith('/'):
                         path = path[1:len(path)]
                     if len(path) > 0:
-                        uri = path + ':' + internal_section
+                        uri = path + ':' + tmp_section
         elif '/attachment/' in self.uri and '.pdf' in self.uri and self.uri.startswith('/'):
             to_replace = self.uri[self.uri.find('/'):self.uri.rfind('/') + 1]
             uri = self.uri.replace(to_replace, '/_static/')

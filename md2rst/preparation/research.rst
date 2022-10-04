@@ -6,13 +6,13 @@ Here are links to various research papers, projects, videos, and blog
 posts related to Qubes OS.
 
 Secure Software Development
-==========================
+===========================
 
 - `Security challenges for the Qubes build process <https://blog.invisiblethings.org/2016/05/30/build-security.html>`__ by Joanna Rutkowska, May 2016 
 
 
 Towards Trusted Hardware
-=======================
+========================
 
 - `Thoughts on the "physically secure" ORWL computer <https://blog.invisiblethings.org/2016/09/03/thoughts-about-orwl.html>`__ by Joanna Rutkowska, September 2016
 - `State considered harmful <https://blog.invisiblethings.org/papers/2015/state_harmful.pdf>`__ by Joanna Rutkowska, December 2015
@@ -35,7 +35,7 @@ Attacks on Intel TXT
 - `Attacking Intel® Trusted Execution Technology <https://invisiblethingslab.com/resources/bh09dc/Attacking%20Intel%20TXT%20-%20paper.pdf>`__ by Rafal Wojtczuk and Joanna Rutkowska
 
 Software Attacks Coming Through Devices
-======================================
+=======================================
 
 - `Following the White Rabbit: Software Attacks against Intel® VT-d <https://invisiblethingslab.com/resources/2011/Software%20Attacks%20on%20Intel%20VT-d.pdf>`__ by Rafal Wojtczuk and Joanna Rutkowska, April 2011
 - `On Formally Verified Microkernels (and on attacking them) <https://blog.invisiblethings.org/2010/05/03/on-formally-verified-microkernels-and.html>`__ by Joanna Rutkowska, May 2010
@@ -43,7 +43,7 @@ Software Attacks Coming Through Devices
 - `Can you still trust your network card? <https://www.ssi.gouv.fr/IMG/pdf/csw-trustnetworkcard.pdf>`__ by Loïc Duflot, Yves-Alexis Perez and others
 
 Application-level Security
-=========================
+==========================
 
 - `Virtics: A System for Privilege Separation of Legacy Desktop Applications <https://www2.eecs.berkeley.edu/Pubs/TechRpts/2010/EECS-2010-70.pdf>`__ by Matt Piotrowski, May 2010
 
@@ -55,7 +55,7 @@ Compartmentalization, Isolation, and Separation
 - `Breaking Up is Hard to Do: Security and Functionality in a Commodity Hypervisor <https://tjd.phlegethon.org/words/sosp11-xoar.pdf>`__ by Patrick Colp at el., October 2011
 
 The Qubes Architecture
-=====================
+======================
 
 - `Qubes virtual mini-summit 2021 <https://www.qubes-os.org/news/2021/07/30/minisummit-agenda/>`__ by 3mdeb and the Qubes team, August 2021
 - `Qubes Air: Generalizing the Qubes Architecture <https://www.qubes-os.org/news/2018/01/22/qubes-air/>`__ by Joanna Rutkowska, January 2018
