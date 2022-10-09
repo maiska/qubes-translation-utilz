@@ -185,7 +185,20 @@ docutils_validate = true
 
 
 
+# TODO
+
+# manual error fixing refs
+# example ref:`qrexec-policy implementation <developer/services/qrexec-internals:\`\`qrexec-policy\`\` implementation>`
+#    for a detailed description.
+# in vim developer/debugging/vm-interface.rst
+
+# or :ref:`update.qubes-dom0 <user/advanced-topics/salt:``update.qubes-dom0`\`>`
+# in project-security/verifying-signatures.rst ref must be:
+# copied <user/how-to-guides/how-to-copy-from-dom0:copying **from** dom0>`
+# in project-security/security.rst ref must be:
+# :ref: `Security FAQ <introduction/faq:general \& security>`
 
 
+#grep -r SYSTEM
 
 

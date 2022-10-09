@@ -144,12 +144,7 @@ class RSTDirectoryPostProcessor:
 
 
 class RSTFilePostProcessor:
-    def __init__(self, file_path: str,
-                 qubes_rst_links_checker
-                 # md_doc_permalinks_and_redirects_to_filepath_map: dict,
-                 # md_pages_permalinks_and_redirects_to_filepath_map: dict, external_redirects_map: dict,
-                 # md_sections_ids_names_map: dict
-                 ) -> None:
+    def __init__(self, file_path: str, qubes_rst_links_checker) -> None:
         if not check_file(file_path):
             print(file_path)
             raise ValueError("Directory parameter does not point to a directory")

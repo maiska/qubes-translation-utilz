@@ -50,7 +50,7 @@ Core documentation for Qubes users.
  * [Download Qubes OS](https://www.qubes-os.org/downloads/)
  * [Download mirrors](https://www.qubes-os.org/downloads/mirrors/)
  * [Installation guide](/doc/installation-guide/)
- * [Installation security](/doc/installation-guide/)
+ * [Installation security](/doc/install-security/)
  * [Custom installation](/doc/custom-install/)
  * [Upgrade guides](/doc/upgrade/)
  * [Supported releases](/doc/supported-releases/)
@@ -113,7 +113,7 @@ Core documentation for Qubes users.
  * [U2F proxy](/doc/u2f-proxy/)
  * [YubiKey](/doc/yubi-key/)
 
-### Advanced Configuration
+### Advanced topics
 
 
  * [How to install software in dom0](/doc/how-to-install-software-in-dom0/)

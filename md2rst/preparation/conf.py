@@ -80,7 +80,7 @@ gettext_compact = False
 
 locale_dirs = ['_translated']
 
-
+# from https://gist.github.com/ehles/bed012d78aad5d3cd6c35a49bef32f9f
 def align(argument):
     """Conversion function for the "align" option."""
     return directives.choice(argument, ('left', 'center', 'right'))

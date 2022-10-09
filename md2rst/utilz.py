@@ -213,17 +213,10 @@ class CheckRSTLinks:
         if self.section in self.md_sections_ids_names_map.keys():
             name = self.md_sections_ids_names_map[self.section]
             result = name.lower()
-        else:
-            logger.error("WTF IT IS WRONG FOR SECTION id %s, using this instead=[%s]", self.section, result)
-        result = result.replace(',', '')
-        result = result.replace('.', '')
-        result = result.replace('"', '')
-        result = result.replace('!', '')
-        result = result.replace('/', '')
-        result = result.replace('”', '')
-        result = result.replace('“', '')
-        result = result.replace(':', '')
-        result = result.replace('\'', '')
+        result = result.replace('’', '\'')
+        result = result.replace('”', '"')
+        result = result.replace('“', '"')
+        result = result.replace('/', '\/')
         return result
 
     def check_cross_referencing_escape_uri(self) -> str:
@@ -241,17 +234,14 @@ class CheckRSTLinks:
         elif self.uri in INTERNAL_BASE_PATH:
             uri = QUBESOS_SITE
         elif self.uri in DOC_BASE_PATH:
-            uri = 'index'
+            uri = '/index'
         elif self.uri in FEED_XML:
             uri = QUBESOS_SITE + FEED_XML[1:len(FEED_XML)]
         elif self.uri.startswith('/doc/#'):
             uri = '/index' + ':' + self.get_custom_section_name()
-            # uri = '/index' + ':' + self.section.replace('-', ' ')
         elif len(self.section) > 0 and self.uri.startswith('/') and not self.uri.startswith('/attachment'):
             # sections
-            # perm_match = uri
             perm = self.uri
-            # section = self.uri[self.uri.index('#') + 1:len(self.uri)]
             if perm in DOC_BASE_PATH:
                 uri = '/' + self.uri[self.uri.index('#'):len(self.uri)]
             else:
@@ -261,7 +251,6 @@ class CheckRSTLinks:
                 else:
                     path = self.get_path_from_md_internal_mapping('all')
                     tmp_section = self.get_custom_section_name()
-                    # internal_section = self.section.replace('-', ' ').replace('#', '')
                     if path.startswith('/'):
                         path = path[1:len(path)]
                     if len(path) > 0:
