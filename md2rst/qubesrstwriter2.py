@@ -7,6 +7,7 @@ from logging import basicConfig, getLogger, DEBUG
 
 import docutils
 from docutils import nodes, writers
+from docutils.nodes import Node
 
 from sphinx.writers.text import MAXWIDTH, STDINDENT
 
@@ -19,53 +20,6 @@ PUNCTUATION_SET = {'!', ',', '.', ':', ';', '?', '__'}
 basicConfig(level=DEBUG)
 logger_qubes_rst = getLogger(__name__)
 
-
-#
-# def align(argument):
-#     """Conversion function for the "align" option."""
-#     return directives.choice(argument, ('left', 'center', 'right'))
-#
-#
-# class IframeVideo(Directive):
-#     has_content = False
-#     required_arguments = 1
-#     optional_arguments = 0
-#     final_argument_whitespace = False
-#     option_spec = {
-#         'height': directives.nonnegative_int,
-#         'width': directives.nonnegative_int,
-#         'align': align,
-#     }
-#     default_width = 500
-#     default_height = 281
-#
-#     def run(self):
-#         self.options['video_id'] = directives.uri(self.arguments[0])
-#         if not self.options.get('width'):
-#             self.options['width'] = self.default_width
-#         if not self.options.get('height'):
-#             self.options['height'] = self.default_height
-#         if not self.options.get('align'):
-#             self.options['align'] = 'left'
-#         return [nodes.raw('', self.html % self.options, format='html')]
-#
-#
-# class GeneralVid(IframeVideo):
-#     html = '<iframe src="%(video_id)s" \
-#         width="%(width)u" height="%(height)u" frameborder="0" \
-#         webkitAllowFullScreen mozallowfullscreen allowfullscreen \
-#         class="responsive" referrerpolicy="no-referrer" scrolling="no"></iframe>'
-#
-# class Youtube(IframeVideo):
-#     html = '<iframe src="https://www.youtube-nocookie.com/embed/%(video_id)s" \
-#     width="%(width)u" height="%(height)u" frameborder="0" \
-#     webkitAllowFullScreen mozallowfullscreen allowfullscreen \
-#     class="responsive" referrerpolicy="no-referrer" scrolling="no"></iframe>'
-#
-#
-# https://gist.github.com/ehles/bed012d78aad5d3cd6c35a49bef32f9f
-# directives.register_directive('youtube', Youtube)
-# directives.register_directive('generalvid', GeneralVid)
 class QubesRstWriter(writers.Writer):
     supported = ('text',)
     settings_spec = ('No options here.', '', ())
@@ -157,6 +111,21 @@ def is_code_block_to_convert_to_bash(node_as_text):
 
 
 # noinspection PyMethodMayBeStatic,PyPep8Naming,PyRedeclaration,PyUnusedLocal
+def is_node_inside_emphasis_strong_literal(parent):
+    return True if isinstance(parent, docutils.nodes.emphasis) or \
+                   isinstance(parent, docutils.nodes.strong) or \
+                   isinstance(parent, docutils.nodes.literal) else False
+
+
+def get_title_text_length(child):
+    length = len(child.astext())
+    if isinstance(child, docutils.nodes.literal) or isinstance(child, docutils.nodes.strong):
+        length += 4
+    if isinstance(child, docutils.nodes.emphasis):
+        length += 2
+    return length
+
+
 class QubesRstTranslator(nodes.NodeVisitor):
     sectionchars = '*=-~"+`'
 
@@ -238,7 +207,6 @@ class QubesRstTranslator(nodes.NodeVisitor):
             self.body += self.nl + '.. note::' + self.nl + CODE_BLOCK_IDENT + self.get_code_text_block(
                 node.children[0].astext()) + self.nl
             raise nodes.SkipNode
-        pass
 
     def depart_container(self, node):
         pass
@@ -275,10 +243,8 @@ class QubesRstTranslator(nodes.NodeVisitor):
         ] if i in node.astext()]) > 0:
             return
         self.body += 'SYSTEM MESSAGE  for: ' + node_as_text
-        pass
 
     def depart_system_message(self, node):
-        print(node)
         node_as_text = node.astext()
         if len([i for i in [
             'Cannot analyze code. No Pygments lexer found for "shell_session".',
@@ -293,31 +259,12 @@ class QubesRstTranslator(nodes.NodeVisitor):
         ] if i in node_as_text]) > 0:
             return
 
-    def visit_literal(self, node):
-        parent = node.parent
-        if not (isinstance(parent, docutils.nodes.reference) and parent.hasattr('name') and
-                node.astext().lstrip() == parent['name']):
-            self.add_space_to_body_if_needed('``', node)
-        pass
-
     def get_custom_videotours_directive(self, directive_name, vidid):
         spacing = self.nl + SPACE * len(directive_name)
         return self.nl + directive_name + vidid + spacing + \
                ':height: 315' + spacing + \
                ':width: 560' + spacing + \
                ':align: left' + self.nl
-
-    def depart_literal(self, node):
-        parent = node.parent
-        # TODO regular expressions
-        # ```openqa_investigator``
-        # < https://github.com/QubesOS/openqa-tests-qubesos/blob/master/utils/openqa_investigator.py>`__
-        # < literal > `openqa_investigator < / literal > << reference
-        # refuri = "https://github.com/QubesOS/openqa-tests-qubesos/blob/master/utils/openqa_investigator.py" >
-        if not (isinstance(parent, docutils.nodes.reference) and parent.hasattr('name') and
-                node.astext().lstrip() == parent['name']):
-            self.body += '``'
-        pass
 
     # TODO refactor...
     def visit_literal_block(self, node):
@@ -409,7 +356,6 @@ class QubesRstTranslator(nodes.NodeVisitor):
 
     def depart_literal_block(self, node):
         self.body += self.nl + self.nl
-        pass
 
     def visit_subsection(self, node):
         pass
@@ -434,11 +380,9 @@ class QubesRstTranslator(nodes.NodeVisitor):
 
     def visit_substitution_reference(self, node):
         self.body += '|'
-        pass
 
     def depart_substitution_reference(self, node):
         self.body += '|'
-        pass
 
     def visit_substitution_definition(self, node):
         assert len(node.children) > 0
@@ -478,30 +422,25 @@ class QubesRstTranslator(nodes.NodeVisitor):
 
     # noinspection PyMethodMayBeStatic
     def visit_section(self, node):
-        # TODO named sections try
-        # if len(self.body) > 0:
-        #     self.body += self.nl + '.. _' + node['ids'][0] + ':' + self.nl + self.nl
         pass
 
     def depart_section(self, node):
         self.section_count += 1
-        pass
 
     def visit_title(self, node):
         if self.title_count == 0:
             length = 0
             for child in node.children:
-                length = self.get_title_text_length(child, length)
+                length += get_title_text_length(child)
             self.body += '=' * length + self.nl
         else:
             self.body += self.nl
-        pass
 
     def depart_title(self, node):
         parent = node.parent
         length = 0
         for child in node.children:
-            length = self.get_title_text_length(child, length)
+            length += get_title_text_length(child)
         # section title
         if self.title_count >= 0 and isinstance(parent, docutils.nodes.section) and not (
                 isinstance(parent.parent, docutils.nodes.section)):
@@ -518,17 +457,6 @@ class QubesRstTranslator(nodes.NodeVisitor):
         else:
             pass
         self.title_count += 1
-        pass
-
-    def get_title_text_length(self, child, length):
-        length += len(child.astext())
-        if isinstance(child, docutils.nodes.literal) or isinstance(child, docutils.nodes.strong):
-            length += 4
-            # length += 5
-        if isinstance(child, docutils.nodes.emphasis):
-            length += 2
-            # length += 3
-        return length
 
     # noinspection PyMethodMayBeStatic
     def visit_line_block(self, node):
@@ -574,7 +502,12 @@ class QubesRstTranslator(nodes.NodeVisitor):
     def depart_Text(self, node):
         parent = node.parent
         node_as_text = node.astext()
-        if is_node_a_code_block(parent):
+        if is_node_inside_emphasis_strong_literal(parent):
+            self.body += node_as_text.replace(self.nl, ' ')
+        elif isinstance(parent, docutils.nodes.title):
+            self.body += node.astext().replace('’', '\'').replace('”', '"').replace('“', '"')
+            # raise nodes.SkipNode
+        elif is_node_a_code_block(parent):
             code_as_indented_text = self.get_code_text_block(node_as_text)
             self.add_space_to_body_if_needed(code_as_indented_text, node)
         elif isinstance(parent, docutils.nodes.caption):
@@ -620,7 +553,6 @@ class QubesRstTranslator(nodes.NodeVisitor):
                 self.body += node_as_text
                 return
             self.add_space_to_body_if_needed(node_as_text, node)
-        pass
 
     def get_code_text_block(self, node_as_string):
         x = node_as_string.splitlines()
@@ -639,14 +571,12 @@ class QubesRstTranslator(nodes.NodeVisitor):
         self.enumerated_lists_count += 1
         self.ident_count += 1
         self.body += self.nl
-        pass
 
     def depart_enumerated_list(self, node):
         self.enumerated_lists_count -= 1
         self.enumerated_count = 0
         self.body += self.nl + self.nl
         self.ident_count -= 1
-        pass
 
     def visit_bullet_list(self, node):
         if self.document["source"].endswith('index.rst') or \
@@ -659,12 +589,10 @@ class QubesRstTranslator(nodes.NodeVisitor):
             self.body += toctree_directive + self.nl
         self.body += self.nl
         self.ident_count += 1
-        pass
 
     def depart_bullet_list(self, node):
         self.body += self.nl + self.nl
         self.ident_count -= 1
-        pass
 
     def visit_list_item(self, node):
         parent = node.parent
@@ -684,8 +612,6 @@ class QubesRstTranslator(nodes.NodeVisitor):
         elif isinstance(parent, docutils.nodes.enumerated_list):
             self.enumerated_count += 1
             self.body += self.nl + str(self.enumerated_count) + '.' + SPACE
-        print(node)
-        pass
 
     # noinspection PyMethodMayBeStatic
     def depart_list_item(self, node):
@@ -695,7 +621,6 @@ class QubesRstTranslator(nodes.NodeVisitor):
         parent = node.parent
         if is_node_a_code_block(parent) and node.hasattr('classes') and 'single' in node['classes']:
             self.body += self.nl + CODE_BLOCK_IDENT
-        pass
 
     # noinspection PyMethodMayBeStatic
     def depart_inline(self, node):
@@ -712,11 +637,9 @@ class QubesRstTranslator(nodes.NodeVisitor):
                 self.body += ':widths: ' + colspec * nr_columns + self.nl + LIST_ITEM_IDENT
         self.body += ':align: center' + self.nl + LIST_ITEM_IDENT
         self.body += ':header-rows: 1' + self.nl + self.nl + LIST_ITEM_IDENT
-        pass
 
     def depart_table(self, node):
         self.body += self.nl + self.nl
-        pass
 
     def visit_entry(self, node):
         if isinstance(node.parent, docutils.nodes.row):
@@ -881,27 +804,22 @@ class QubesRstTranslator(nodes.NodeVisitor):
 
     def depart_paragraph(self, node):
         self.body += self.nl
-        pass
 
     def visit_image(self, node):
         self.body += node['uri'] + self.nl + LIST_ITEM_IDENT
         self.body += ':alt: ' + node['alt'] + self.nl
-        pass
 
     def depart_image(self, node):
         pass
 
     def visit_caption(self, node):
         self.body += self.nl + LIST_ITEM_IDENT + node.astext()
-        pass
 
     def depart_caption(self, node):
         self.body += self.nl
-        pass
 
     def visit_figure(self, node):
         self.body += self.nl + '.. figure:: '
-        pass
 
     def depart_figure(self, node):
         pass
@@ -945,7 +863,6 @@ class QubesRstTranslator(nodes.NodeVisitor):
                    [self.nl, SPACE, CODE_BLOCK_IDENT, LIST_ITEM_IDENT, '(', ':', '/', "", '\'', '“']:
                 self.body += ' '
             self.add_space_to_body_if_needed(role + '`', node)
-        pass
 
     def depart_reference(self, node):
         refname = node.get('name')
@@ -993,24 +910,60 @@ class QubesRstTranslator(nodes.NodeVisitor):
                 (self.document["source"].endswith('how-to-back-up-restore-and-migrate.rst') and
                  'backup-emergency-restore' in node.astext())
         ):
-            self.body += '`' + underscore
-        pass
+            self.body += '`' + underscore + ' '
 
     def visit_strong(self, node):
-        self.body += '**'
-        pass
+        self.add_space_to_body_if_needed('**', node)
 
     def depart_strong(self, node):
         self.body += '**'
-        pass
 
     def visit_emphasis(self, node):
-        self.body += '*'
-        pass
+        self.add_space_to_body_if_needed('*', node)
 
     def depart_emphasis(self, node):
-        self.body += '* '
+        self.body += '*'
+
+    def visit_term(self, node: Node) -> None:
         pass
+
+    def visit_definition(self, node: Node) -> None:
+        self.indent += 3
+
+    def depart_definition(self, node: Node) -> None:
+        self.indent -= 3
+
+    def depart_term(self, node: Node) -> None:
+        self.body += self.nl
+
+    def visit_definition_list(self, node: Node) -> None:
+        pass
+
+    def depart_definition_list(self, node: Node) -> None:
+        pass
+
+    def visit_definition_list_item(self, node: Node) -> None:
+        pass
+
+    def depart_definition_list_item(self, node: Node) -> None:
+        pass
+
+    def visit_literal(self, node):
+        parent = node.parent
+        if not (isinstance(parent, docutils.nodes.reference) and parent.hasattr('name') and
+                node.astext().lstrip() == parent['name']):
+            self.add_space_to_body_if_needed('``', node)
+
+    def depart_literal(self, node):
+        parent = node.parent
+        # TODO regular expressions
+        # ```openqa_investigator``
+        # < https://github.com/QubesOS/openqa-tests-qubesos/blob/master/utils/openqa_investigator.py>`__
+        # < literal > `openqa_investigator < / literal > << reference
+        # refuri = "https://github.com/QubesOS/openqa-tests-qubesos/blob/master/utils/openqa_investigator.py" >
+        if not (isinstance(parent, docutils.nodes.reference) and parent.hasattr('name') and
+                node.astext().lstrip() == parent['name']):
+            self.body += '``'
 
     # def unknown_visit(self, node):
     #     print(node)
