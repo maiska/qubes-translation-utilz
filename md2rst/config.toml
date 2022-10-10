@@ -92,14 +92,13 @@ dump_docs_filename = 'md_doc_permalinks_and_redirects_to_filepath_map.json'
 dump_pages_filename = 'md_pages_permalinks_and_redirects_to_filepath_map.json'
 
 [log]
-# TODO it was just a string now it is a list !!!
 patterns = ['architecture']
 output = 'mapping.txt'
 logfile = '/tmp/md2rst.log'
 
 [test]
-run = false
-#run = true
+#run = false
+run = true
 docutils_validate = true
 
 #file_name = '/home/user/testingfilez/index.rst' # toctree incorporated, given that doc.md is the right one
