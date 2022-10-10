@@ -146,7 +146,6 @@ class RSTDirectoryPostProcessor:
 class RSTFilePostProcessor:
     def __init__(self, file_path: str, qubes_rst_links_checker) -> None:
         if not check_file(file_path):
-            print(file_path)
             raise ValueError("Directory parameter does not point to a directory")
         if is_not_readable(file_path):
             raise PermissionError("Directory could not be read")

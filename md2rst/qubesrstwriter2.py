@@ -9,16 +9,20 @@ import docutils
 from docutils import nodes, writers
 from docutils.nodes import Node
 
-from sphinx.writers.text import MAXWIDTH, STDINDENT
-
 from config_constants import PATTERN_STRIKEOUT_1, PATTERN_STRIKEOUT_2
-from docutils_rst_writer.writer import RstTranslator
-from utilz import CheckRSTLinks
 
 PUNCTUATION_SET = {'!', ',', '.', ':', ';', '?', '__'}
 
 basicConfig(level=DEBUG)
 logger_qubes_rst = getLogger(__name__)
+from sphinx.writers.text import MAXWIDTH, STDINDENT
+
+from utilz import CheckRSTLinks
+
+from docutils_rst_writer.writer import RstTranslator
+
+basicConfig(level=DEBUG)
+logger = getLogger(__name__)
 
 
 class QubesRstWriter(writers.Writer):
@@ -127,7 +131,7 @@ def get_title_text_length(child):
     return length
 
 
-class QubesRstTranslator(nodes.NodeVisitor):
+class QubesRstTranslator(RstTranslator):
     sectionchars = '*=-~"+`'
 
     def __init__(self, document, qubes_rst_links_checker: CheckRSTLinks):
@@ -150,7 +154,7 @@ class QubesRstTranslator(nodes.NodeVisitor):
         else:
             self.nl = '\n'
         self.sectionchars = '=-~"+`'
-        self.indent = STDINDENT
+        self.indentation = STDINDENT
         self.wrapper = textwrap.TextWrapper(width=MAXWIDTH, break_long_words=False, break_on_hyphens=False)
 
     def wrap(self, text, width=MAXWIDTH):
@@ -947,10 +951,10 @@ class QubesRstTranslator(nodes.NodeVisitor):
         pass
 
     def visit_definition(self, node: Node) -> None:
-        self.indent += 3
+        self.indentation += 3
 
     def depart_definition(self, node: Node) -> None:
-        self.indent -= 3
+        self.indentation -= 3
 
     def depart_term(self, node: Node) -> None:
         self.body += self.nl

@@ -11,6 +11,7 @@ import docutils.nodes
 import docutils.parsers
 import docutils.parsers.rst
 import docutils.utils
+import pygments
 import tomli
 from docutils.io import StringOutput
 from sphinx.util import ensuredir
@@ -198,4 +199,14 @@ if __name__ == '__main__':
     config = get_configuration(args.config)
     configure_logging(config['log'][LOGFILE])
     logger.info("Configuration dump: %s", config)
+
+    # "add" shell_session alias to bash lexer
+    pygments.lexers._mapping.LEXERS['BashLexer'] = (
+        pygments.lexers._mapping.LEXERS['BashLexer'][0],
+        pygments.lexers._mapping.LEXERS['BashLexer'][1],
+        pygments.lexers._mapping.LEXERS['BashLexer'][2] + ('shell_session',),
+        pygments.lexers._mapping.LEXERS['BashLexer'][3],
+        pygments.lexers._mapping.LEXERS['BashLexer'][4],
+    )
+
     run(config)
