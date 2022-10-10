@@ -15,7 +15,10 @@ logger = getLogger(__name__)
 class MarkdownRedirector:
 
     def __init__(self, root_markdown_directory: str, base_site: str,
-                 excluded_files_to_redirect=['README.md', 'CONTRIBUTING.md', 'hcl.md', 'downloads.md']) -> None:
+                 excluded_files_to_redirect=['README.md', 'CONTRIBUTING.md', 'hcl.md', 'downloads.md',
+                                             'visual-style-guide.md', 'website-style-guide.md',
+                                             'how-to-edit-the-documentation.md',
+                                             'documentation-style-guide.md']) -> None:
         if os.path.isdir(root_markdown_directory):
             self.root_markdown_directory = root_markdown_directory
         else:
@@ -35,7 +38,7 @@ class MarkdownRedirector:
                 file_path = os.path.join(path, file_name)
                 logger.info(
                     'Inserting redirect_to base site [%s] and removing markdown content for \t%s' % (self.base_site,
-                                                                                                      file_path))
+                                                                                                     file_path))
                 if file_name in self.excluded_files_to_redirect or 'external/' in file_name:
                     continue
 
