@@ -20,6 +20,7 @@ PUNCTUATION_SET = {'!', ',', '.', ':', ';', '?', '__'}
 basicConfig(level=DEBUG)
 logger_qubes_rst = getLogger(__name__)
 
+
 class QubesRstWriter(writers.Writer):
     supported = ('text',)
     settings_spec = ('No options here.', '', ())
@@ -584,7 +585,12 @@ class QubesRstTranslator(nodes.NodeVisitor):
                 self.document["source"].endswith('releases/schedules.rst') or \
                 self.document["source"].endswith('downloading-installing-upgrading/upgrade/upgrade.rst') or \
                 (self.document["source"].endswith('how-to-back-up-restore-and-migrate.rst') and
-                 'backup-emergency-restore' in node.astext()):
+                 (
+                         'Qubes R4 or newer' in node.astext() or
+                         'Qubes R3' in node.astext() or
+                         'Qubes R2 or older' in node.astext()
+                 )
+                ):
             toctree_directive = self.nl + '.. toctree::' + self.nl + LIST_ITEM_IDENT + ':maxdepth: 1'
             self.body += toctree_directive + self.nl
         self.body += self.nl
@@ -602,8 +608,12 @@ class QubesRstTranslator(nodes.NodeVisitor):
                  self.document["source"].endswith('releases/schedules.rst') or
                  self.document["source"].endswith('downloading-installing-upgrading/upgrade/upgrade.rst') or
                  (self.document["source"].endswith('how-to-back-up-restore-and-migrate.rst') and
-                  'backup-emergency-restore' in node.astext())
-                ):
+                  (
+                          'Qubes R4 or newer' in node.astext() or
+                          'Qubes R3' in node.astext() or
+                          'Qubes R2 or older' in node.astext()
+                  )
+                 )):
             self.body += LIST_ITEM_IDENT
         elif isinstance(parent, docutils.nodes.list_item) or isinstance(parent.parent, docutils.nodes.list_item):
             self.body += LIST_ITEM_IDENT + '-  '
@@ -843,7 +853,12 @@ class QubesRstTranslator(nodes.NodeVisitor):
                 self.document["source"].endswith('releases/schedules.rst') or \
                 self.document["source"].endswith('downloading-installing-upgrading/upgrade/upgrade.rst') or \
                 (self.document["source"].endswith('how-to-back-up-restore-and-migrate.rst') and
-                 'backup-emergency-restore' in node.astext()):
+                 (
+                         'Qubes R4 or newer' in node.astext() or
+                         'Qubes R3' in node.astext() or
+                         'Qubes R2 or older' in node.astext()
+                 )
+                ):
             return
         if refname is None and refuri.startswith('http'):
             self.body += refuri
@@ -908,9 +923,13 @@ class QubesRstTranslator(nodes.NodeVisitor):
                 self.document["source"].endswith('releases/schedules.rst') or
                 self.document["source"].endswith('downloading-installing-upgrading/upgrade/upgrade.rst') or \
                 (self.document["source"].endswith('how-to-back-up-restore-and-migrate.rst') and
-                 'backup-emergency-restore' in node.astext())
-        ):
-            self.body += '`' + underscore + ' '
+                 (
+                         'Qubes R4 or newer' in node.astext() or
+                         'Qubes R3' in node.astext() or
+                         'Qubes R2 or older' in node.astext()
+                 )
+                )):
+            self.body += '`' + underscore
 
     def visit_strong(self, node):
         self.add_space_to_body_if_needed('**', node)
