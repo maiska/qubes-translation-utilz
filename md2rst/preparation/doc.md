@@ -195,6 +195,7 @@ Core documentation for Qubes developers and advanced users.
 
  * [Inter-qube file copying (qfilecopy)](/doc/qfilecopy/)
  * [Qubes memory manager (qmemman)](/doc/qmemman/)
+ * [Disposable implementation](/doc/disposablevm-implementation/)
  * [Dom0 secure updates](/doc/dom0-secure-updates/)
  * [Qrexec: secure communication across domains](/doc/qrexec/)
  * [Qrexec v2 (deprecated)](/doc/qrexec2/)

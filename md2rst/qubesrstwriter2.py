@@ -135,7 +135,7 @@ class QubesRstTranslator(RstTranslator):
     sectionchars = '*=-~"+`'
 
     def __init__(self, document, qubes_rst_links_checker: CheckRSTLinks):
-        nodes.NodeVisitor.__init__(self, document)
+        super().__init__(document)
         self.qubes_rst_links_checker = qubes_rst_links_checker
         self.body = ""
         self.document = document
