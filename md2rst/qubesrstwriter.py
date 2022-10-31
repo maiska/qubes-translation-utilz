@@ -785,6 +785,8 @@ class QubesRstTranslator(nodes.NodeVisitor):
             is_code_block = True
             if node.get('language', 'default') == 'default' and len(node['classes']) >= 2:
                 node['language'] = node['classes'][1]
+        if '::' in node.get('classes', []):
+            is_code_block = True
         # highlight_args is the only way to distinguish between :: and .. code:: in Sphinx 2 or higher.
         if node.get('highlight_args') is not None:
             is_code_block = True
@@ -1000,6 +1002,12 @@ class QubesRstTranslator(nodes.NodeVisitor):
                         uri = path + ':' + internal_section
             # print('sections')
             # print(uri)
+        elif uri.startswith('#'):
+            uri = uri.replace('#', '')
+            if uri == 'how-to-guides':
+                uri = 'how-to guides'
+            else:
+                uri = uri.replace('-', ' ')
         elif '/attachment/' in uri and '.pdf' in uri:
             to_replace = uri[uri.find('/'):uri.rfind('/') + 1]
             uri = uri.replace(to_replace, '/_static/')

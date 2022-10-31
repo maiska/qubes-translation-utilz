@@ -1,8 +1,11 @@
 #! /usr/bin/env python3
 import codecs
+import json
 import os
 import shutil
+import subprocess
 import sys
+import tempfile
 from argparse import ArgumentParser
 from logging import basicConfig, getLogger, DEBUG, Formatter, FileHandler
 
@@ -18,10 +21,12 @@ from docutils.io import StringOutput
 from sphinx.util import ensuredir
 
 from config_constants import *
+from convert_inventory import convert_inventory
 from pandocconverter import PandocConverter
-from qubesrstwriter import QubesRstWriter, RstBuilder
-from rstqubespostprocessor import parse_and_validate_rst, qube_links_2
-from utilz import get_mappings
+from qubesrstwriter2 import QubesRstWriter, RstBuilder
+# from qubesrstwriter import QubesRstWriter, RstBuilder
+from rstqubespostprocessor import validate_rst_file, RSTDirectoryPostProcessor
+from utilz import get_mappings, convert_svg_to_png, is_not_readable
 
 basicConfig(level=DEBUG)
 logger = getLogger(__name__)
@@ -65,7 +70,7 @@ def convert_md_to_rst(config_toml: dict) -> None:
     rst_dir_to_remove = config_toml[RST][DIRECTORY_TO_REMOVE]
 
     logger.info("Converting from Markdown to RST")
-    rst_converter = PandocConverter(rst_directory)
+    rst_converter = PandocConverter(rst_directory, config_toml[RST][SKIP_MD])
 
     if config_toml[RUN][COPY_MD_FILES]:
         logger.info("Copy from %s directory to %s", copy_from_dir, md_file_names_to_copy)
@@ -90,13 +95,38 @@ def convert_md_to_rst(config_toml: dict) -> None:
 
     logger.info("Conversion and cleaning done")
 
+def generate_sphinx_refs(config_toml):
+    with tempfile.TemporaryDirectory() as d:
+        subprocess.check_call(['sphinx-build', config_toml[RST][RST_DIRECTORY], d])
+        labels = convert_inventory(os.path.join(d, 'objects.inv'))
+    filename = os.path.join(config_toml[URL_MAPPING][DUMP_DIRECTORY],
+        config_toml[URL_MAPPING][DUMP_LOCALREFS_FILENAME])
+    with open(filename, 'w') as f:
+        f.write(json.dumps(labels))
+    return labels
+
+def load_sphinx_refs(config_toml):
+    filename = os.path.join(config_toml[URL_MAPPING][DUMP_DIRECTORY],
+        config_toml[URL_MAPPING][DUMP_LOCALREFS_FILENAME])
+    try:
+        with open(filename) as f:
+            return json.load(f)
+    except FileNotFoundError:
+        print("WARNING: sphinx internal refs not found, set sphinx_refs=true")
+        return {}
 
 def run(config_toml: dict) -> None:
     # gather the mappings before converting
-    if config_toml[RUN][MD_MAP]:
-        md_doc_permalinks_and_redirects_to_filepath_map, md_pages_permalinks_and_redirects_to_filepath_map, \
-        external_redirects_mappings = get_mappings(config_toml)
+    if not config_toml[RUN][MD_MAP] and not is_not_readable(config_toml[MARKDOWN][ROOT_DIRECTORY]):
+        print("Please configure gathering of markdown url mapping")
+        return
 
+    md_doc_permalinks_and_redirects_to_filepath_map, md_pages_permalinks_and_redirects_to_filepath_map, \
+    external_redirects_mappings = get_mappings(config_toml, config_toml[RST][SKIP_MD])
+    rstDirectoryPostProcessor = RSTDirectoryPostProcessor(config_toml[RST][RST_DIRECTORY],
+                                                          md_doc_permalinks_and_redirects_to_filepath_map,
+                                                          md_pages_permalinks_and_redirects_to_filepath_map,
+                                                          external_redirects_mappings)
     logger.debug("md_doc_permalinks_and_redirects_to_filepath_map")
     logger.debug(md_doc_permalinks_and_redirects_to_filepath_map)
     logger.debug("md_pages_permalinks_and_redirects_to_filepath_map")
@@ -104,30 +134,41 @@ def run(config_toml: dict) -> None:
     logger.debug("external_redirects_mappings")
     logger.debug(external_redirects_mappings)
 
-    if config_toml[RUN][PYPANDOC] and config_toml[RUN][MD_MAP]:
+    if config_toml[RUN][PYPANDOC]:
         convert_md_to_rst(config_toml)
 
-    if config_toml[RUN][DOCUTILS_VALIDATE] and config_toml[RUN][MD_MAP]:
-        parse_and_validate_rst(config_toml[RST][RST_DIRECTORY])
+    if config_toml[RUN][DOCUTILS_VALIDATE]:
+        rstDirectoryPostProcessor.parse_and_validate_rst()
 
-    if config_toml[RUN][QUBES_RST] and config_toml[RUN][MD_MAP]:
+    if config_toml[RUN][SPHINX_REFS]:
+        labels = generate_sphinx_refs(config_toml)
+    else:
+        labels = load_sphinx_refs(config_toml)
+
+    if config_toml[RUN][QUBES_RST]:
         # TODO Maya FIRST
-        qube_links_2(config_toml[RST][RST_DIRECTORY], md_doc_permalinks_and_redirects_to_filepath_map,
-                                md_pages_permalinks_and_redirects_to_filepath_map,
-                                external_redirects_mappings)
+        rstDirectoryPostProcessor.qube_links_2(labels=labels)
         pass
 
+    if config_toml[RUN][SVG_PNG_CONVERSION_REPLACEMENT]:
+        convert_svg_to_png(config_toml)
+
     if config_toml[TEST][RUN]:
-        run_single_rst_test(config_toml, external_redirects_mappings, md_doc_permalinks_and_redirects_to_filepath_map,
-                            md_pages_permalinks_and_redirects_to_filepath_map)
+        file_name = config_toml[TEST][FILE_NAME]
+        file_name_converted = file_name + '.test'
+        run_single_rst_test(file_name, external_redirects_mappings, md_doc_permalinks_and_redirects_to_filepath_map,
+                            md_pages_permalinks_and_redirects_to_filepath_map, labels, config_toml[RST][RST_DIRECTORY])
+        if config_toml[TEST]['validate']:
+            validate_rst_file(file_name_converted)
+        if config_toml[RUN]['markdown_links_leftover']:
+            rstDirectoryPostProcessor.search_replace_md_links_single(file_name_converted)
 
     if config_toml[RUN][COPY_RST_FILES]:
         copy_manual_rst(config_toml)
 
 
-def run_single_rst_test(config_toml, external_redirects_mappings, md_doc_permalinks_and_redirects_to_filepath_map,
-                        md_pages_permalinks_and_redirects_to_filepath_map):
-    file_name = config_toml[TEST][FILE_NAME]
+def run_single_rst_test(file_name, external_redirects_mappings, md_doc_permalinks_and_redirects_to_filepath_map,
+                        md_pages_permalinks_and_redirects_to_filepath_map, internal_labels, rst_directory):
     fileobj = open(file_name, 'r')
     # noinspection PyUnresolvedReferences
     default_settings = docutils.frontend.OptionParser(components=(docutils.parsers.rst.Parser,)).get_default_values()
@@ -138,7 +179,9 @@ def run_single_rst_test(config_toml, external_redirects_mappings, md_doc_permali
     fileobj.close()
     writer = QubesRstWriter(RstBuilder(), md_doc_permalinks_and_redirects_to_filepath_map,
                             md_pages_permalinks_and_redirects_to_filepath_map,
-                            external_redirects_mappings)
+                            external_redirects_mappings,
+                            internal_labels,
+                            rst_directory)
     destination = StringOutput(encoding='utf-8')
     writer.write(rst_document, destination)
     ensuredir(os.path.dirname(file_name))

@@ -13,13 +13,15 @@ logger = getLogger(__name__)
 
 class Permalinks2Filepath:
 
-    def __init__(self, root_qubes_directory: str) -> None:
+    def __init__(self, root_qubes_directory: str, skip_md: list) -> None:
         if os.path.isdir(root_qubes_directory):
             self.root_qubes_directory = root_qubes_directory
         else:
             raise ValueError("Directory parameter containing the markdown documentation does not point to a directory")
         if not os.access(self.root_qubes_directory, os.R_OK):
             raise PermissionError("Directory parameter containing the markdown documentation could not be read")
+        # skip those files
+        self.skip_md = skip_md
         # holds _doc mappings for official Qubes OS documenation
         self.md_permalinks_and_redirects_to_filepath_mapping = None
         # holds pages mappings for official Qubes OS documenation
@@ -41,6 +43,8 @@ class Permalinks2Filepath:
                     file_path = os.path.join(path, file_name)
                     relative_path = file_path[file_path.index(subdir) + len(subdir):file_path.index(
                         file_pattern[1:len(file_pattern)])]
+                    if relative_path.lstrip('/') + '.md' in self.skip_md:
+                        continue
                     if relative_path.startswith(exclude_pattern):
                         continue
                     with io.open(file_path) as fp:
@@ -69,6 +73,8 @@ class Permalinks2Filepath:
                     file_path = os.path.join(path, file_name)
                     relative_path = file_path[file_path.index(subdir) + len(subdir):file_path.index(
                         file_pattern[1:len(file_pattern)])]
+                    if relative_path.lstrip('/') + '.md' in self.skip_md:
+                        continue
                     if relative_path.startswith(single_dir):
                         with io.open(file_path) as fp:
                             md = load(fp)
