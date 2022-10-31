@@ -32,7 +32,7 @@ class MarkdownRedirector:
         else:
             raise ValueError("There is a problem with reaching the RTD doc site " + base_site)
 
-    def traverse_insert_redirect_delete_content(self, subdir='_doc', file_extension='*.md'):
+    def traverse_insert_redirect_delete_content(self, subdir: str = '_doc', file_extension: str = '*.md') -> None:
         for path, dirs, files in os.walk(os.path.join(self.root_markdown_directory, subdir)):
             for file_name in fnmatch.filter(files, file_extension):
                 file_path = os.path.join(path, file_name)

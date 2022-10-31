@@ -37,9 +37,14 @@ extensions = [
     'sphinx_reredirects'
 ]
 
-# redirects = {
-#      "<source>": "<target>"
-# }
+redirects = {
+    "user/hardware/hcl": "https://www.qubes-os.org/hcl/",
+    "user/downloading-installing-upgrading/downloads:mirrors":"https://www.qubes-os.org/downloads/mirrors/",
+    "developer/general/visual-style-guide": "https://www.qubes-os.org/doc/visual-style-guide/",
+    "developer/general/website-style-guide":"https://www.qubes-os.org/doc/website-style-guide/",
+    "user/downloading-installing-upgrading/downloads":"https://www.qubes-os.org/downloads/",
+    "developer/general/how-to-edit-the-documentation":"https://www.qubes-os.org/doc/how-to-edit-the-documentation/"
+}
 
 autosectionlabel_prefix_document = True
 

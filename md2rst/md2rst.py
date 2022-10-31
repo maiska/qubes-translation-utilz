@@ -4,6 +4,7 @@ import os
 import sys
 from argparse import ArgumentParser
 from logging import basicConfig, getLogger, DEBUG, Formatter, FileHandler
+import git
 
 import docutils.core
 import docutils.frontend
@@ -16,9 +17,8 @@ import tomli
 from docutils.io import StringOutput
 from sphinx.util import ensuredir
 
-from config_constants import *
-from docutils_rst_writer import Writer
 from markdownredirector import MarkdownRedirector
+from config_constants import *
 
 from pandocconverter import PandocConverter
 from qubesrstwriter2 import QubesRstWriter
@@ -50,20 +50,38 @@ def get_configuration(configuration: str) -> dict:
     return config_dict
 
 
+def git_init_add_submodule(config_toml: dict) -> None:
+    origin_url = config_toml[GIT][ORIGIN_URL]
+    attachment_url = config_toml[GIT][ATTACHMENT_URL]
+    rst_directory = config_toml[RST][RST_DIRECTORY]
+    bare_repo = git.Repo.init(rst_directory)
+    origin = bare_repo.create_remote('origin', origin_url)
+    assert origin.exists()
+    logger.info(rst_directory)
+    attachment_submodule_path = os.path.join(rst_directory, 'attachment')
+    logger.info(attachment_submodule_path)
+    git.Submodule.add(bare_repo, 'attachment', attachment_submodule_path, attachment_url)
+
+    bare_repo.git.add(all=True)
+    bare_repo.git.commit('-S', '-m',
+                         "Initialize repo, add attachment submodule, \n pandoc convert and rst cross links fixing")
+
+
 def convert_md_to_rst(config_toml: dict) -> None:
     rst_directory = config_toml[RST][RST_DIRECTORY]
     copy_from_dir = config_toml[RST][COPY_FROM_DIR]
     md_file_names_to_copy = config_toml[RST][MD_FILE_NAMES]
     rst_config_files_to_copy = config_toml[RST][RST_CONFIG_FILES]
     rst_files_to_copy = config_toml[RST][RST_FILES]
-    rst_dir_to_remove = config_toml[RST][DIRECTORY_TO_REMOVE]
+    rst_dirs_to_remove = config_toml[RST][DIRECTORIES_TO_REMOVE]
+    root_directory = config_toml[MARKDOWN][ROOT_DIRECTORY]
 
     logger.info("Converting from Markdown to RST")
     rst_converter = PandocConverter(rst_directory)
 
     if config_toml[RUN][COPY_MD_FILES]:
         logger.info("Copy from %s directory to %s", copy_from_dir, md_file_names_to_copy)
-        rst_converter.prepare_convert(copy_from_dir, md_file_names_to_copy)
+        rst_converter.prepare_convert(root_directory, copy_from_dir, md_file_names_to_copy)
 
     logger.info("Convert to RST")
     rst_converter.traverse_directory_and_convert()
@@ -72,8 +90,8 @@ def convert_md_to_rst(config_toml: dict) -> None:
     rst_converter.remove_obsolete_files()
 
     if config_toml[RUN][REMOVE_RST_DIRECTORY]:
-        logger.info("Deleting %s directory", rst_dir_to_remove)
-        rst_converter.remove_whole_directory(rst_dir_to_remove)
+        logger.info("Deleting %s directories", rst_dirs_to_remove)
+        rst_converter.remove_whole_directory(rst_dirs_to_remove)
 
     if config_toml[RUN][COPY_RST_FILES]:
         logger.info("Copy from %s directory to %s", copy_from_dir, rst_config_files_to_copy)
@@ -132,11 +150,25 @@ def run(config_toml: dict) -> None:
         logger.debug("-------------------- QUBES_RST ----------------------------")
         rst_directory_post_processor.qube_links_2()
 
+    if config_toml[RUN]['git_init']:
+        logger.debug("------------------------------------------------")
+        logger.debug("------------------------------------------------")
+        logger.debug("-------------------- GIT INIT, ADD SUBMODULE ----------------------------")
+        git_init_add_submodule(config_toml)
+
     if config_toml[RUN][SVG_PNG_CONVERSION_REPLACEMENT]:
         logger.debug("------------------------------------------------")
         logger.debug("------------------------------------------------")
         logger.debug("-------------------- SVG_PNG_CONVERSION_REPLACEMENT ----------------------------")
         convert_svg_to_png(config_toml)
+
+    if config_toml[RUN][HANDLE_LEFTOVER_MARKDOWN_LINKS]:
+        logger.debug("-------------------- MD LINKS REPLACE TEST ----------------------------")
+        rst_directory_post_processor.search_replace_md_links()
+
+    if config_toml[RUN]['replace_custom_strings']:
+        logger.debug("-------------------- MD LINKS REPLACE TEST ----------------------------")
+        rst_directory_post_processor.search_replace_custom_links(config_toml['replace_custom_strings_values'])
 
     if config_toml[RUN][REDIRECT_MARKDOWN]:
         logger.debug("------------------------------------------------")
@@ -153,8 +185,9 @@ def run(config_toml: dict) -> None:
         logger.debug("-------------------- RUN TEST ----------------------------")
         file_name = config_toml[TEST][FILE_NAME]
         file_name_converted = file_name + '.test'
+        rst_directory = config_toml[RST][RST_DIRECTORY]
         run_single_rst_test(file_name, external_redirects_map, md_doc_permalinks_and_redirects_to_filepath_map,
-                            md_pages_permalinks_and_redirects_to_filepath_map, md_sections_id_name_map)
+                            md_pages_permalinks_and_redirects_to_filepath_map, md_sections_id_name_map, rst_directory)
         if config_toml[TEST][DOCUTILS_VALIDATE]:
             logger.debug("-------------------- VALIDATE TEST ----------------------------")
             validate_rst_file(file_name_converted)
@@ -163,8 +196,10 @@ def run(config_toml: dict) -> None:
             rst_directory_post_processor.search_replace_md_links_single(file_name_converted)
 
 
-def run_single_rst_test(file_name, external_redirects_mappings, md_doc_permalinks_and_redirects_to_filepath_map,
-                        md_pages_permalinks_and_redirects_to_filepath_map, md_sections_id_name_map):
+def run_single_rst_test(file_name: str, external_redirects_mappings: dict,
+                        md_doc_permalinks_and_redirects_to_filepath_map: dict,
+                        md_pages_permalinks_and_redirects_to_filepath_map: dict, md_sections_id_name_map: dict,
+                        rst_directory: str) -> None:
     fileobj = open(file_name, 'r')
     # noinspection PyUnresolvedReferences
     default_settings = docutils.frontend.OptionParser(components=(docutils.parsers.rst.Parser,)).get_default_values()
@@ -176,9 +211,8 @@ def run_single_rst_test(file_name, external_redirects_mappings, md_doc_permalink
     qubes_rst_links_checker = CheckRSTLinks('', md_doc_permalinks_and_redirects_to_filepath_map,
                                             md_pages_permalinks_and_redirects_to_filepath_map,
                                             external_redirects_mappings, md_sections_id_name_map)
-    writer = QubesRstWriter(qubes_rst_links_checker)
+    writer = QubesRstWriter(qubes_rst_links_checker, rst_directory)
 
-    # # writer = Writer() new writer
     destination = StringOutput(encoding='utf-8')
     writer.write(rst_document, destination)
     ensuredir(os.path.dirname(file_name))
