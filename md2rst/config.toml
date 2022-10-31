@@ -16,21 +16,23 @@ description = "Customized post processing tool for broken links after pandoc con
 version = "1.0.0"
 author = "m"
 
+[log]
+logfile = '/tmp/md2rst.log'
+
 [markdown]
 root_directory = '/home/user/qubes-translation-utilz/md2rst/refactor_test/TEST/markdown/qubesos.github.io.rtd'
 redirect_base_url = 'https://foo.bar' # TODO
 
 [rst]
-# TODO delete if we are going with just one directory
-rst_directory = '/home/user/qubes-translation-utilz/md2rst/refactor_test/TEST/rst-convert/qubesos.github.io.rtd/_doc/'
+rst_directory = '/home/user/qubes-translation-utilz/md2rst/refactor_test/TEST/rst-convert-monster-merge/qubes-rst/'
 copy_from_dir = '/home/user/qubes-translation-utilz/md2rst/preparation/'
-md_file_names = ['admin-api.md', 'doc.md']
+md_file_names = ['doc.md']
 rst_config_files = ['requirements.txt', 'conf.py', '.readthedocs.yaml']
 rst_files = ['research.rst', 'intro.rst', 'admin-api.rst']
 skip_files = ['gui.rst', 'research.rst', 'intro.rst', 'admin-api.rst']
-directory_to_remove = 'external'
-# TODO
+directories_to_remove = ['external']
 files_to_remove = [
+    '.git',
     '.gitlab-ci.yml',
     '.travis.yml',
     'qubes-core-admin-client.rst',
@@ -40,97 +42,83 @@ files_to_remove = [
     'qubes-template-configs.rst',
     'community-recommended-hardware.rst']
 
+[git]
+# expects signed commits preconfigured
+# performs ONLY initial commit after pandoc conversion and rst cross linkings,
+# as well as adding the attachment repo as sumodule
+origin_url = 'https://github.com/maiska/qubes-rst.git'
+attachment_url = 'https://github.com/maiska/qubes-attachment.rtd.git'
+
 [svg]
-# should reside in the rst_directory or subdirectories
 svg_files_to_png = ['admin-api-architecture.svg', 'u2f.svg', 'update_table-20140424-170010.svg', 'release-cycle.svg']
-#replace_svg_with_png_in_rst_files = false
-replace_svg_with_png_in_rst_files = true
 
 [run]
+
 md_map = true
 
+#####################
 # 1-st stage all true
-pypandoc = false
-#pypandoc = true
-copy_md_files = false
-#copy_md_files = true
-copy_rst_files = false
-#copy_rst_files = true
-remove_rst_directory = false
-#remove_rst_directory = true
-remove_rst_files = false
-#remove_rst_files = true
+#####################
+pypandoc = true
+#pypandoc = false
+#copy_md_files = false
+copy_md_files = true
+#copy_rst_files = false
+copy_rst_files = true
+#remove_rst_directory = false
+remove_rst_directory = true
+#remove_rst_files = false
+remove_rst_files = true
 
-
+####################
 # 2nd stage all true
+####################
 docutils_validate = false
 #docutils_validate = true
 qubes_rst = false
 #qubes_rst = true
+git_init = false
+#git_init = true
 svg_png_conversion_replacement = false
 #svg_png_conversion_replacement = true
 markdown_links_leftover = false
 #markdown_links_leftover = true
+replace_custom_strings = false
+#replace_custom_strings = true
 
+###########
+# TODO test for bugs
 # 3rd stage
+###########
 redirect_markdown = false
 #redirect_markdown = true
 
-#git reset --hard && find . ! -not -name 'README.md' -o ! -not -name 'CONTRIBUTING.md' -o -type f -name '*.rst' -delete
-
-
-[url_mapping]
-save_to_json = false
-#save_to_json = true
-dump_directory_name = '/home/user/qubes-translation-utilz/md2rst/refactor_test/md-dump/'
-dump_external_filename = 'external_redirects_mappings.json'
-dump_docs_filename = 'md_doc_permalinks_and_redirects_to_filepath_map.json'
-dump_pages_filename = 'md_pages_permalinks_and_redirects_to_filepath_map.json'
-
-[log]
-patterns = ['architecture']
-output = 'mapping.txt'
-logfile = '/tmp/md2rst.log'
+[replace_custom_strings_values]
+'user/how-to-guides/how-to-copy-from-dom0:copying from dom0' = 'user/how-to-guides/how-to-copy-from-dom0:copying **from** dom0'
+'<introduction/faq:general  security>' = '<introduction/faq:general \& security>'
+'/doc/glossary:vm' = 'user/reference/glossary:vm'
+'</user/reference/glossary:app qube>' = '<user/reference/glossary:app qube>'
+'developer/services/qrexec-internals:qrexec policy implementation' = 'developer/services/qrexec-internals:\`\`qrexec-policy\`\` implementation'
+'user/how-to-guides/how-to-use-pci-devices:qvm-pci usage' = 'user/how-to-guides/how-to-use-pci-devices:\`\`qvm-pci\`\` usage'
+'user/advanced-topics/salt:update.qubes-dom0' = 'user/advanced-topics/salt:\`\`update.qubes-dom0\`\`'
+'user/advanced-topics/salt:update.qubes-vm' = 'user/advanced-topics/salt:\`\`update.qubes-vm\`\`'
+'```openqa_investigator`` <' = '`openqa_investigator <'
+':ref:`ISO downloads <user/downloading-installing-upgrading/downloads:mirrors>`' = '`ISO downloads <https://www.qubes-os.org/downloads/#mirrors>__'
+':ref:`here <user/downloading-installing-upgrading/downloads:mirrors>`' = '`here <https://www.qubes-os.org/downloads/#mirrors>__'
+':ref:`download mirrors <user/downloading-installing-upgrading/downloads:mirrors>`' = '`download mirrors <https://www.qubes-os.org/downloads/#mirrors>__'
+':doc:`Qubes News RSS feed <https://www.qubes-os.org/feed.xml>`' = '`Qubes News RSS feed <https://www.qubes-os.org/feed.xml>`'
 
 [test]
 run = false
 #run = true
 docutils_validate = true
+#file_name = '/home/user/testingfilez/automated-tests.rst'
 
-#file_name = '/home/user/testingfilez/index.rst' # toctree incorporated, given that doc.md is the right one
-#file_name = '/home/user/testingfilez/video-tours.rst' # directives in conf.py, see the conf.py in preparation
-
-# DONE
-# can be deleted, is referenced only via url in the index
-#file_name = '/home/user/testingfilez/qubes-core-admin-client.rst'
-# can be deleted, is referenced only via url in the index
-#file_name = '/home/user/testingfilez/qubes-core-admin.rst'
-# can be deleted, is referenced only via url in the index
-#file_name = '/home/user/testingfilez/qubes-core-stack.rst'
-# just  a redirect to index, developer documentation section, can be removed
-#file_name = '/home/user/testingfilez/system-doc.rst'
-# can be deleted, is referenced only via url in the index
-#file_name = '/home/user/testingfilez/qubes-template-configs.rst'
-# can be deleted, is referenced only via url in the index
-#file_name = '/home/user/testingfilez/community-recommended-hardware.rst'
-
-# Will be copied
-#file_name = '/home/user/testingfilez/research.rst'
-#just copy it
-#file_name = '/home/user/testingfilez/intro.rst'
-
+# notes
 # strikethrough for rst https://sphinx.silverrainz.me/strike/ and in conf.py
 # https://github.com/sphinx-notes/strike
 
-
-
 #https://gist.github.com/dbrgn/2922648
-#TODO only one usability-ux has a reference to the /doc/visual style guide
-
-
-#--------------------------
-# TODO As default codign block language is bash -> one should alter that, as in gsoc.rst
-# there are long text passages that should be how rst formatted exactly??
 
 
 

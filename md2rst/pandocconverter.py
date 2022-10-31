@@ -7,7 +7,7 @@ from logging import basicConfig, getLogger, DEBUG
 from frontmatter import load
 from pypandoc import convert_file
 
-from utilz import is_not_readable
+from distutils.dir_util import copy_tree
 
 basicConfig(level=DEBUG)
 logger = getLogger(__name__)
@@ -16,15 +16,10 @@ logger = getLogger(__name__)
 # noinspection PyDefaultArgument
 class PandocConverter:
 
-    def __init__(self, directory):
-        if os.path.isdir(directory):
-            self.directory_to_convert = directory
-        else:
-            raise ValueError("Directory parameter does not point to a directory")
-        if is_not_readable(self.directory_to_convert):
-            raise PermissionError("Directory could not be read")
+    def __init__(self, directory: str) -> None:
+        self.directory_to_convert = directory
 
-    def traverse_directory_and_convert(self, file_pattern='*.md'):
+    def traverse_directory_and_convert(self, file_pattern: str = '*.md') -> None:
         for path, dirs, files in os.walk(os.path.abspath(self.directory_to_convert)):
             for filename in fnmatch.filter(files, file_pattern):
                 filepath = os.path.join(path, filename)
@@ -46,7 +41,7 @@ class PandocConverter:
                         for line in lines:
                             fp.write(line)
 
-    def remove_obsolete_files(self, file_patterns=['*.md']):
+    def remove_obsolete_files(self, file_patterns: list = ['*.md']) -> None:
         for file_pattern in file_patterns:
             for path, dirs, files in os.walk(os.path.abspath(self.directory_to_convert)):
                 for filename in fnmatch.filter(files, file_pattern):
@@ -54,14 +49,22 @@ class PandocConverter:
                     logger.info('Removing file [%s]', filepath)
                     os.remove(filepath)
 
-    def remove_whole_directory(self, path_pattern='/external/'):
-        filepath = os.path.join(self.directory_to_convert, path_pattern)
-        logger.info('Removing directory [%s]', filepath)
-        if os.path.exists(filepath):
-            shutil.rmtree(filepath)
+    def remove_whole_directory(self, path_patterns: list = ['/external/']) -> None:
+        for path_pattern in path_patterns:
+            filepath = os.path.join(self.directory_to_convert, path_pattern)
+            logger.info('Removing directory [%s]', filepath)
+            if os.path.exists(filepath):
+                shutil.rmtree(filepath)
 
-    def prepare_convert(self, copy_from_dir='/home/user/md2rst/preparation/',
-                        md_file_names=['admin-api-table.md', 'admin-api.md', 'doc.md']):
+    def prepare_convert(self, md_dir: str, copy_from_dir: str = '/home/user/md2rst/preparation/',
+                        md_file_names: list = ['admin-api.md', 'doc.md']) -> None:
+        if os.path.exists(self.directory_to_convert):
+            shutil.rmtree(self.directory_to_convert)
+        logger.info(md_dir)
+        logger.info(os.path.join(md_dir, '_doc'))
+        copy_tree(os.path.join(md_dir, '_doc'), self.directory_to_convert)
+        logger.info('copied original markdown directory')
+
         for file_name in md_file_names:
             for path, dirs, files in os.walk(os.path.abspath(self.directory_to_convert)):
                 for filename in fnmatch.filter(files, file_name):
@@ -70,8 +73,9 @@ class PandocConverter:
                     logger.info('Copying [%s] to [%s]', file_to_copy, filepath)
                     shutil.copy(file_to_copy, filepath)
 
-    def post_convert(self, copy_from_dir='/home/user/md2rst/preparation/',
-                     rst_config_files=['requirements.txt', 'conf.py', '.readthedocs.yaml'], rst_files=['intro.rst']):
+    def post_convert(self, copy_from_dir: str = '/home/user/md2rst/preparation/',
+                     rst_config_files: list = ['requirements.txt', 'conf.py', '.readthedocs.yaml'],
+                     rst_files: list = ['intro.rst']) -> None:
 
         if os.path.exists(os.path.join(self.directory_to_convert, "doc.rst")):
             shutil.move(os.path.join(self.directory_to_convert, "doc.rst"),

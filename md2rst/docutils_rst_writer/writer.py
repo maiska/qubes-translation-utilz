@@ -22,6 +22,7 @@ from __future__ import (
 )
 
 import logging
+import os
 import re
 import sys
 from dataclasses import dataclass, field
@@ -55,7 +56,7 @@ class Writer(writers.Writer):
     def translate(self) -> None:
         visitor = RstTranslator(self.document)
         self.document.walkabout(visitor)
-        self.output = "\n".join(visitor.lines)
+        self.output = self.nl.join(visitor.lines)
 
 
 class _ListItem:
@@ -175,9 +176,9 @@ class _Reference:
 
         self.text_only = all(isinstance(c, nodes.Text) for c in node.children)
         self.image_only = (
-            (not self.text_only)
-            and len(node.children) == 1
-            and isinstance(node.children[0], nodes.image)
+                (not self.text_only)
+                and len(node.children) == 1
+                and isinstance(node.children[0], nodes.image)
         )
 
 
@@ -188,10 +189,10 @@ class _AttrKind:
     flag: bool
 
     def __init__(
-        self,
-        node_attr: str,
-        rst_attr: Optional[str] = None,
-        flag: bool = False,
+            self,
+            node_attr: str,
+            rst_attr: Optional[str] = None,
+            flag: bool = False,
     ) -> None:
         self.node_attr = node_attr
         self.rst_attr = node_attr if rst_attr is None else rst_attr
@@ -270,6 +271,7 @@ class RstTranslator(nodes.NodeVisitor):
 
         self.role_count = 0
         self.extra_roles = {}
+        self.nl = os.linesep
 
     @staticmethod
     def log_warning(message: str) -> None:
@@ -297,23 +299,23 @@ class RstTranslator(nodes.NodeVisitor):
         return self.captures.pop()
 
     def write(self, text: str) -> None:
-        lines = text.split("\n")
+        lines = text.split(self.nl)
         indent = " " * self.indent
 
-        if not self.lines[-1] and lines[0]:
-            lines[0] = indent + lines[0]
+        lines_ = lines[0]
+        if not self.lines[-1] and lines_:
+            lines_ = indent + lines_
 
         for idx in range(1, len(lines)):
             if lines[idx]:
                 lines[idx] = indent + lines[idx]
-
-        self.lines[-1] += lines[0]
+        self.lines[-1] += lines_
         self.lines.extend(lines[1:])
 
     def write_markup_start(
-        self,
-        node: Node,
-        name: str,
+            self,
+            node: Node,
+            name: str,
     ) -> None:
         if isinstance(node.parent, nodes.substitution_definition):
             self.write(f"{name}::")
@@ -322,9 +324,9 @@ class RstTranslator(nodes.NodeVisitor):
             self.write(f".. {name}::")
 
     def write_attributes(
-        self,
-        node: Node,
-        attrs: Tuple[Union[str, _AttrKind], ...],
+            self,
+            node: Node,
+            attrs: Tuple[Union[str, _AttrKind], ...],
     ) -> None:
         wrote_any = False
         if isinstance(node.parent, nodes.reference):
@@ -374,30 +376,30 @@ class RstTranslator(nodes.NodeVisitor):
                 wrote_any = True
 
                 if kind.flag:
-                    self.write("\n")
+                    self.write(self.nl)
                 else:
                     self.write(f" {value}\n")
 
         if wrote_any:
-            self.write("\n\n")
+            self.write(self.nl + self.nl)
         else:
-            self.write("\n")
+            self.write(self.nl)
 
     def visit_document(self, node: Node) -> None:
         pass
 
     def depart_document(self, node: Node) -> None:
         if self.extra_substitutions:
-            self.write("\n\n")
+            self.write(self.nl + self.nl)
 
             for name, (value, dest) in self.extra_substitutions.items():
                 self.write(f".. |{name}| replace:: {value}\n")
                 if dest is not None:
                     self.write(f".. _{name}: {dest}\n")
-                self.write("\n")
+                self.write(self.nl)
 
         if self.extra_roles:
-            self.write("\n\n")
+            self.write(self.nl + self.nl)
 
             for classes, name in self.extra_roles.items():
                 self.write(f".. role:: {name}\n")
@@ -405,20 +407,20 @@ class RstTranslator(nodes.NodeVisitor):
                 class_str = " ".join(classes)
                 self.write(f":class: {class_str}\n")
                 self.indent -= 3
-                self.write("\n")
+                self.write(self.nl)
 
     def visit_paragraph(self, node: Node) -> None:
         pass
 
     def depart_paragraph(self, node: Node) -> None:
-        self.write("\n\n")
+        self.write(self.nl + self.nl)
 
     def visit_compound(self, node: Node) -> None:
         self.write(".. compound::\n\n")
         self.indent += 3
 
     def depart_compound(self, node: Node) -> None:
-        self.write("\n\n")
+        self.write(self.nl + self.nl)
         self.indent -= 3
 
     def needs_space(self, node: Node) -> bool:
@@ -462,19 +464,37 @@ class RstTranslator(nodes.NodeVisitor):
         self.indent -= 3
 
     def visit_strong(self, node: Node) -> None:
-        self.write("**")
+        l = len(self.lines[-1])
+        if l == 0 and len(self.lines) > 0:
+            self.write("**")
+        elif l > 0 and self.lines[-1][l - 1] in [' ', '\n', '(', ' ', '/']:
+            self.write("**")
+        else:
+            self.write(" **")
 
     def depart_strong(self, node: Node) -> None:
         self.write("**")
 
     def visit_literal(self, node: Node) -> None:
-        self.write("``")
+        l = len(self.lines[-1])
+        if l == 0 and len(self.lines) > 0:
+            self.write("``")
+        elif l > 0 and self.lines[-1][l - 1] in [' ', '\n', '(', ' ', '/']:
+            self.write("``")
+        else:
+            self.write(" ``")
 
     def depart_literal(self, node: Node) -> None:
         self.write("``")
 
     def visit_emphasis(self, node: Node) -> None:
-        self.write("*")
+        l = len(self.lines[-1])
+        if l == 0 and len(self.lines) > 0:
+            self.write("*")
+        elif l > 0 and self.lines[-1][l - 1] in [' ', '\n', '(', ' ', '/']:
+            self.write("*")
+        else:
+            self.write(" *")
 
     def depart_emphasis(self, node: Node) -> None:
         self.write("*")
@@ -495,7 +515,7 @@ class RstTranslator(nodes.NodeVisitor):
         pass
 
     def depart_term(self, node: Node) -> None:
-        self.write("\n")
+        self.write(self.nl)
 
     def visit_definition(self, node: Node) -> None:
         self.indent += 3
@@ -507,13 +527,13 @@ class RstTranslator(nodes.NodeVisitor):
         pass
 
     def depart_bullet_list(self, node: Node) -> None:
-        self.write("\n")
+        self.write(self.nl)
 
     def visit_enumerated_list(self, node: Node) -> None:
         pass
 
     def depart_enumerated_list(self, node: Node) -> None:
-        self.write("\n")
+        self.write(self.nl)
 
     def visit_list_item(self, node: Node) -> None:
         item = _ListItem(node)
@@ -525,13 +545,13 @@ class RstTranslator(nodes.NodeVisitor):
         item = _ListItem(node)
         formatted = item.format() + " "
         self.indent -= len(formatted)
-        self.write("\n")
+        self.write(self.nl)
 
     def visit_field_list(self, node: Node) -> None:
         pass  # TODO
 
     def depart_field_list(self, node: Node) -> None:
-        self.write("\n")
+        self.write(self.nl)
 
     def visit_field(self, node: Node) -> None:
         pass  # TODO
@@ -552,9 +572,9 @@ class RstTranslator(nodes.NodeVisitor):
         self.indent -= 3
 
     def visit_literal_block(
-        self,
-        node: Node,
-        language: Optional[str] = None,
+            self,
+            node: Node,
+            language: Optional[str] = None,
     ) -> None:
         # TODO: Make this more robust
         is_code = "code" in node["classes"]
@@ -567,7 +587,7 @@ class RstTranslator(nodes.NodeVisitor):
         else:
             lang = ""
 
-        number_lines = "\n"
+        number_lines = self.nl
 
         if not is_code:
             is_code = not all(isinstance(c, nodes.Text) for c in node.children)
@@ -575,9 +595,9 @@ class RstTranslator(nodes.NodeVisitor):
         if isinstance(node.children[0], nodes.inline):
             if "ln" in node.children[0]["classes"]:
                 number_lines = (
-                    "\n   :number-lines: "
-                    + str(node.children[0].children[0]).strip()
-                    + "\n"
+                        "\n   :number-lines: "
+                        + str(node.children[0].children[0]).strip()
+                        + self.nl
                 )
 
         if is_code:
@@ -588,7 +608,7 @@ class RstTranslator(nodes.NodeVisitor):
         self.allow_inlines.append(False)
 
     def depart_literal_block(self, node: Node) -> None:
-        self.write("\n\n")
+        self.write(self.nl + self.nl)
         self.indent -= 3
         allowed = self.allow_inlines.pop()
         assert not allowed
@@ -597,7 +617,7 @@ class RstTranslator(nodes.NodeVisitor):
         pass
 
     def depart_option_list(self, node: Node) -> None:
-        self.write("\n")
+        self.write(self.nl)
 
     def visit_option_group(self, node: Node) -> None:
         pass
@@ -632,7 +652,7 @@ class RstTranslator(nodes.NodeVisitor):
         pass
 
     def visit_description(self, node: Node) -> None:
-        self.write("\n")
+        self.write(self.nl)
         self.indent += 3
 
     def depart_description(self, node: Node) -> None:
@@ -669,7 +689,7 @@ class RstTranslator(nodes.NodeVisitor):
         # TODO: Account for ellipsis/strong/... in title length
         length = sum(len(str(x)) for x in node.children)
         underline = self.title_underline[self.section_depth] * length
-        self.write("\n" + underline + "\n")
+        self.write(self.nl + underline + self.nl)
 
     def visit_image(self, node: Node) -> None:
         if "uri" in node:
@@ -723,6 +743,7 @@ class RstTranslator(nodes.NodeVisitor):
             )
 
     def visit_target(self, node: Node) -> None:
+
         if node.children:
             self.write("_`")
         else:
@@ -746,7 +767,7 @@ class RstTranslator(nodes.NodeVisitor):
         if node.children:
             self.write("`")
         else:
-            self.write("\n\n")
+            self.write(self.nl + self.nl)
 
     def visit_note(self, node: Node) -> None:
         self.write(f".. {node.tagname}:: ")
@@ -762,6 +783,7 @@ class RstTranslator(nodes.NodeVisitor):
     visit_tip = visit_note
     visit_warning = visit_note
 
+    #
     def depart_note(self, node: Node) -> None:
         self.indent -= 3
 
@@ -820,7 +842,7 @@ class RstTranslator(nodes.NodeVisitor):
             self.write("replace:: ")
 
     def depart_substitution_definition(self, node: Node) -> None:
-        self.write("\n")
+        self.write(self.nl)
         self.write_attributes(
             node,
             (_AttrKind("ltrim", flag=True), _AttrKind("rtrim", flag=True)),
@@ -897,7 +919,7 @@ class RstTranslator(nodes.NodeVisitor):
 
     def depart_comment(self, node: Node) -> None:
         self.indent -= 3
-        self.write("\n\n")
+        self.write(self.nl + self.nl)
 
     def visit_line_block(self, node: Node) -> None:
         self.line_block_indent += 1
@@ -906,7 +928,7 @@ class RstTranslator(nodes.NodeVisitor):
         assert self.line_block_indent >= 1
         self.line_block_indent -= 1
         if not isinstance(node.parent, nodes.line_block):
-            self.write("\n")
+            self.write(self.nl)
 
     def visit_line(self, node: Node) -> None:
         prefix = "|" + (" " * self.line_block_indent)
@@ -915,13 +937,13 @@ class RstTranslator(nodes.NodeVisitor):
 
     def depart_line(self, node: Node) -> None:
         self.indent -= self.line_block_indent + 1
-        self.write("\n")
+        self.write(self.nl)
 
     def visit_doctest_block(self, node: Node) -> None:
         pass
 
     def depart_doctest_block(self, node: Node) -> None:
-        self.write("\n\n")
+        self.write(self.nl + self.nl)
 
     def visit_table(self, node: Node) -> None:
         self.write(".. table::")
@@ -934,7 +956,7 @@ class RstTranslator(nodes.NodeVisitor):
             children[0].walkabout(self)
             children = children[1:]
 
-        self.write("\n")
+        self.write(self.nl)
 
         # TODO: Implement stub columns
 
@@ -956,7 +978,7 @@ class RstTranslator(nodes.NodeVisitor):
         raise nodes.SkipChildren
 
     def depart_table(self, node: Node) -> None:
-        self.write("\n\n")
+        self.write(self.nl + self.nl)
         self.indent -= 3
 
     def visit_tgroup(self, node: Node) -> None:
@@ -975,7 +997,7 @@ class RstTranslator(nodes.NodeVisitor):
     def depart_tgroup(self, node: Node) -> None:
         assert self.table is not None
         # TODO: Write the table I guess?
-        rendered = "\n".join(self.table.render())
+        rendered = self.nl.join(self.table.render())
         self.table = None
         self.write(rendered)
 
@@ -989,7 +1011,7 @@ class RstTranslator(nodes.NodeVisitor):
         assert self.table is not None
         assert not self.table.in_header
         self.table.in_header = True
-        self.write("\n\n")
+        self.write(self.nl + self.nl)
 
     def depart_thead(self, node: Node) -> None:
         assert self.table is not None
@@ -1000,7 +1022,7 @@ class RstTranslator(nodes.NodeVisitor):
         if self.lines[-1]:
             # XXX: Need to write newlines after `.. table::` if there isn't a
             #      `thead` element.
-            self.write("\n\n")
+            self.write(self.nl + self.nl)
 
     def depart_tbody(self, node: Node) -> None:
         pass  # TODO
@@ -1099,7 +1121,7 @@ class RstTranslator(nodes.NodeVisitor):
         self.indent += 3
 
     def depart_math_block(self, node: Node) -> None:
-        self.write("\n\n")
+        self.write(self.nl + self.nl)
         self.indent -= 3
 
     def visit_topic(self, node: Node) -> None:
@@ -1113,7 +1135,7 @@ class RstTranslator(nodes.NodeVisitor):
             children[0].walkabout(self)
             children = children[1:]
 
-        self.write("\n\n")
+        self.write(self.nl + self.nl)
 
         for child in children:
             if isinstance(child, nodes.title):
@@ -1124,5 +1146,5 @@ class RstTranslator(nodes.NodeVisitor):
         raise nodes.SkipChildren
 
     def depart_topic(self, node: Node) -> None:
-        self.write("\n\n")
+        self.write(self.nl + self.nl)
         self.indent -= 3

@@ -6,7 +6,7 @@ What is Qubes OS?
 ----------------
 
 Qubes OS is a free and open-source, security-oriented operating system for
-single-user desktop computing. Qubes OS `leverages Xen-based virtualization <https://wiki.xen.org/wiki/Xen_Project_Software_Overview>`__ to allow for the creation and management of `isolated compartments called :ref:`qubes </user/reference/glossary:qube>`.
+single-user desktop computing. Qubes OS `leverages Xen-based virtualization <https://wiki.xen.org/wiki/Xen_Project_Software_Overview>`__ to allow for the creation and management of isolated compartments called :ref:`qubes <user/reference/glossary:qube>`.
 
 
 These qubes, which are implemented as :ref:`virtual machines VMs</doc/glossary:vm>`, have specific:
@@ -133,6 +133,7 @@ that people make mistakes, and it allows you to protect yourself from your
 own mistakes. It's a place where you can click on links, open attachments,
 plug in devices, and install software free from worry. It's a place where
 **you** have control over your software, not the other way around.
+(See some :doc:`examples of how different types of users organize their qubes </user/how-to-guides/how-to-organize-your-qubes>`.)
 
 Qubes is also powerful. Organizations like the `Freedom of the Press Foundation <https://securedrop.org/news/piloting-securedrop-workstation-qubes-os>`__, 
 `Mullvad <https://twitter.com/mullvadnet/status/631010362083643392>`__,

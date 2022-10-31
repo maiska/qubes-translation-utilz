@@ -58,6 +58,8 @@ Core documentation for Qubes users.
 
 ### How-to guides
 
+
+ * [How to organize your qubes](/doc/how-to-organize-your-qubes/)
  * [How to update](/doc/how-to-update/)
  * [How to back up, restore, and migrate](/doc/how-to-back-up-restore-and-migrate/)
  * [How to copy and paste text](/doc/how-to-copy-and-paste-text/)

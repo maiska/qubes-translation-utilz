@@ -57,7 +57,6 @@ The calls
 
 The API should be implemented as a set of qrexec calls. This is to make
 it easy to set the policy using current mechanism.
- :doc:`View this table on a fullscreen page. </developer/services/admin-api-table>`
 
 
 .. list-table:: i
@@ -587,8 +586,6 @@ it easy to set the policy using current mechanism.
      - `-`
      - ``vm-stats`` events, see below
      - emit VM statistics (CPU, memory usage) in form of events
-
-:doc:`View this table on a fullscreen page. </developer/services/admin-api-table>`
 
 
 Volume properties:

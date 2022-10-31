@@ -137,7 +137,7 @@ class Permalinks2Filepath:
         return self.md_permalinks_and_redirects_to_filepath_mapping_pages
 
 
-def get_section_mappings(toc_list):
+def get_section_mappings(toc_list: list) -> dict:
     result = {}
     for item in toc_list:
         if isinstance(item, dict) and 'children' in item.keys() and len(item['children']) > 0:

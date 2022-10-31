@@ -9,14 +9,13 @@ COPY_FROM_DIR = 'copy_from_dir'
 MD_FILE_NAMES = 'md_file_names'
 RST_CONFIG_FILES = "rst_config_files"
 RST_FILES = 'rst_files'
-DIRECTORY_TO_REMOVE = "directory_to_remove"
+DIRECTORIES_TO_REMOVE = "directories_to_remove"
 FILES_TO_REMOVE = 'files_to_remove'
 SKIP_FILES = 'skip_files'
 
 SVG = 'svg'
 # ------
 SVG_FILES_TO_PNG = 'svg_files_to_png'
-PNG_IN_RST_FILES = 'replace_svg_with_png_in_rst_files'
 
 RUN = 'run'
 # ------
@@ -31,15 +30,12 @@ QUBES_RST = 'qubes_rst'
 SVG_PNG_CONVERSION_REPLACEMENT = 'svg_png_conversion_replacement'
 HANDLE_LEFTOVER_MARKDOWN_LINKS = 'markdown_links_leftover'
 
-REDIRECT_MARKDOWN = 'redirect_markdown'
-
-URL_MAPPING = 'url_mapping'
+GIT = 'git'
 # ------
-SAVE_TO_JSON = 'save_to_json'
-DUMP_DIRECTORY = 'dump_directory_name'
-DUMP_PAGES_FILENAME = 'dump_pages_filename'
-DUMP_DOCS_FILENAME = 'dump_docs_filename'
-DUMP_EXTERNAL_FILENAME = 'dump_external_filename'
+ORIGIN_URL = 'origin_url'
+ATTACHMENT_URL = 'attachment_url'
+
+REDIRECT_MARKDOWN = 'redirect_markdown'
 
 TEST = 'test'
 # ------
@@ -72,7 +68,6 @@ PATTERN_MD_EXTERNAL_LINKS = '(\[[\w#@\d\s\“\”\[\]\_\)\(/\.\’&:,\\-]{1,50}\
 PATTERN_MD_EXTERNAL_LINKS_SPACEY = '(\[[\w#@\d\s\“\”\[\]\_\)\(/\.\’&:,\\-]{1,50}\])(\(https{0,1}:/(/[\w\.\-\/\d]{1,50}){1,10}\s\))'
 
 PATTERN_MD_MAILTO_LINKS = '(\[(.*)\])(\(mailto:(.*@.*)\))'
-# PATTERN_MD_MAILTO_LINKS = '(\[.*\])(\(mailto:(.*@.*)\))'
 
 PATTERN_STRIKEOUT_1 = '((~\[STRIKEOUT:)(.*)(\]~))'
 PATTERN_STRIKEOUT_2 = '((\[STRIKEOUT:)(.*)(\]))'

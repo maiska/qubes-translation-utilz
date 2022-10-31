@@ -45,10 +45,24 @@ def find_and_replace_external_md(data, external_md_links_found, found):
     return data, found
 
 
+def traverse_and_gather_section_ids_and_title(rst_document):
+    result = {}
+    for child in rst_document.children:
+        if isinstance(child, docutils.nodes.section):
+            for title in child.children:
+                if isinstance(title, docutils.nodes.title):
+                    result[child['ids'][0]] = title.astext()
+                    if len(child.children) > 0:
+                        result.update(traverse_and_gather_section_ids_and_title(child))
+                    else:
+                        return result
+        else:
+            result.update(traverse_and_gather_section_ids_and_title(child))
+    return result
+
+
 class RSTDirectoryPostProcessor:
     def __init__(self, rst_directory: str, qubes_rst_links_checker: CheckRSTLinks, files_to_skip: list) -> None:
-        if is_not_readable(rst_directory):
-            raise PermissionError("Directory could not be read")
         self.rst_directory = rst_directory
         self.qubes_rst_links_checker = qubes_rst_links_checker
         if files_to_skip is None:
@@ -66,6 +80,21 @@ class RSTDirectoryPostProcessor:
                 found = False
                 data, found = self.convert_leftover_markdown_links_in(data, found)
 
+                if found:
+                    write_to(data, filepath)
+
+    def search_replace_custom_links(self, links_to_replace: dict, file_pattern: str = '*.rst') -> None:
+        for path, dirs, files in os.walk(os.path.abspath(self.rst_directory)):
+            for filename in fnmatch.filter(files, file_pattern):
+                filepath = os.path.join(path, filename)
+                data = read_from(filepath)
+                found = False
+                for to_replace, replace_with in links_to_replace.items():
+                    if to_replace in data:
+                        data = data.replace(to_replace, replace_with)
+                        found = True
+                        logger.debug("Reading RST file %s and replacing custom strings markdown links", filepath)
+                        logger.debug("String to replace: [%s] with: [%s]", to_replace, replace_with)
                 if found:
                     write_to(data, filepath)
 
@@ -101,11 +130,9 @@ class RSTDirectoryPostProcessor:
         for path, dirs, files in os.walk(os.path.abspath(self.rst_directory)):
             for filename in fnmatch.filter(files, file_pattern):
                 filepath = os.path.join(path, filename)
-                # data = read_from(filepath)
-                # if '</doc/' in data: and all the oder cases such as <# etc.
                 if not os.path.basename(filepath) in self.rst_files_to_skip:
                     rst_file_postprocessor = RSTFilePostProcessor(filepath,
-                                                                  self.qubes_rst_links_checker)
+                                                                  self.qubes_rst_links_checker, self.rst_directory)
                     rst_file_postprocessor.find_and_qube_links()
 
     def parse_and_validate_rst(self, file_pattern: str = '*.rst') -> None:
@@ -119,13 +146,7 @@ class RSTDirectoryPostProcessor:
             url_name = item[0]
             external_url = item[1]
             found_string_phrase = url_name + external_url
-            perm = external_url[1:len(external_url) - 1]
-            filepath_map = self.md_doc_permalinks_and_redirects_to_filepath_map
-            to_filepath_map = self.md_pages_permalinks_and_redirects_to_filepath_map
-            redirects_map = self.external_redirects_map
-            check_rst_links = CheckRSTLinks(perm, filepath_map, to_filepath_map, redirects_map,
-                                            self.md_sections_ids_names_mapping, self.md_sections_ids_names_mapping)
-            url = check_rst_links.check_cross_referencing_escape_uri()
+            url = self.qubes_rst_links_checker.check_cross_referencing_escape_uri()
 
             if url.startswith('http') or url.startswith('ftp'):
                 url_name_to_replace = ' `' + url_name[1:len(url_name) - 1].strip().replace('`', '').replace(
@@ -144,18 +165,20 @@ class RSTDirectoryPostProcessor:
 
 
 class RSTFilePostProcessor:
-    def __init__(self, file_path: str, qubes_rst_links_checker) -> None:
+    def __init__(self, file_path: str, qubes_rst_links_checker, rst_directory) -> None:
         if not check_file(file_path):
-            raise ValueError("Directory parameter does not point to a directory")
+            raise ValueError("Directory parameter does not point to a directory: " + file_path)
+        if not check_file(rst_directory):
+            raise ValueError("Directory parameter does not point to a directory: " + rst_directory)
         if is_not_readable(file_path):
             raise PermissionError("Directory could not be read")
         self.file_path = file_path
         self.qubes_rst_links_checker = qubes_rst_links_checker
+        self.rst_directory = rst_directory
 
     def find_and_qube_links(self) -> None:
         rst_document = self.get_rst_document()
-
-        writer = QubesRstWriter(self.qubes_rst_links_checker)
+        writer = QubesRstWriter(self.qubes_rst_links_checker, self.rst_directory)
         self.write_rst_file(rst_document, writer)
 
     # noinspection PyUnresolvedReferences
