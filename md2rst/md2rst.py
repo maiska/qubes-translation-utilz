@@ -25,6 +25,7 @@ from qubesrstwriter2 import QubesRstWriter
 from rstqubespostprocessor import validate_rst_file, RSTDirectoryPostProcessor
 from utilz import get_mappings, convert_svg_to_png, is_not_readable, CheckRSTLinks
 
+
 basicConfig(level=DEBUG)
 logger = getLogger(__name__)
 
@@ -175,8 +176,8 @@ def run(config_toml: dict) -> None:
         logger.debug("------------------------------------------------")
         logger.debug("-------------------- REDIRECT_MARKDOWN ----------------------------")
         markdown_redirector = MarkdownRedirector(config_toml[MARKDOWN][ROOT_DIRECTORY],
-                                                 config_toml[MARKDOWN]['redirect_base_url'],
-                                                 config_toml[MARKDOWN]['excluded_files_from_redirect'])
+                                                 config_toml[MARKDOWN][REDIRECT_BASE_URL],
+                                                 config_toml[MARKDOWN][EXCLUDE_FILES_FROM_REDIRECT])
         markdown_redirector.traverse_insert_redirect_delete_content()
 
     if config_toml[TEST][RUN]:

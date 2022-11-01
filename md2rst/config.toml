@@ -20,17 +20,77 @@ author = "m"
 logfile = '/tmp/md2rst.log'
 
 [markdown]
-root_directory = '/home/user/qubes-translation-utilz/md2rst/refactor_test/TEST/markdown/qubesos.github.io.rtd'
-redirect_base_url = 'https://foo.bar' # TODO
+# the repository containing the current markdown documentation
+# it will be used to gather permalinks and relative paths, so that cross referencing
+# can be later done in the restructured text documentation
+# the markown _doc repository will be copied to the rst_directory for further processing as well
+root_directory = '/home/user/qubes-translation-utilz/md2rst/refactor_test/TEST/redirect-markdown/qubesos.github.io.rtd'
+#root_directory = '/home/user/qubes-translation-utilz/md2rst/refactor_test/TEST/markdown/qubesos.github.io.rtd'
+# redirect base url for the hosted rst documentation
+redirect_base_url = 'https://foo.bar'
+# markdown files not to emptied and redirected to new hosted RTD docs
+excluded_files_from_redirect = ['README.md', 'CONTRIBUTING.md', 'hcl.md', 'downloads.md',
+                                             'visual-style-guide.md', 'website-style-guide.md',
+                                             'how-to-edit-the-documentation.md',
+                                             'documentation-style-guide.md']
 
 [rst]
+# this directory will contain the converted rst documentation
+# whenever the 1st stage (look below) is executed it will be deleted and populated anew from the root_directory above
 rst_directory = '/home/user/qubes-translation-utilz/md2rst/refactor_test/TEST/rst-convert-monster-merge/qubes-rst/'
+# this is the directory containing rst relevant files such as requirements or configuration
+# to be blindly copied to rst_directory and thus used
 copy_from_dir = '/home/user/qubes-translation-utilz/md2rst/preparation/'
+# certain markdown files that need to be copied and overwrite existing markdown documentation
+# prior to converting to rst
+# after iterations it came down to just the written out documentation index
+# containing references to the separate files and external documentation
+# resides in copy_from_dir
+#----------------------------------------------------------------------
+# be careful before converting, make sure the contents is up to date and
+# satisfies the requirements
+#----------------------------------------------------------------------
 md_file_names = ['doc.md']
+# rst configurration specific files
+# reside in copy_from_dir
+#----------------------------------------------------------------------
+# be careful before converting, make sure the contents is up to date and
+# satisfies the requirements
+#----------------------------------------------------------------------
 rst_config_files = ['requirements.txt', 'conf.py', '.readthedocs.yaml']
+# rst specific files for which it was easier to create a manual representation
+# and just copy them
+# reside in copy_from_dir
+#----------------------------------------------------------------------
+# be careful before converting, make sure the contents is up to date and
+# satisfies the requirements !!!
+#----------------------------------------------------------------------
 rst_files = ['research.rst', 'intro.rst', 'admin-api.rst']
+# certain files to skip from post processing and cross referencing
+# links because either they do not have any (gui.rst)
+# or are already converted and prepared (the rest of the files)
+# these files will be skipped ALWAYS
+#----------------------------------------------------------------------
+# be careful before converting, make sure the contents is up to date and
+# satisfies the requirements
+#----------------------------------------------------------------------
 skip_files = ['gui.rst', 'research.rst', 'intro.rst', 'admin-api.rst']
+# external empty files because they already are refered to via the index
+# and are hosted externally
+#----------------------------------------------------------------------
+# be careful before converting, make sure the contents is up to date and
+# satisfies the requirements
+#----------------------------------------------------------------------
 directories_to_remove = ['external']
+# files such as previous obsolete markdown documentaion build relevant configuration
+# git configuration
+# and some other files I for a reason deemed obsolete (either developer documentation)
+# or such that is not relevant any more
+# !!!!!!!!! please take a second look
+#----------------------------------------------------------------------
+# be careful before converting, make sure the contents is up to date and
+# satisfies the requirements
+#----------------------------------------------------------------------
 files_to_remove = [
     '.git',
     '.gitlab-ci.yml',
@@ -50,6 +110,11 @@ origin_url = 'https://github.com/maiska/qubes-rst.git'
 attachment_url = 'https://github.com/maiska/qubes-attachment.rtd.git'
 
 [svg]
+# originally there was a problem with svg images when rendering latex offline documentation
+# this is the motivation why the following svgs are automactically converted to png
+# then the svg referals in the documentation are replaced with the newly generated png ones
+# and placed into the attachment submodule
+# if their png variants exist, please ignore and set svg_png_conversion_replacement to false
 svg_files_to_png = ['admin-api-architecture.svg', 'u2f.svg', 'update_table-20140424-170010.svg', 'release-cycle.svg']
 
 [run]
@@ -57,39 +122,71 @@ svg_files_to_png = ['admin-api-architecture.svg', 'u2f.svg', 'update_table-20140
 md_map = true
 
 #####################
-# 1-st stage all true
+# 1-st stage
+# please set all the keys
+# to true in this section
 #####################
-pypandoc = true
+# initially converts markdown to rst via pandoc
 #pypandoc = false
+pypandoc = true
 #copy_md_files = false
+# if the markdown files from md_file_names should be copied or not
 copy_md_files = true
 #copy_rst_files = false
-copy_rst_files = true
+# if the rst files from rst_files should be copied or not
+#copy_rst_files = true
+# if the rst dirs from directories_to_remove should be deleted or not
 #remove_rst_directory = false
 remove_rst_directory = true
+# if the rst files from files_to_remove should be deleted or not
 #remove_rst_files = false
 remove_rst_files = true
 
 ####################
 # 2nd stage all true
+# please set all the keys
+# to true in this section
 ####################
+# if prior to further processing the converted rst documentation via pandoc
+# should be parseed and validated first
+# the usual suspects are 2:
+#1. developer/building/development-workflow.rst, l. 168, l. 241, l. 321 with
+# with a needed modification from -------- to ~~~~~~~ for the section separators
+#2. developer/system/template-implementation.rst, l. 111, l. 132 with
+# with a needed modification from ~~~~~~~ to -------- for the section separators
 docutils_validate = false
 #docutils_validate = true
+# fix the broken cross referenced links between the different documentaion files
 qubes_rst = false
 #qubes_rst = true
+# whether or not to initialize the newly converted rst documentaion repository
+# and add the attachment submodule
+# either way attachment should be present in the rst-doc repository
+# so that all the referenced images can be found and displayed
+# see svg above
 git_init = false
 #git_init = true
+# whether or not the convert certain svg to png
+# see git above
 svg_png_conversion_replacement = false
 #svg_png_conversion_replacement = true
+# unfortunately not all markdown links are converted via pandoc
+# several leftovers are being handled with regular expressions
+# see config_constants.py
 markdown_links_leftover = false
 #markdown_links_leftover = true
+# simple search and replace
+# see replace_custom_strings_values
 replace_custom_strings = false
 #replace_custom_strings = true
 
+#[stage_three]
 ###########
-# TODO test for bugs
 # 3rd stage
 ###########
+# empty all relevant markdown files and
+# add a redirection to the current rst documentation
+# see redirect_base_url
 redirect_markdown = false
 #redirect_markdown = true
 
@@ -108,6 +205,9 @@ redirect_markdown = false
 ':ref:`download mirrors <user/downloading-installing-upgrading/downloads:mirrors>`' = '`download mirrors <https://www.qubes-os.org/downloads/#mirrors>__'
 ':doc:`Qubes News RSS feed <https://www.qubes-os.org/feed.xml>`' = '`Qubes News RSS feed <https://www.qubes-os.org/feed.xml>`'
 
+
+# for debug purposes for difficult files
+# now obsolete
 [test]
 run = false
 #run = true

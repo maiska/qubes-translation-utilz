@@ -1,6 +1,8 @@
 MARKDOWN = 'markdown'
 # ------
 ROOT_DIRECTORY = 'root_directory'
+REDIRECT_BASE_URL = 'redirect_base_url'
+EXCLUDE_FILES_FROM_REDIRECT = 'excluded_files_from_redirect'
 
 RST = 'rst'
 # ------
