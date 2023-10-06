@@ -17,13 +17,15 @@ version = "1.0.0"
 author = "m"
 
 [markdown]
-root_directory = '/home/user/qubes-translation-utilz/md2rst/refactor_test/TEST/markdown/qubesos.github.io.rtd'
+root_directory = '/home/user/qubes/convert/markdown/qubesos.github.io'
 redirect_base_url = 'https://foo.bar' # TODO
 
 [rst]
 # TODO delete if we are going with just one directory
-rst_directory = '/home/user/qubes-translation-utilz/md2rst/refactor_test/TEST/rst-convert/qubesos.github.io.rtd/_doc/'
-copy_from_dir = '/home/user/qubes-translation-utilz/md2rst/preparation/' # TODO nice to have
+rst_directory = '/home/user/qubes/convert/rst-convert/qubesos.github.io/_doc/'
+
+copy_from_dir = '/home/user/qubes/tools/qubes-translation-utilz/md2rst/resources/' # TODO WTF 
+#copy_from_dir = '/home/user/qubes/md2rst/preparation/' # TODO WTF 
 md_file_names = ['doc.md'] # TODO nice to have
 # files that should remain in md, to be moved to qubesos.github.io repo
 skip_md = ['user/downloading-installing-upgrading/downloads.md', 'user/hardware/hcl.md', 'introduction/intro.md', 'introduction/privacy.md', 'introduction/code-of-conduct.md', 'introdution/statistics.md', 'user/hardware/community-recommended-hardware.rst', 'developer/building/qubes-template-configs.rst', 'developer/general/visual-style-guide.rst']
@@ -40,22 +42,23 @@ replace_svg_with_png_in_rst_files = true
 [run]
 md_map = true
 
-pypandoc = false
-#pypandoc = true
-copy_md_files = false
-#copy_md_files = true
-copy_rst_files = false
-#copy_rst_files = true
-remove_rst_directory = false
-#remove_rst_directory = true
-remove_hidden_files = false
-#remove_hidden_files = true
+#pypandoc = false
+pypandoc = true
+#copy_md_files = false
+copy_md_files = true
+#copy_rst_files = false
+copy_rst_files = true
+#remove_rst_directory = false
+remove_rst_directory = true
+#remove_hidden_files = false
+remove_hidden_files = true
 
 docutils_validate = false
 #docutils_validate = true
 #
 
 sphinx_refs = true
+# no sphinx-build but sphinx-autobuild which does watch and does  not end itself TODO
 #sphinx_refs = false
 
 qubes_rst = false
@@ -63,17 +66,17 @@ qubes_rst = false
 
 svg_png_conversion_replacement = false
 #svg_png_conversion_replacement = true
-#markdown_links_leftover = false # TODO
-markdown_links_leftover = true # TODO
+markdown_links_leftover = false # TODO
+#markdown_links_leftover = true # TODO
 redirect_markdown = false # TODO
 
 #git reset --hard && find . ! -not -name 'README.md' -o ! -not -name 'CONTRIBUTING.md' -o -type f -name '*.rst' -delete
 
 
 [url_mapping]
-save_to_json = false
-#save_to_json = true
-dump_directory_name = '/home/user/qubes-translation-utilz/md2rst/refactor_test/md-dump/'
+#save_to_json = false
+save_to_json = true
+dump_directory_name = '/home/user/qubes/convert/md-dump/'
 dump_external_filename = 'external_redirects_mappings.json'
 dump_docs_filename = 'md_doc_permalinks_and_redirects_to_filepath_map.json'
 dump_pages_filename = 'md_pages_permalinks_and_redirects_to_filepath_map.json'
@@ -86,9 +89,11 @@ output = 'mapping.txt'
 logfile = '/tmp/md2rst.log'
 
 [test]
-#run = false
-run = true
-validate = true
+run = false
+#run = true
+
+#validate = true
+validate = false
 
 #file_name = '/home/user/testingfilez/qubes-template-configs.rst' # TODO empty?
 #file_name = '/home/user/testingfilez/source-code.rst'
