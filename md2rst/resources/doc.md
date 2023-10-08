@@ -50,14 +50,15 @@ Core documentation for Qubes users.
  * [Download Qubes OS](https://www.qubes-os.org/downloads/)
  * [Download mirrors](https://www.qubes-os.org/downloads/mirrors/)
  * [Installation guide](/doc/installation-guide/)
- * [Installation security](/doc/installation-guide/)
- * [Custom installation](/doc/custom-install/)
+ * [Installation security](/doc/install-security/)
  * [Upgrade guides](/doc/upgrade/)
  * [Supported releases](/doc/supported-releases/)
  * [Testing new releases and updates](/doc/testing/)
 
 ### How-to guides
 
+
+ * [How to organize your qubes](/doc/how-to-organize-your-qubes/)
  * [How to update](/doc/how-to-update/)
  * [How to back up, restore, and migrate](/doc/how-to-back-up-restore-and-migrate/)
  * [How to copy and paste text](/doc/how-to-copy-and-paste-text/)
@@ -113,8 +114,7 @@ Core documentation for Qubes users.
  * [U2F proxy](/doc/u2f-proxy/)
  * [YubiKey](/doc/yubi-key/)
 
-### Advanced Configuration
-
+### Advanced Topics
 
  * [How to install software in dom0](/doc/how-to-install-software-in-dom0/)
  * [Volume backup and revert](/doc/volume-backup-revert/)
@@ -125,7 +125,7 @@ Core documentation for Qubes users.
  * [USB qubes](/doc/usb-qubes/)
  * [Managing qube kernels](/doc/managing-vm-kernel/)
  * [Salt (management software)](/doc/salt/)
- * [GuiVM Configuration](/doc/guivm-configuration/)
+ * [GUI domain](/doc/gui-domain/)
  * [Disposable customization](/doc/disposablevm-customization/)
  * [Installing contributed packages](/doc/installing-contributed-packages/)
  * [How to make any file persistent (bind-dirs)](/doc/bind-dirs/)
@@ -181,9 +181,9 @@ Core documentation for Qubes developers and advanced users.
  * [Architecture](/doc/architecture/)
  * [Security design goals](/doc/security-design-goals/)
  * [Security-critical code](/doc/security-critical-code/)
- * [Qubes core admin](https://dev.qubes-os.org/projects/core-admin/en/latest/)
- * [Qubes core admin client](https://dev.qubes-os.org/projects/core-admin-client/en/latest/)
- * [Qubes core stack](https://www.qubes-os.org/news/2017/10/03/core3/)
+ * [Qubes core admin](/doc/qubes-core-admin/)
+ * [Qubes core admin client](/doc/qubes-core-admin-client/)
+ * [Qubes core stack](/doc/qubes-core-stack/)
  * [GUI virtualization](/doc/gui/)
  * [Networking](/doc/networking/)
  * [Template implementation](/doc/template-implementation/)
@@ -195,6 +195,7 @@ Core documentation for Qubes developers and advanced users.
 
  * [Inter-qube file copying (qfilecopy)](/doc/qfilecopy/)
  * [Qubes memory manager (qmemman)](/doc/qmemman/)
+ * [Disposable implementation](/doc/disposablevm-implementation/)
  * [Dom0 secure updates](/doc/dom0-secure-updates/)
  * [Qrexec: secure communication across domains](/doc/qrexec/)
  * [Qrexec v2 (deprecated)](/doc/qrexec2/)
@@ -204,7 +205,6 @@ Core documentation for Qubes developers and advanced users.
  * [Qfileexchgd (deprecated)](/doc/qfileexchgd/)
 
 ### Debugging
-
 
  * [How to set up a test bench](/doc/test-bench/)
  * [Automated tests](/doc/automated-tests/)

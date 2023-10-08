@@ -51,7 +51,6 @@ Core documentation for Qubes users.
  * [Download mirrors](https://www.qubes-os.org/downloads/mirrors/)
  * [Installation guide](/doc/installation-guide/)
  * [Installation security](/doc/install-security/)
- * [Custom installation](/doc/custom-install/)
  * [Upgrade guides](/doc/upgrade/)
  * [Supported releases](/doc/supported-releases/)
  * [Testing new releases and updates](/doc/testing/)
@@ -115,8 +114,7 @@ Core documentation for Qubes users.
  * [U2F proxy](/doc/u2f-proxy/)
  * [YubiKey](/doc/yubi-key/)
 
-### Advanced topics
-
+### Advanced Topics
 
  * [How to install software in dom0](/doc/how-to-install-software-in-dom0/)
  * [Volume backup and revert](/doc/volume-backup-revert/)
@@ -127,7 +125,7 @@ Core documentation for Qubes users.
  * [USB qubes](/doc/usb-qubes/)
  * [Managing qube kernels](/doc/managing-vm-kernel/)
  * [Salt (management software)](/doc/salt/)
- * [GuiVM Configuration](/doc/guivm-configuration/)
+ * [GUI domain](/doc/gui-domain/)
  * [Disposable customization](/doc/disposablevm-customization/)
  * [Installing contributed packages](/doc/installing-contributed-packages/)
  * [How to make any file persistent (bind-dirs)](/doc/bind-dirs/)
@@ -183,9 +181,9 @@ Core documentation for Qubes developers and advanced users.
  * [Architecture](/doc/architecture/)
  * [Security design goals](/doc/security-design-goals/)
  * [Security-critical code](/doc/security-critical-code/)
- * [Qubes core admin](https://dev.qubes-os.org/projects/core-admin/en/latest/)
- * [Qubes core admin client](https://dev.qubes-os.org/projects/core-admin-client/en/latest/)
- * [Qubes core stack](https://www.qubes-os.org/news/2017/10/03/core3/)
+ * [Qubes core admin](/doc/qubes-core-admin/)
+ * [Qubes core admin client](/doc/qubes-core-admin-client/)
+ * [Qubes core stack](/doc/qubes-core-stack/)
  * [GUI virtualization](/doc/gui/)
  * [Networking](/doc/networking/)
  * [Template implementation](/doc/template-implementation/)
@@ -207,7 +205,6 @@ Core documentation for Qubes developers and advanced users.
  * [Qfileexchgd (deprecated)](/doc/qfileexchgd/)
 
 ### Debugging
-
 
  * [How to set up a test bench](/doc/test-bench/)
  * [Automated tests](/doc/automated-tests/)

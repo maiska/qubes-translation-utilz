@@ -5,6 +5,10 @@ build:
   tools:
     python: "3.10"
 
+submodules:
+  include: all
+  recursive: true
+
 sphinx:
   builder: html
   configuration: conf.py
@@ -14,8 +18,8 @@ python:
   install:
    - requirements: requirements.txt
 
-     #formats:
-     #- pdf
-     #- epub
+formats:
+- pdf
+- epub
 
 
