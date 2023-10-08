@@ -1,5 +1,6 @@
 import codecs
 import fnmatch
+import logging
 import os
 import re
 from logging import basicConfig, getLogger, DEBUG
@@ -104,6 +105,14 @@ class RSTDirectoryPostProcessor:
                                                           self.external_redirects_map,
                                                           labels,
                                                           self.rst_directory)
+                logging.info("RSTFilePostProcessor initialized: md_doc_permalinks_and_redirects_to_filepath_map: [%s]" +
+                             ", md_pages_permalinks_and_redirects_to_filepath_map: [%s], external_redirects_map: [%s]," +
+                             ", labels = [%s], rst_dir = [%s]",
+                             self.md_doc_permalinks_and_redirects_to_filepath_map,
+                             self.md_pages_permalinks_and_redirects_to_filepath_map,
+                             self.external_redirects_map,
+                             labels,
+                             self.rst_directory)
                 rstfilepostprocesr.find_and_qube_links()
 
     def parse_and_validate_rst(self, file_pattern: str = '*.rst') -> None:
@@ -118,11 +127,17 @@ class RSTFilePostProcessor:
                  md_pages_permalinks_and_redirects_to_filepath_map: dict, external_redirects_map: dict,
                  internal_labels: dict,
                  rst_directory: str) -> None:
+        if not check_file(rst_directory):
+            print(rst_directory)
+            raise ValueError("Directory parameter does not point to a directory")
+        if is_not_readable(rst_directory):
+            raise PermissionError("Directory could not be read")
+        self.rst_directory = rst_directory
         if not check_file(file_path):
             print(file_path)
-            raise ValueError("Directory parameter does not point to a directory")
+            raise ValueError("file_path parameter does not point to a file_path")
         if is_not_readable(file_path):
-            raise PermissionError("Directory could not be read")
+            raise PermissionError("file_path could not be read")
         self.file_path = file_path
         if is_dict_empty(md_pages_permalinks_and_redirects_to_filepath_map):
             raise ValueError("md_pages_permalinks_and_redirects_to_filepath_map is not set")
@@ -148,6 +163,7 @@ class RSTFilePostProcessor:
                                 self.external_redirects_map,
                                 self.internal_labels,
                                 rst_directory=self.rst_directory)
+        logging.info("Current rst_document = [%s]", rst_document)
         self.write_rst_file(rst_document, writer)
 
     def get_rst_document(self):

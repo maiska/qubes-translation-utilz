@@ -16,7 +16,7 @@ logger = getLogger(__name__)
 
 
 def check_file(filename: str) -> bool:
-    return os.path.exists(filename) and os.path.getsize(filename) > 0
+    return os.path.exists(filename) #and os.path.getsize(filename) > 0
 
 
 def is_not_readable(path):
@@ -178,6 +178,8 @@ class CheckRSTLinks:
 
         doc_name = self.get_path_from_md_internal_mapping(uri, 'doc').lstrip('/')
         if uri == '':
+            print(f'self.docname [%s]----------------------1111111111111', self.docname)
+            print(f'self.internal_labels [%s]----------------------222222222222222', self.internal_labels)
             target_labels = self.internal_labels[self.docname]
         elif doc_name in self.internal_labels:
             target_labels = self.internal_labels[doc_name]

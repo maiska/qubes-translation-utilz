@@ -51,24 +51,9 @@ Downloading, Installing, and Upgrading Qubes
   Download mirrors <https://www.qubes-os.org/downloads/mirrors/>
   /user/downloading-installing-upgrading/installation-guide
   /user/downloading-installing-upgrading/install-security
-  /user/downloading-installing-upgrading/custom-install
   /user/downloading-installing-upgrading/upgrade/upgrade
   /user/downloading-installing-upgrading/supported-releases
   /user/downloading-installing-upgrading/testing
-
-.. toctree::
-  :maxdepth: 1
-  :hidden:
-
-  /user/downloading-installing-upgrading/upgrade/2
-  /user/downloading-installing-upgrading/upgrade/2b1
-  /user/downloading-installing-upgrading/upgrade/2b2
-  /user/downloading-installing-upgrading/upgrade/2b3
-  /user/downloading-installing-upgrading/upgrade/3_0
-  /user/downloading-installing-upgrading/upgrade/3_1
-  /user/downloading-installing-upgrading/upgrade/3_2
-  /user/downloading-installing-upgrading/upgrade/4_0
-  /user/downloading-installing-upgrading/upgrade/4_1
 
 
 How-to guides
@@ -78,6 +63,7 @@ How-to guides
   :maxdepth: 1
   :caption: How-to guides
 
+  /user/how-to-guides/how-to-organize-your-qubes
   /user/how-to-guides/how-to-update
   /user/how-to-guides/how-to-back-up-restore-and-migrate
   /user/how-to-guides/how-to-copy-and-paste-text
@@ -93,13 +79,6 @@ How-to guides
   /user/how-to-guides/how-to-use-optical-discs
   /user/how-to-guides/how-to-reinstall-a-template
 
-.. toctree::
-  :maxdepth: 1
-  :hidden:
-
-  /user/how-to-guides/backup-emergency-restore-v2
-  /user/how-to-guides/backup-emergency-restore-v3
-  /user/how-to-guides/backup-emergency-restore-v4
 
 Templates
 ~~~~~~~~~
@@ -157,7 +136,7 @@ Security in Qubes
   /user/security-in-qubes/u2f-proxy
   /user/security-in-qubes/yubi-key
 
-Advanced Configuration
+Advanced Topics
 ~~~~~~~~~~~~~~~~~~~~~~
 .. toctree::
   :maxdepth: 1
@@ -172,7 +151,7 @@ Advanced Configuration
   /user/advanced-topics/usb-qubes
   /user/advanced-topics/managing-vm-kernels
   /user/advanced-topics/salt
-  /user/advanced-topics/guivm
+  /user/advanced-topics/gui-domain
   /user/advanced-topics/disposable-customization
   /user/advanced-topics/installing-contributed-packages
   /user/advanced-topics/bind-dirs
@@ -201,11 +180,7 @@ Project Security
 
   /project-security/security
   /project-security/security-pack
-  Qubes security bulletins (QSBs) <https://www.qubes-os.org/security/qsb/>
-  Qubes canaries <https://www.qubes-os.org/security/canary/>
-  Xen security advisory (XSA) tracker <https://www.qubes-os.org/security/xsa/>
   /project-security/verifying-signatures
-  PGP keys <https://www.qubes-os.org/security/pgp-keys/>
 
 Developer Documentation
 -----------------------
@@ -251,9 +226,9 @@ System
   /developer/system/architecture
   /developer/system/security-design-goals
   /developer/system/security-critical-code
-  Qubes core admin <https://dev.qubes-os.org/projects/core-admin/en/latest/>
-  Qubes core admin client <https://dev.qubes-os.org/projects/core-admin-client/en/latest/>
-  Qubes core stack <https://www.qubes-os.org/news/2017/10/03/core3/>
+  /developer/system/qubes-core-admin
+  /developer/system/qubes-core-admin-client
+  /developer/system/qubes-core-stack
   /developer/system/gui
   /developer/system/networking
   /developer/system/template-implementation
@@ -270,6 +245,7 @@ Services
 
   /developer/services/qfilecopy
   /developer/services/qmemman
+  /developer/services/disposablevm-implementation
   /developer/services/dom0-secure-updates
   /developer/services/qrexec
   Qrexec v2 (deprecated) </developer/services/qrexec2>

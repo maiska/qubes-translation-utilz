@@ -13,3 +13,6 @@ sphinx-autobuild  /home/user/qubes/convert/rst-convert/qubesos.github.io/_doc /t
 
 in /tmp/html there is the objects.inv
 ```
+
+
+https://github.com/maiska/qubes-translation-utilz/blob/master/README.md

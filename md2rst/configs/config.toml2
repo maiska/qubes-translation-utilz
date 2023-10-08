@@ -57,33 +57,26 @@ remove_hidden_files = false
 #remove_hidden_files = true
 
 
-# Stage nr. 2 - everything true
 ###################
-# copy attachment directory to _doc (rst_directory)
+#sphinx_refs = false
 # no sphinx-build but sphinx-autobuild which does watch and does  not end itself TODO
-sphinx_refs = false
-#sphinx_refs = true
+sphinx_refs = true
 
 
 ###############
-# Stage nr. 3 - everything true
-###############
-#docutils_validate = false
-docutils_validate = true
+docutils_validate = false
+#docutils_validate = true
+#
+
 
 #qubes_rst = false
-qubes_rst = true
+qubes_rst = false
 
-#svg_png_conversion_replacement = false
-svg_png_conversion_replacement = true
-#markdown_links_leftover = false # TODO
-markdown_links_leftover = true # TODO
-
-
-# Stage nr. 4 - everything true
-###############
-#redirect_markdown = false # TODO
-redirect_markdown = true # TODO
+svg_png_conversion_replacement = false
+#svg_png_conversion_replacement = true
+markdown_links_leftover = false # TODO
+#markdown_links_leftover = true # TODO
+redirect_markdown = false # TODO
 
 #git reset --hard && find . ! -not -name 'README.md' -o ! -not -name 'CONTRIBUTING.md' -o -type f -name '*.rst' -delete
 

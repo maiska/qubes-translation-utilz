@@ -57,10 +57,11 @@ def copy_manual_rst(config_toml: dict):
     copy_from_dir = config_toml[RST][COPY_FROM_DIR]
     rst_file_names_to_copy = config_toml[RST][RST_FILE_NAMES]
     rst_directory = config_toml[RST][RST_DIRECTORY]
-    logger.info("Copy from %s directory to %s", copy_from_dir, rst_file_names_to_copy)
+    logger.info("Copy from %s directory files %s", copy_from_dir, rst_file_names_to_copy)
     for file_name in rst_file_names_to_copy:
         file_to_copy = os.path.join(copy_from_dir, file_name)
         shutil.copy(file_to_copy, os.path.join(rst_directory, os.path.dirname(file_name)))
+
 
 def convert_md_to_rst(config_toml: dict) -> None:
     rst_directory = config_toml[RST][RST_DIRECTORY]
@@ -73,7 +74,7 @@ def convert_md_to_rst(config_toml: dict) -> None:
     rst_converter = PandocConverter(rst_directory, config_toml[RST][SKIP_MD])
 
     if config_toml[RUN][COPY_MD_FILES]:
-        logger.info("Copy from %s directory to %s", copy_from_dir, md_file_names_to_copy)
+        logger.info("Copy from %s directory files %s", copy_from_dir, md_file_names_to_copy)
         rst_converter.prepare_convert(copy_from_dir, md_file_names_to_copy)
 
     logger.info("Convert to RST")
@@ -95,25 +96,28 @@ def convert_md_to_rst(config_toml: dict) -> None:
 
     logger.info("Conversion and cleaning done")
 
+
 def generate_sphinx_refs(config_toml):
     with tempfile.TemporaryDirectory() as d:
         subprocess.check_call(['sphinx-build', config_toml[RST][RST_DIRECTORY], d])
         labels = convert_inventory(os.path.join(d, 'objects.inv'))
     filename = os.path.join(config_toml[URL_MAPPING][DUMP_DIRECTORY],
-        config_toml[URL_MAPPING][DUMP_LOCALREFS_FILENAME])
+                            config_toml[URL_MAPPING][DUMP_LOCALREFS_FILENAME])
     with open(filename, 'w') as f:
         f.write(json.dumps(labels))
     return labels
 
+
 def load_sphinx_refs(config_toml):
     filename = os.path.join(config_toml[URL_MAPPING][DUMP_DIRECTORY],
-        config_toml[URL_MAPPING][DUMP_LOCALREFS_FILENAME])
+                            config_toml[URL_MAPPING][DUMP_LOCALREFS_FILENAME])
     try:
         with open(filename) as f:
             return json.load(f)
     except FileNotFoundError:
         print("WARNING: sphinx internal refs not found, set sphinx_refs=true")
         return {}
+
 
 def run(config_toml: dict) -> None:
     # gather the mappings before converting
@@ -122,7 +126,7 @@ def run(config_toml: dict) -> None:
         return
 
     md_doc_permalinks_and_redirects_to_filepath_map, md_pages_permalinks_and_redirects_to_filepath_map, \
-    external_redirects_mappings = get_mappings(config_toml, config_toml[RST][SKIP_MD])
+        external_redirects_mappings = get_mappings(config_toml, config_toml[RST][SKIP_MD])
     rstDirectoryPostProcessor = RSTDirectoryPostProcessor(config_toml[RST][RST_DIRECTORY],
                                                           md_doc_permalinks_and_redirects_to_filepath_map,
                                                           md_pages_permalinks_and_redirects_to_filepath_map,

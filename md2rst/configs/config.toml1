@@ -45,16 +45,16 @@ md_map = true
 # Stage nr. 1 - everything true
 ###############
 
-pypandoc = false
-#pypandoc = true
-copy_md_files = false
-#copy_md_files = true
-copy_rst_files = false
-#copy_rst_files = true
-remove_rst_directory = false
-#remove_rst_directory = true
-remove_hidden_files = false
-#remove_hidden_files = true
+#pypandoc = false
+pypandoc = true
+#copy_md_files = false
+copy_md_files = true
+#copy_rst_files = false
+copy_rst_files = true
+#remove_rst_directory = false
+remove_rst_directory = true
+#remove_hidden_files = false
+remove_hidden_files = true
 
 
 # Stage nr. 2 - everything true
@@ -66,24 +66,20 @@ sphinx_refs = false
 
 
 ###############
-# Stage nr. 3 - everything true
 ###############
-#docutils_validate = false
-docutils_validate = true
+docutils_validate = false
+#docutils_validate = true
+#
+
 
 #qubes_rst = false
-qubes_rst = true
+qubes_rst = false
 
-#svg_png_conversion_replacement = false
-svg_png_conversion_replacement = true
-#markdown_links_leftover = false # TODO
-markdown_links_leftover = true # TODO
-
-
-# Stage nr. 4 - everything true
-###############
-#redirect_markdown = false # TODO
-redirect_markdown = true # TODO
+svg_png_conversion_replacement = false
+#svg_png_conversion_replacement = true
+markdown_links_leftover = false # TODO
+#markdown_links_leftover = true # TODO
+redirect_markdown = false # TODO
 
 #git reset --hard && find . ! -not -name 'README.md' -o ! -not -name 'CONTRIBUTING.md' -o -type f -name '*.rst' -delete
 

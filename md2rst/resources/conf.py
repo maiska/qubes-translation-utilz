@@ -3,7 +3,7 @@
 # -- Project information -----------------------------------------------------
 
 project = 'Qubes OS'
-copyright = '2022, Qubes OS Project'
+copyright = '2023, Qubes OS Project'
 author = 'Qubes OS Project'
 
 title = "Qubes Docs"

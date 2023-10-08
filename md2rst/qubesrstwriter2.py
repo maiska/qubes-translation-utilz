@@ -142,6 +142,7 @@ class QubesRstTranslator(RstTranslator):
 
         self.rst_directory = rst_directory
         self.docname = self.get_self_docname()
+        logger.info('self.docname =[%]---------------000000000000000', self.docname)
         # self.md_pages_permalinks_and_redirects_to_filepath_map = md_pages_permalinks_and_redirects_to_filepath_map
         # self.external_redirects_map = external_redirects_map
         # self.md_doc_permalinks_and_redirects_to_filepath_map = md_doc_permalinks_and_redirects_to_filepath_map
@@ -182,8 +183,11 @@ class QubesRstTranslator(RstTranslator):
     #     return role
     def get_self_docname(self):
         source = self.document['source']
-        if source.startswith(self.rst_directory + '/') and source.endswith('.rst'):
+
+        if source.startswith(self.rst_directory ) and source.endswith('.rst'):
             return source.replace(self.rst_directory + '/', '').replace('.rst', '')
+
+        logger.error("This is not a rst document apparently sourc = [%s] ", source)
         return None
 
 
