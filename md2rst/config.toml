@@ -24,7 +24,7 @@ logfile = '/tmp/md2rst.log'
 # it will be used to gather permalinks and relative paths, so that cross referencing
 # can be later done in the restructured text documentation
 # the markown _doc repository will be copied to the rst_directory for further processing as well
-root_directory = '/home/user/qubes-translation-utilz/md2rst/refactor_test/TEST/redirect-markdown/qubesos.github.io.rtd'
+root_directory = '/home/user/qubes/convert/markdown/qubesos.github.io.rtd'
 #root_directory = '/home/user/qubes-translation-utilz/md2rst/refactor_test/TEST/markdown/qubesos.github.io.rtd'
 # redirect base url for the hosted rst documentation
 redirect_base_url = 'https://foo.bar'
@@ -37,7 +37,7 @@ excluded_files_from_redirect = ['README.md', 'CONTRIBUTING.md', 'hcl.md', 'downl
 [rst]
 # this directory will contain the converted rst documentation
 # whenever the 1st stage (look below) is executed it will be deleted and populated anew from the root_directory above
-rst_directory = '/home/user/qubes-translation-utilz/md2rst/refactor_test/TEST/rst-convert-monster-merge/qubes-rst/'
+rst_directory = '/home/user/qubes/convert/rst-convert/qubes-rst/'
 # this is the directory containing rst relevant files such as requirements or configuration
 # to be blindly copied to rst_directory and thus used
 copy_from_dir = '/home/user/qubes-translation-utilz/md2rst/preparation/'

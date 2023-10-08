@@ -18,9 +18,9 @@ from docutils.parsers.rst import Directive, directives
 
 # -- Project information -----------------------------------------------------
 
-project = 'qubes-docs'
-copyright = '2022, test'
-author = 'test'
+project = 'Qubes OS'
+copyright = '2023, Qubes OS Project'
+author = 'Qubes OS Project'
 
 title = "Qubes Docs"
 html_title = "Qubes Docs"
