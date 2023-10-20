@@ -34,7 +34,7 @@ def is_base_url_available(base_url: str) -> bool:
 
 def create_rtd_url(base_url: str, doc: str) -> str:
     doc_page = doc + '.html'
-    return urljoin(base_url, doc_page)
+    return urljoin(base_url, doc_page.lstrip('/'))
 
 
 def is_not_readable(path: str) -> bool:
