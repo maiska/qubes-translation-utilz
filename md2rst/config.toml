@@ -24,7 +24,7 @@ logfile = '/tmp/md2rst.log'
 # it will be used to gather permalinks and relative paths, so that cross referencing
 # can be later done in the restructured text documentation
 # the markown _doc repository will be copied to the rst_directory for further processing as well
-root_directory = '/home/user/qubes/convert/markdown/qubesos.github.io.rtd'
+root_directory = '/home/user/qubes/convert/markdown/qubesos.github.io'
 #root_directory = '/home/user/qubes-translation-utilz/md2rst/refactor_test/TEST/markdown/qubesos.github.io.rtd'
 # redirect base url for the hosted rst documentation
 redirect_base_url = 'https://foo.bar'
@@ -37,10 +37,10 @@ excluded_files_from_redirect = ['README.md', 'CONTRIBUTING.md', 'hcl.md', 'downl
 [rst]
 # this directory will contain the converted rst documentation
 # whenever the 1st stage (look below) is executed it will be deleted and populated anew from the root_directory above
-rst_directory = '/home/user/qubes/convert/rst-convert/qubes-rst/'
+rst_directory = '/home/user/qubes/convert/rst-convert/qubesos.github.io/'
 # this is the directory containing rst relevant files such as requirements or configuration
 # to be blindly copied to rst_directory and thus used
-copy_from_dir = '/home/user/qubes-translation-utilz/md2rst/preparation/'
+copy_from_dir = '/home/user/qubes/tools/qubes-translation-utilz/md2rst/preparation/'
 # certain markdown files that need to be copied and overwrite existing markdown documentation
 # prior to converting to rst
 # after iterations it came down to just the written out documentation index
@@ -128,19 +128,31 @@ md_map = true
 #####################
 # initially converts markdown to rst via pandoc
 #pypandoc = false
-pypandoc = true
+#pypandoc = true
 #copy_md_files = false
 # if the markdown files from md_file_names should be copied or not
-copy_md_files = true
+#copy_md_files = true
 #copy_rst_files = false
 # if the rst files from rst_files should be copied or not
 #copy_rst_files = true
 # if the rst dirs from directories_to_remove should be deleted or not
 #remove_rst_directory = false
-remove_rst_directory = true
+#remove_rst_directory = true
 # if the rst files from files_to_remove should be deleted or not
 #remove_rst_files = false
-remove_rst_files = true
+#remove_rst_files = true
+
+pypandoc = false
+copy_md_files = false
+copy_rst_files = false
+remove_rst_directory = false
+remove_rst_files = false
+
+#pypandoc = true
+#copy_md_files = true
+#copy_rst_files = true
+#remove_rst_directory = true
+#remove_rst_files = true
 
 ####################
 # 2nd stage all true
@@ -154,31 +166,45 @@ remove_rst_files = true
 # with a needed modification from -------- to ~~~~~~~ for the section separators
 #2. developer/system/template-implementation.rst, l. 111, l. 132 with
 # with a needed modification from ~~~~~~~ to -------- for the section separators
-docutils_validate = false
+#docutils_validate = false
 #docutils_validate = true
 # fix the broken cross referenced links between the different documentaion files
-qubes_rst = false
+#qubes_rst = false
 #qubes_rst = true
 # whether or not to initialize the newly converted rst documentaion repository
 # and add the attachment submodule
 # either way attachment should be present in the rst-doc repository
 # so that all the referenced images can be found and displayed
 # see svg above
-git_init = false
+#git_init = false
 #git_init = true
 # whether or not the convert certain svg to png
 # see git above
-svg_png_conversion_replacement = false
+#svg_png_conversion_replacement = false
 #svg_png_conversion_replacement = true
 # unfortunately not all markdown links are converted via pandoc
 # several leftovers are being handled with regular expressions
 # see config_constants.py
-markdown_links_leftover = false
+#markdown_links_leftover = false
 #markdown_links_leftover = true
 # simple search and replace
 # see replace_custom_strings_values
-replace_custom_strings = false
+#replace_custom_strings = false
 #replace_custom_strings = true
+
+git_init = false
+
+#docutils_validate = false
+#qubes_rst = false
+#svg_png_conversion_replacement = false
+#markdown_links_leftover = false
+#replace_custom_strings = false
+
+docutils_validate = true
+qubes_rst = true
+svg_png_conversion_replacement = true
+markdown_links_leftover = true
+replace_custom_strings = true
 
 #[stage_three]
 ###########
@@ -204,9 +230,22 @@ redirect_markdown = false
 ':ref:`here <user/downloading-installing-upgrading/downloads:mirrors>`' = '`here <https://www.qubes-os.org/downloads/#mirrors>__'
 ':ref:`download mirrors <user/downloading-installing-upgrading/downloads:mirrors>`' = '`download mirrors <https://www.qubes-os.org/downloads/#mirrors>__'
 ':doc:`Qubes News RSS feed <https://www.qubes-os.org/feed.xml>`' = '`Qubes News RSS feed <https://www.qubes-os.org/feed.xml>`'
+':title-reference:`AEM' = '`AEM'
+':title-reference:`Qubes Security Pack (``qubes-secpack``) </security/pack/>`__' = '`Qubes Security Pack (qubes-secpack) <https://www.qubes-os.org/security/pack/>__`'
+'``README`` <https'='README <https'
+':title-reference:`bug in ``qvm-device block`` or' = '`bug in qvm-device block or'
+'``qvm-block`` <https' = 'qvm-block <https'
+':title-reference:`Tor’s data dir ``/var/lib/tor``' = '`Tor’s data dir /var/lib/tor'
+':title-reference:`searching the ``qubes-users``' = '`searching the qubes-users'
+':title-reference:`are not copied to the' = ':ref:`are not copied to the'
+'``/home`` </doc/templates/#inheritance-and-persistence>`__' = '/home <user/templates/templates:inheritance and persistence>`'
+'```qvm-pci`` tool </doc/how-to-use-pci-devices/>__`' = ':doc:`qvm-pci tool </user/how-to-guides/how-to-use-pci-devices>`'
+'```qvm-device pci`` </doc/how-to-use-devices/#general-qubes-device-widget-behavior-and-handling>`__.' = ':ref:`qvm-device pci <user/how-to-guides/how-to-use-devices:general qubes device widget behavior and handling>`'
+'```/rw/config/rc.local`` </doc/config-files>`__' = ':doc:`rw/config/rc.local </user/advanced-topics/config-files>`'
+'```sys-usb`` </doc/usb/>`__' = ':doc:`sys-usb </user/advanced-topics/usb-qubes>`'
 
 
-# for debug purposes for difficult files
+#for debug purposes for difficult files
 # now obsolete
 [test]
 run = false
