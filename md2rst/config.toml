@@ -27,7 +27,7 @@ logfile = '/tmp/md2rst.log'
 root_directory = '/home/user/qubes/convert/markdown/qubesos.github.io'
 #root_directory = '/home/user/qubes-translation-utilz/md2rst/refactor_test/TEST/markdown/qubesos.github.io.rtd'
 # redirect base url for the hosted rst documentation
-redirect_base_url = 'https://foo.bar'
+redirect_base_url = 'https://foo.bar/'
 # markdown files not to emptied and redirected to new hosted RTD docs
 excluded_files_from_redirect = ['README.md', 'CONTRIBUTING.md', 'hcl.md', 'downloads.md',
                                              'visual-style-guide.md', 'website-style-guide.md',
@@ -231,7 +231,7 @@ redirect_markdown = false
 ':ref:`download mirrors <user/downloading-installing-upgrading/downloads:mirrors>`' = '`download mirrors <https://www.qubes-os.org/downloads/#mirrors>__'
 ':doc:`Qubes News RSS feed <https://www.qubes-os.org/feed.xml>`' = '`Qubes News RSS feed <https://www.qubes-os.org/feed.xml>`'
 ':title-reference:`AEM' = '`AEM'
-':title-reference:`Qubes Security Pack (``qubes-secpack``) </security/pack/>`__' = '`Qubes Security Pack (qubes-secpack) <https://www.qubes-os.org/security/pack/>__`'
+':title-reference:`Qubes Security Pack (``qubes-secpack``) </security/pack/>`__' = '`Qubes Security Pack (qubes-secpack) <https://www.qubes-os.org/security/pack/>`__'
 '``README`` <https'='README <https'
 ':title-reference:`bug in ``qvm-device block`` or' = '`bug in qvm-device block or'
 '``qvm-block`` <https' = 'qvm-block <https'
@@ -239,10 +239,20 @@ redirect_markdown = false
 ':title-reference:`searching the ``qubes-users``' = '`searching the qubes-users'
 ':title-reference:`are not copied to the' = ':ref:`are not copied to the'
 '``/home`` </doc/templates/#inheritance-and-persistence>`__' = '/home <user/templates/templates:inheritance and persistence>`'
-'```qvm-pci`` tool </doc/how-to-use-pci-devices/>__`' = ':doc:`qvm-pci tool </user/how-to-guides/how-to-use-pci-devices>`'
+'```qvm-pci`` tool </doc/how-to-use-pci-devices/>`__' = ':doc:`qvm-pci tool </user/how-to-guides/how-to-use-pci-devices>`'
 '```qvm-device pci`` </doc/how-to-use-devices/#general-qubes-device-widget-behavior-and-handling>`__.' = ':ref:`qvm-device pci <user/how-to-guides/how-to-use-devices:general qubes device widget behavior and handling>`'
 '```/rw/config/rc.local`` </doc/config-files>`__' = ':doc:`rw/config/rc.local </user/advanced-topics/config-files>`'
 '```sys-usb`` </doc/usb/>`__' = ':doc:`sys-usb </user/advanced-topics/usb-qubes>`'
+'```sys-whonix`` <https://www.whonix.org/wiki/Qubes>`__' = '`sys-whonix <https://www.whonix.org/wiki/Qubes>`__'
+'on the ```qubes-users``' = 'on the `qubes-users'
+'```qubes-users`` mailing list <#qubes-users>`__' = '`qubes-users mailing list <#qubes-users>`__'
+'`ISO downloads <https://www.qubes-os.org/downloads/#mirrors>__ and' = '`ISO downloads <https://www.qubes-os.org/downloads/#mirrors>`__ and'
+'`download mirrors <https://www.qubes-os.org/downloads/#mirrors>__.' = '`download mirrors <https://www.qubes-os.org/downloads/#mirrors>`__.'
+'`Qubes Security Pack (qubes-secpack) <https://www.qubes-os.org/security/pack/>__.' = '`Qubes Security Pack (qubes-secpack) <https://www.qubes-os.org/security/pack/>`__.'
+'```frontend-dev``-option <#frontend-dev>`__' = '`frontend-dev-option <#frontend-dev>`__'
+':doc:`qvm-pci tool </user/how-to-guides/how-to-use-pci-devices>`__' = ':doc:`qvm-pci tool </user/how-to-guides/how-to-use-pci-devices>`'
+'at ```transient_for``' = 'at `transient_for'
+'how to update </user/how-to-guides/how-to-update>' = ':doc:`how to update </user/how-to-guides/how-to-update>`'
 
 
 #for debug purposes for difficult files

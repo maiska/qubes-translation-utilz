@@ -48,10 +48,14 @@ It contains:
 4. fix broken links in config files 
 5. pdf latex builds 
 6. new jekyll site test with new
+7. developer/general/gsoc.rst - remove the commented out section 
+8. how to edit the documentation, documentation style guide, website style guide (remove from index?? )
+9. visually style guide - manually convert??
+10. http://127.0.0.1:8000/developer/services/qrexec.html - comment
 
 ```commandline
 grep -r "</doc/"
-user/how-to-guides/how-to-use-usb-devices.rst:pass it to the ```qvm-pci`` tool </doc/how-to-use-pci-devices/>`__ to
+--- user/how-to-guides/how-to-use-usb-devices.rst:pass it to the ```qvm-pci`` tool </doc/how-to-use-pci-devices/>`__ to
 user/how-to-guides/how-to-use-pci-devices.rst:```qvm-device pci`` </doc/how-to-use-devices/#general-qubes-device-widget-behavior-and-handling>`__.
 user/advanced-topics/bind-dirs.rst:  using ```/rw/config/rc.local`` </doc/config-files>`__
 introduction/faq.rst:intend to use from ```sys-usb`` </doc/usb/>`__ to another qube via
