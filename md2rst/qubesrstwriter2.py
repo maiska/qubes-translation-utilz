@@ -351,7 +351,7 @@ class QubesRstTranslator(RstTranslator):
 
             self.write(self.nl + '.. |' + node['names'][0] + '| image:: ' + image['uri'] + \
                        self.nl + LIST_ITEM_IDENT + \
-                       ':target: ' + first_child['refuri'] + self.nl)
+                       ('' if first_child['refuri'].startswith('/attachment') else ':target: ' + first_child['refuri']) + self.nl)
             raise nodes.SkipNode
         if isinstance(first_child, docutils.nodes.image):
             self.write(self.nl + '.. |' + node['names'][0] + '| image:: ' + first_child['uri'] + \
