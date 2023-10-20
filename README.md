@@ -24,20 +24,49 @@ It contains:
 
 - requirements.txt - dependencies for serving sphinx locally with all the extensions needed
 - conf.py - initial sphinx configuration with strike role for strikeout text and redirects,
-    [see](https://www.sphinx-doc.org/en/master/usage/configuration.html)
+  [see](https://www.sphinx-doc.org/en/master/usage/configuration.html)
 - .readthedocs.yml - ReadTheDocs conf, [see](https://docs.readthedocs.io/en/stable/config-file/v2.html)
 
 2. Markdown files to be copied prior conversion such as 
 - doc.md - written out documentation index containing references to the separate doc files and external documentation 
-    Be careful before converting, make sure the contents is up to date and satisfies the requirements 
+  Be careful before converting, make sure the contents is up to date and satisfies the requirements 
 
 3. RST specific files for which it was easier to create a manual representation
 
 4. Certain RST files to skip from post processing and cross referencing links because either they do not have any (gui.rst) 
-or are already converted and prepared (the rest of the files). These files will be skipped ALWAYS
+  or are already converted and prepared (the rest of the files). These files will be skipped ALWAYS
 
 5. Directories and files to remove such as the markdown documentation configuration or mere redirects to external docs
 
+#### TODO
+
+- TODO requirements - new one
+- TODO redirects does not work atm
+1. test links with sphinx
+2. fix links
+3. compare sites
+4. fix broken links in config files 
+5. pdf latex builds 
+6. new jekyll site test with new
+
+```commandline
+grep -r "</doc/"
+user/how-to-guides/how-to-use-usb-devices.rst:pass it to the ```qvm-pci`` tool </doc/how-to-use-pci-devices/>`__ to
+user/how-to-guides/how-to-use-pci-devices.rst:```qvm-device pci`` </doc/how-to-use-devices/#general-qubes-device-widget-behavior-and-handling>`__.
+user/advanced-topics/bind-dirs.rst:  using ```/rw/config/rc.local`` </doc/config-files>`__
+introduction/faq.rst:intend to use from ```sys-usb`` </doc/usb/>`__ to another qube via
+developer/system/template-implementation.rst:``/home`` </doc/templates/#inheritance-and-persistence>`__. The child  
+```
+
+```commandline
+grep -r ":title-reference"
+user/how-to-guides/how-to-update.rst:30::title-reference:`Qubes Security Pack (``qubes-secpack``) </security/pack/>`__. It is
+user/how-to-guides/how-to-update.rst:108:instructions to this effect. See the relevant QSB and the :title-reference:`AEM
+user/how-to-guides/how-to-use-devices.rst:70:But be careful: There is a :title-reference:`bug in ``qvm-device block`` or
+user/advanced-topics/bind-dirs.rst:24:For example, in Whonix, :title-reference:`Tor’s data dir ``/var/lib/tor`` has been made
+introduction/support.rst:39:5. Try :title-reference:`searching the ``qubes-users``
+developer/system/template-implementation.rst:36:``/home`` directory of its parent TemplateVM :title-reference:`are not copied to the
+```
 ### Submodule
 
 THe new RST documentatoin expects the attachment Qubes OS repo to be available
