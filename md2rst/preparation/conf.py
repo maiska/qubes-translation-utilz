@@ -60,7 +60,8 @@ exclude_patterns = [
     '**/*.txt'
 ]
 
-html_theme = 'default'
+html_theme = 'sphinx_rtd_theme'
+# html_theme = 'default'
 # html_theme = 'classic'
 
 html_theme_options = {
@@ -74,6 +75,7 @@ html_theme_options = {
     'codebgcolor': 'grey',
     'body_min_width': '50%',
     'body_max_width': '90%',
+    'collapse_navigation': True,
 }
 
 gettext_uuid = True
