@@ -27,8 +27,8 @@ pyparsing==3.0.9
 python-frontmatter==1.0.0
 pytz==2022.2.1
 PyYAML==6.0
-reportlab==3.6.11
 requests==2.28.1
+rlPyCairo
 six==1.16.0
 smmap==5.0.0
 snowballstemmer==2.2.0
