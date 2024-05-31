@@ -83,7 +83,7 @@ Core documentation for Qubes users.
  * [How to upgrade a Debian template in-place](/doc/templates/debian/in-place-upgrade/)
  * [Minimal templates](/doc/templates/minimal/)
  * [Xfce templates](/doc/templates/xfce/)
- * [Windows templates](/doc/templates/windows/)
+ * [Windows qubes](/doc/templates/windows/)
 
 ### Troubleshooting
 
@@ -236,7 +236,6 @@ Core documentation for Qubes developers and advanced users.
 Unofficial, third-party documentation from the Qubes community and others.
 
 ### Operating System Guides
-
 
  * [Template: Ubuntu](https://github.com/Qubes-Community/Contents/blob/master/docs/os/ubuntu.md)
  * [Template: Whonix](https://github.com/Qubes-Community/Contents/blob/master/docs/privacy/whonix.md)
