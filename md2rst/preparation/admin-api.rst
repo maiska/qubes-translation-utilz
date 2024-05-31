@@ -322,6 +322,12 @@ it easy to set the policy using current mechanism.
      - `-`
      - `-`
      - force reload firewall without changing any rule
+   * - ``admin.vm.deviceclass.List``
+     - ``dom0``
+     - `-`
+     - `-`
+     - ``<class>``
+     -
    * - ``admin.vm.device.<class>.Attach``
      - vm
      - device
