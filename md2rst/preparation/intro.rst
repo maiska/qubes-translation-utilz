@@ -54,7 +54,7 @@ Features
 
 - **Split GPG** Utilize :doc:`Split GPG </user/security-in-qubes/split-gpg>` to keep your private keys safe.
 
-- **U2F proxy** Operate :doc:`Qubes U2F proxy </user/security-in-qubes/u2f-proxy>` to use your two-factor authentication devices without exposing your web browser to the full USB stack.
+- **CTAP proxy** Operate :doc:`Qubes CTAP proxy </user/security-in-qubes/ctap-proxy>` to use your two-factor authentication devices without exposing your web browser to the full USB stack.
 
 - **Open-source** Users are free to use, copy, and modify Qubes OS and :doc:`are encouraged to do so! </introduction/contributing>`
 
