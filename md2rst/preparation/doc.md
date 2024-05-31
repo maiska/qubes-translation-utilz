@@ -83,6 +83,7 @@ Core documentation for Qubes users.
  * [How to upgrade a Debian template in-place](/doc/templates/debian/in-place-upgrade/)
  * [Minimal templates](/doc/templates/minimal/)
  * [Xfce templates](/doc/templates/xfce/)
+ * [Windows templates](/doc/templates/windows/)
 
 ### Troubleshooting
 
@@ -111,8 +112,8 @@ Core documentation for Qubes users.
  * [Device handling security](/doc/device-handling-security/)
  * [Anti evil maid (AEM)](/doc/anti-evil-maid/)
  * [Split GPG](/doc/split-gpg/)
- * [U2F proxy](/doc/u2f-proxy/)
- * [YubiKey](/doc/yubi-key/)
+ * [Multi-factor Login](/doc/mfa/)
+ * [CTAP proxy](/doc/ctap-proxy/)
 
 ### Advanced Topics
 
@@ -164,6 +165,7 @@ Core documentation for Qubes developers and advanced users.
  * [Website style guide](https://www.qubes-os.org/doc/website-style-guide/)
  * [Continuous integration (CI)](/doc/continuous-integration/)
  * [Usability & UX](/doc/usability-ux/)
+ * [Developing Qubes OS GUI tools](/doc/developing-gui-applications/)
  * [Visual style guide](https://www.qubes-os.org/doc/visual-style-guide/)
  * [Research](/research/)
  * [Developer books](/doc/devel-books/)
@@ -187,7 +189,6 @@ Core documentation for Qubes developers and advanced users.
  * [GUI virtualization](/doc/gui/)
  * [Networking](/doc/networking/)
  * [Template implementation](/doc/template-implementation/)
- * [Storage pools](/doc/storage-pools/)
  * [Audio virtualization](/doc/audio-virtualization/)
  * [Template manager](/doc/template-manager/)
 
@@ -237,7 +238,6 @@ Unofficial, third-party documentation from the Qubes community and others.
 ### Operating System Guides
 
 
- * [Windows qubes](https://github.com/Qubes-Community/Contents/blob/master/docs/os/windows/windows.md)
  * [Template: Ubuntu](https://github.com/Qubes-Community/Contents/blob/master/docs/os/ubuntu.md)
  * [Template: Whonix](https://github.com/Qubes-Community/Contents/blob/master/docs/privacy/whonix.md)
  * [Template: CentOS](https://github.com/Qubes-Community/Contents/blob/master/docs/os/centos.md)
