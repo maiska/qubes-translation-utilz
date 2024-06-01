@@ -28,7 +28,7 @@ These qubes, which are implemented as :ref:`virtual machines VMs</doc/glossary:v
    :alt: Qubes system diagram
 
 
-Note: See our glossary and FAQ for more information.
+Note: See our :doc:`glossary </user/reference/glossary>` and :doc:`FAQ </introduction/faq>` for more information.
 
 
 Features
