@@ -16,37 +16,37 @@ release = '4.1'
 
 html_static_path = ['attachment/doc']
 extensions = [
-        'sphinx.ext.autosectionlabel',
+    'sphinx.ext.autosectionlabel',
 ]
 autosectionlabel_prefix_document = True
 
 source_suffix = {
-    '.rst': 'restructuredtext',
+  '.rst': 'restructuredtext',
 }
 templates_path = ['_templates']
 
 root_doc = "index"
 exclude_patterns = [
-            '_dev/*', 
-            'attachment/*',
-            '**/*.txt'
-            ]
+      '_dev/*', 
+      'attachment/*',
+      '**/*.txt'
+      ]
 
 
 html_theme = 'default'
 #html_theme = 'classic'
 
 html_theme_options = {
-    'externalrefs': True, 
-    'bgcolor': 'white',
-    'linkcolor': '#99bfff',
-    'textcolor': '#000000',
-    'visitedlinkcolor': '#7b7b7b',
-    'bodyfont': '"Open Sans", Arial, sans-serif',
-    'codebgcolor': '$color-qube-light',
-    'codebgcolor': 'grey',
-    'body_min_width': '50%',
-    'body_max_width': '90%',
+  'externalrefs': True, 
+  'bgcolor': 'white',
+  'linkcolor': '#99bfff',
+  'textcolor': '#000000',
+  'visitedlinkcolor': '#7b7b7b',
+  'bodyfont': '"Open Sans", Arial, sans-serif',
+  'codebgcolor': '$color-qube-light',
+  'codebgcolor': 'grey',
+  'body_min_width': '50%',
+  'body_max_width': '90%',
 }
 
 gettext_uuid=True
