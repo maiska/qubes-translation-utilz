@@ -200,7 +200,7 @@ Core documentation for Qubes developers and advanced users.
  * [Qrexec: secure communication across domains](/doc/qrexec/)
  * [Qrexec v2 (deprecated)](/doc/qrexec2/)
  * [Qrexec: Qubes RPC internals](/doc/qrexec-internals/)
- * [Qrexec: Socket-based services](/doc/qrexec-socket-services/)
+ * [Qrexec: socket-based services](/doc/qrexec-socket-services/)
  * [Admin API](/doc/admin-api/)
  * [Qfileexchgd (deprecated)](/doc/qfileexchgd/)
 
