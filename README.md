@@ -120,6 +120,14 @@ so that all the referenced images can be found and displayed see svg above)
 - handle several leftovers with regular expressions (see config_constants.py) via `markdown_links_leftover = true`
 - simple search and replace custom strings (see replace_custom_strings_values) via `replace_custom_strings = true`
 
+## 3rd stage
+
+## Finally
+
+Run locally `sphinx-view .` in the newly created qubes-doc-rst directory to serve the files.
+
+Check for broken links with a browser extension and `sphinx-build` TODO
+
 ### Tips
 
 1. to be on the safe side do grep for SYSTEM / ERROR inside the rst doc directory for system errors 

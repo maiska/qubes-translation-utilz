@@ -5,6 +5,8 @@
 ### RST
 
 1. prepare doc.md which files are retained and need to refer to the qubes os website? admin-api-*.md
+configuration in config.toml
+stage 1
 2. pypandoc convert
 3. rst validation
 4. qubes-links-convert
@@ -22,6 +24,23 @@ inkscape release-cycle.svg -w 1000 -h 1000 -o release-cycle.png
 10. edit RST documentation new file
 11. privacy policy 2 times
 12. toctree for latex epub pdf -> test
+13. change and new files in index as in an example of markdown index
+### General
+
+[How to edit the documentation](https://www.qubes-os.org/doc/how-to-edit-the-documentation/)
+[Documentation style guide](https://www.qubes-os.org/doc/documentation-style-guide/)
+[Website style guide](https://www.qubes-os.org/doc/website-style-guide/)
+
+SHOULD BE
+
+### General
+
+[How to edit the RST/RTD documentation](TODO)
+[How to edit the markdownn documentation](https://www.qubes-os.org/doc/how-to-edit-the-documentation/)
+[Markdown documentation style guide](https://www.qubes-os.org/doc/documentation-style-guide/)
+[Website style guide](https://www.qubes-os.org/doc/website-style-guide/)
+
+
 
 ### Jekyll
 
@@ -32,6 +51,3 @@ inkscape release-cycle.svg -w 1000 -h 1000 -o release-cycle.png
 ### Localization
 
 1. Warning for untrusted doc on rst translation
-
-
-
