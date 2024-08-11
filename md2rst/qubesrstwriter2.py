@@ -399,7 +399,8 @@ class QubesRstTranslator(RstTranslator):
     if isinstance(parent, docutils.nodes.paragraph) and \
         isinstance(parent.parent, docutils.nodes.container):
       self.write(CODE_BLOCK_IDENT)
-      super().visit_strong(node)
+
+    super().visit_strong(node)
 
   def visit_Text(self, node: Node) -> None:
     parent = node.parent
