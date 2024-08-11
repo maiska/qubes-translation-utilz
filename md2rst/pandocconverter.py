@@ -1,5 +1,6 @@
 import fnmatch
 import io
+import re
 import os
 import shutil
 from logging import basicConfig, getLogger, DEBUG
@@ -7,6 +8,7 @@ from logging import basicConfig, getLogger, DEBUG
 from frontmatter import load
 from pypandoc import convert_file
 
+from utilz import read_from
 from distutils.dir_util import copy_tree
 
 basicConfig(level=DEBUG)
@@ -32,7 +34,7 @@ class PandocConverter:
           with io.open(filepath, 'r') as fp:
             md = load(fp)
             title = md.get('title')
-          convert_file(filepath, outputfile=rst_name, to='rst', format='md')
+          convert_file(filepath, outputfile=rst_name, to='rst')#, format='md')
           with io.open(rst_name, 'r+') as fp:
             lines = fp.readlines()
             fp.seek(0)
@@ -70,8 +72,44 @@ class PandocConverter:
         for filename in fnmatch.filter(files, file_name):
           filepath = os.path.join(path, filename)
           file_to_copy = os.path.join(copy_from_dir, file_name)
+
           logger.info('Copying [%s] to [%s]', file_to_copy, filepath)
           shutil.copy(file_to_copy, filepath)
+
+  def convert_link_to_markdown(self, match):
+    href = match.group(1)
+    text = match.group(2)
+    return f'[{text}]({href})'
+
+  def convert_links_in_div(self, div_content):
+    modified_div_content = re.sub(
+        r'<a href="([^"]+)">([^<]+)</a>',
+        self.convert_link_to_markdown,
+        div_content
+    )
+    return modified_div_content
+
+  def convert_html_links_to_markdown(self, md_dir: str, file_pattern="*.md"):
+    for path, dirs, files in os.walk(os.path.abspath(self.directory_to_convert)):
+      for filename in fnmatch.filter(files, file_pattern):
+        filepath = os.path.join(path, filename)
+        markdown_content = read_from(filepath)
+        div_blocks = re.findall(r'(<div class="alert.*?<\/div>)', markdown_content, flags=re.DOTALL)
+        modified_content = markdown_content
+        for div_block in div_blocks:
+          hrefs = re.findall(r'<a href="([^"]+)">([^<]+)</a>', div_block, flags=re.DOTALL)
+          logger.info(hrefs)
+          modified_div = self.convert_links_in_div(div_block)
+
+          logger.info(div_block)
+          logger.info(modified_div)
+          if modified_div != div_block:
+            logger.info("Replacing links in html blocks with markdown ones")
+            modified_content = modified_content.replace(div_block, modified_div)
+
+        if modified_content != markdown_content:
+          with open(filepath, 'w', encoding='utf-8') as file:
+            file.write(modified_content)
 
   def post_convert(self, copy_from_dir: str = '/home/user/md2rst/preparation/',
            rst_config_files: list = ['requirements.txt', 'conf.py', '.readthedocs.yaml'],

@@ -81,8 +81,12 @@ def convert_md_to_rst(config_toml: dict) -> None:
   rst_converter = PandocConverter(rst_directory)
 
   if config_toml[RUN][COPY_MD_FILES]:
+
     logger.info("Copy from %s directory to %s", copy_from_dir, md_file_names_to_copy)
     rst_converter.prepare_convert(root_directory, copy_from_dir, md_file_names_to_copy)
+    logger.info("Convert links in html blocks to mardown links")
+    rst_converter.convert_html_links_to_markdown(root_directory)
+
 
   logger.info("Convert to RST")
   rst_converter.traverse_directory_and_convert()
@@ -145,6 +149,7 @@ def run(config_toml: dict) -> None:
     logger.debug("-------------------- DOCUTILS_VALIDATE ----------------------------")
     rst_directory_post_processor.parse_and_validate_rst()
 
+
   if config_toml[RUN][QUBES_RST]:
     logger.debug("------------------------------------------------")
     logger.debug("------------------------------------------------")
@@ -167,9 +172,20 @@ def run(config_toml: dict) -> None:
     logger.debug("-------------------- MD LINKS REPLACE TEST ----------------------------")
     rst_directory_post_processor.search_replace_md_links()
 
+  if config_toml[RUN]['replace_custom_links']:
+    logger.debug("-------------------- CUSTOM QUBES OS LINKS REPLACEMENT ----------------------------")
+    rst_directory_post_processor.search_replace_custom_qubes_links(config['customized_qubesos_link_mappings'])
+
+
   if config_toml[RUN]['replace_custom_strings']:
     logger.debug("-------------------- MD LINKS REPLACE TEST ----------------------------")
     rst_directory_post_processor.search_replace_custom_links(config_toml['replace_custom_strings_values'])
+
+  if config_toml[RUN]['add_block']:
+    logger.debug("-------------------- add block with message at the beginning of a specific files ----------------------------")
+    rst_directory_post_processor.add_block(config_toml['add_block']['add_block_message'], config_toml['add_block']['add_block_files'],  config_toml['add_block']['add_block_type'])
+
+
 
   if config_toml[RUN][REDIRECT_MARKDOWN]:
     logger.debug("------------------------------------------------")

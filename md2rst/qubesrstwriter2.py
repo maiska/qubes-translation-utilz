@@ -19,6 +19,7 @@ from utilz import CheckRSTLinks
 
 from docutils_rst_writer.writer import RstTranslator
 
+
 basicConfig(level=DEBUG)
 logger = getLogger(__name__)
 
@@ -172,40 +173,37 @@ class QubesRstTranslator(RstTranslator):
     pass
 
   def visit_container(self, node: Node) -> None:
+    source = self.document['source']
+
     if node.hasattr('classes') and node['classes'][0] == 'focus' and \
         isinstance(node.children[0], docutils.nodes.paragraph):
-      self.write(self.nl + '.. important::' + self.nl + CODE_BLOCK_IDENT +
-             self.get_code_text_block(node.children[0].astext()) + self.nl)
-      raise nodes.SkipNode
+      self.write(self.nl + '.. important::' + self.nl + CODE_BLOCK_IDENT)
 
     if node.hasattr('classes') and len(node['classes']) == 2 and \
         node['classes'][0] == 'alert' and \
         node['classes'][1] == 'alert-warning' and \
         isinstance(node.children[0], docutils.nodes.paragraph):
-      self.write(self.nl + '.. warning::' + self.nl + CODE_BLOCK_IDENT +
-             self.get_code_text_block(node.children[0].astext()) + self.nl)
-      raise nodes.SkipNode
+      self.write(self.nl + '.. warning::' + self.nl + CODE_BLOCK_IDENT)
     if node.hasattr('classes') and len(node['classes']) == 2 and \
         node['classes'][0] == 'alert' and \
         node['classes'][1] == 'alert-danger' and \
         isinstance(node.children[0], docutils.nodes.paragraph):
-      self.write(self.nl + '.. DANGER::' + self.nl + CODE_BLOCK_IDENT +
-             self.get_code_text_block(node.children[0].astext()) + self.nl)
-      raise nodes.SkipNode
+      self.write(self.nl + '.. DANGER::' + self.nl + CODE_BLOCK_IDENT)
     if node.hasattr('classes') and len(node['classes']) == 2 and \
         node['classes'][0] == 'alert' and \
         (node['classes'][1] == 'alert-success' or node['classes'][1] == 'alert-info') and \
         isinstance(node.children[0], docutils.nodes.paragraph):
-      self.write(self.nl + '.. note::' + self.nl + CODE_BLOCK_IDENT +
-             self.get_code_text_block(node.children[0].astext()) + self.nl)
-      raise nodes.SkipNode
+      self.write(self.nl + '.. note::' + self.nl + CODE_BLOCK_IDENT)
 
   def depart_container(self, node: Node) -> None:
     pass
 
   def visit_system_message(self, node: Node) -> None:
+
+
     if isinstance(node.parent, docutils.nodes.section):
       pass
+
     logger_qubes_rst.info("=====================================================================")
     logger_qubes_rst.info("===================== SYSTEM MESSAGE: ===============================")
     node_as_text = node.astext()
@@ -396,6 +394,13 @@ class QubesRstTranslator(RstTranslator):
       pass
     self.title_count += 1
 
+  def visit_strong(self, node):
+    parent = node.parent
+    if isinstance(parent, docutils.nodes.paragraph) and \
+        isinstance(parent.parent, docutils.nodes.container):
+      self.write(CODE_BLOCK_IDENT)
+      super().visit_strong(node)
+
   def visit_Text(self, node: Node) -> None:
     parent = node.parent
 
@@ -414,6 +419,12 @@ class QubesRstTranslator(RstTranslator):
     elif is_node_a_code_block(parent):
       self.write(CODE_BLOCK_IDENT)
     elif isinstance(parent, docutils.nodes.reference):
+      self.write(node.astext().replace(self.nl, ' '))
+      raise nodes.SkipNode
+
+    elif isinstance(parent, docutils.nodes.paragraph) and \
+        isinstance(parent.parent, docutils.nodes.container):
+      self.write(CODE_BLOCK_IDENT)
       self.write(node.astext().replace(self.nl, ' '))
       raise nodes.SkipNode
     elif isinstance(parent, docutils.nodes.paragraph) and \
@@ -476,7 +487,9 @@ class QubesRstTranslator(RstTranslator):
         return
       self.write(node_as_text)
 
+
   def get_code_text_block(self, node_as_string: str) -> str:
+
     x = node_as_string.splitlines()
     ident = self.nl + CODE_BLOCK_IDENT
     return ident.join(x) + self.nl
@@ -492,6 +505,7 @@ class QubesRstTranslator(RstTranslator):
 
   def depart_enumerated_list(self, node: Node) -> None:
     super().depart_enumerated_list(node)
+
 
   def visit_bullet_list(self, node: Node) -> None:
     if self.document["source"].endswith('index.rst') or \
@@ -725,6 +739,7 @@ class QubesRstTranslator(RstTranslator):
   def visit_reference(self, node: Node) -> None:
     refname = node.get('name')
     refuri = node.get('refuri')
+
     if self.document['source'].endswith('index.rst') or \
         self.document["source"].endswith('releases/notes.rst') or \
         self.document["source"].endswith('releases/schedules.rst') or \

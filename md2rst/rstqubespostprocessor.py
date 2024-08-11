@@ -83,6 +83,46 @@ class RSTDirectoryPostProcessor:
         if found:
           write_to(data, filepath)
 
+  def add_block(self, message: str, file_patterns: list, block_type: str = 'warning') -> None:
+    for path, dirs, files in os.walk(os.path.abspath(self.rst_directory)):
+      for file_pattern in file_patterns:
+        for filename in fnmatch.filter(files, file_pattern):
+          if filename.endswith(file_pattern):
+            filepath = os.path.join(path, filename)
+            data = read_from(filepath)
+            block = ".. " + block_type + "::" + "\n      " + message + "\n\n"
+            data = block + data
+            logger.debug("Reading RST file [%s] and adding block of type [%s] and message [%s]", filepath, block_type, message)
+            write_to(data, filepath)
+
+  def search_replace_custom_qubes_links(self, links_to_replace: dict, file_pattern: str = '*.rst') -> None:
+    for path, dirs, files in os.walk(os.path.abspath(self.rst_directory)):
+      for filename in fnmatch.filter(files, file_pattern):
+
+        filepath = os.path.join(path, filename)
+        logger.debug("Reading RST file %s and replacing custom QUBES strings markdown links", filepath)
+        with open(filepath, 'r') as file:
+          lines = file.readlines()
+        found = False
+        new_lines = []
+
+        for to_replace, replace_with in links_to_replace.items():
+          new_lines = []
+          for line in lines:
+            if to_replace in line:
+              l = line
+              line = line.replace(':doc:', '')
+              line = line.replace('>`','>__`')
+              line = line.replace(to_replace, replace_with)
+              found = True
+              logger.debug("String to replace: [%s] with: [%s]", l, line)
+            new_lines.append(line)
+          lines = new_lines
+        if found:
+          with open(filepath, 'w') as file:
+            file.writelines(lines)
+
+
   def search_replace_custom_links(self, links_to_replace: dict, file_pattern: str = '*.rst') -> None:
     for path, dirs, files in os.walk(os.path.abspath(self.rst_directory)):
       for filename in fnmatch.filter(files, file_pattern):

@@ -25,6 +25,7 @@ logfile = '/tmp/md2rst.log'
 # it will be used to gather permalinks and relative paths, so that cross referencing
 # can be later done in the restructured text documentation
 # the markown _doc repository will be copied to the rst_directory for further processing as well
+
 root_directory = '/home/user/rst/qubesos.github.io.orig'
 #######################################################################
 # redirect base url for the hosted rst documentation
@@ -117,7 +118,15 @@ files_to_remove = [
     'qubes-core-stack.rst',
     'system-doc.rst',
     'qubes-template-configs.rst',
-    'community-recommended-hardware.rst']
+    'community-recommended-hardware.rst',
+    'hcl.rst',
+    'downloads.rst',
+    'visual-style-guide.rst',
+    'website-style-guide.rst',
+    'how-to-edit-the-documentation.rst',
+    'documentation-style-guide.rst'
+]
+
 
 [git]
 #######################################################################
@@ -136,13 +145,46 @@ attachment_url = 'https://github.com/maiska/qubes-attachment.rtd.git'
 # if their png variants exist, please ignore and set svg_png_conversion_replacement to false
 svg_files_to_png = ['admin-api-architecture.svg', 'u2f.svg', 'update_table-20140424-170010.svg', 'release-cycle.svg']
 
+[add_block]
+
+add_block_type = 'warning'
+add_block_message = 'This page is intended for advanced users.'
+add_block_files = [
+    'awesomewm.rst',
+    'disposable-customization.rst',
+    'how-to-install-software-in-dom0.rst',
+    'kde.rst',
+    'qubes-service.rst',
+    'salt.rst',
+    'usb-qubes.rst',
+    'bind-dirs.rst',
+    'gui-configuration.rst',
+    'i3.rst',
+    'managing-vm-kernels.rst',
+    'resize-disk-image.rst',
+    'secondary-storage.rst',
+    'volume-backup-revert.rst',
+    'config-files.rst',
+    'gui-domain.rst',
+    'installing-contributed-packages.rst',
+    'mount-from-other-os.rst',
+    'rpc-policy.rst',
+    'standalones-and-hvms.rst'
+]
+
 [run]
 
 md_map = true
 
 #######################################################################
+#######################################################################
+#######################################################################
 # 1-ST STAGE
 # please set all keys to true in this section
+#######################################################################
+#######################################################################
+#######################################################################
+
 #######################################################################
 
 # initially converts markdown to rst via pandoc
@@ -176,9 +218,15 @@ copy_rst_files = true
 remove_rst_directory = true
 remove_rst_files = true
 
+
+
+#######################################################################
+#######################################################################
 #######################################################################
 # 2ND STAGE
 # please set all the to true in this section
+#######################################################################
+#######################################################################
 #######################################################################
 
 
@@ -226,27 +274,44 @@ qubes_rst = false
 svg_png_conversion_replacement = false
 markdown_links_leftover = false
 replace_custom_strings = false
+replace_custom_links = false
+add_block = false
 
 #docutils_validate = true
 #qubes_rst = true
 #svg_png_conversion_replacement = true
 #markdown_links_leftover = true
 #replace_custom_strings = true
+#replace_custom_links = true
+#add_block = true
+
 
 # TODO grep for SYSTEM MESSAGE in rst converted documentation
+
 #######################################################################
 #######################################################################
 #######################################################################
-#[stage_three]
-###########
 # 3rd stage
-###########
+#######################################################################
+#######################################################################
+#######################################################################
+
 # empty all relevant markdown files and
 # add a redirection to the current rst documentation
 # see redirect_base_url
 redirect_markdown = false
 #redirect_markdown = true
+#for debug purposes for difficult files
+# now obsolete
 
+[customized_qubesos_link_mappings]
+'</user/downloading-installing-upgrading/downloads>' = '<https://www.qubes-os.org/downloads/>'
+'</user/downloading-installing-upgrading/download-mirrors>' = '<https://www.qubes-os.org/downloads/mirrors/>'
+'</developer/general/visual-style-guide>' = '<https://www.qubes-os.org/doc/visual-style-guide/>'
+'</developer/general/documentation-style-guide>' = '<https://www.qubes-os.org/doc/documentation-style-guide/>'
+'</developer/general/how-to-edit-the-documentation>' = '<https://www.qubes-os.org/doc/how-to-edit-the-documentation/>'
+'</developer/general/website-style-guide>'  =  '<https://www.qubes-os.org/doc/website-style-guide/>'
+'</user/hardware/hcl>' = '<https://www.qubes-os.org/hcl/>'
 
 [replace_custom_strings_values]
 'user/how-to-guides/how-to-copy-from-dom0:copying from dom0' = 'user/how-to-guides/how-to-copy-from-dom0:copying **from** dom0'
@@ -290,10 +355,20 @@ redirect_markdown = false
 '**``sys-usb:2-5 - 058f_USB_2.0_Camera``**' = '**sys-usb:2-5 - 058f_USB_2.0_Camera**'
 '“\|appmenu\|[VM-name]: Qube Settings”' = '“[VM-name]: Qube Settings”'
 'Mostly WorksTM' = 'Mostly Works :superscript:`TM`'
+'of that usage see `here <../firewall_4.1/>`__' = 'of that usage see :doc:`here </user/security-in-qubes/firewall_4.1>`.'
+'of that usage see `here <../firewall/>`__' = 'of that usage see :doc:`here </user/security-in-qubes/firewall/>`'
+'some created as `disposables <../glossary#disposable>`__' = 'some created as :ref:`disposables <user/reference/glossary:disposable>`.'
+'`templates <../templates/>`__ you want to have installed' = ':doc:`templates </user/templates/templates>` you want to have installed'
+'`Architecture Specification document </_static/arch-spec-0.3.pdf>`__' = ':download:`Architecture Specification document </attachment/doc/arch-spec-0.3.pdf>`'
+'`Architecture Spec v0.3 [PDF] </_static/arch-spec-0.3.pdf>`__' = ':download:`Architecture Spec v0.3 [PDF] </attachment/doc/arch-spec-0.3.pdf>`'
+"`The Applications tab in Qube\n" = "`The Applications tab in Qube"
+':doc:`:doc:' = ':doc:'
+
+
 #TODO after stage 2 '```qvm-device pci`` </doc/how-to-use-devices/#general-qubes-device-widget-behavior-and-handling>`__.' = '`qvm-device pci </doc/how-to-use-devices/#general-qubes-device-widget-behavior-and-handling>`__.'
 
-#for debug purposes for difficult files
-# now obsolete
+
+
 [test]
 run = false
 #run = true
