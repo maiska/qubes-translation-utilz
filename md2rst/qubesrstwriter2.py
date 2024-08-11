@@ -781,8 +781,6 @@ class QubesRstTranslator(RstTranslator):
 
   def depart_reference(self, node: Node) -> None:
     refname = node.get('name')
-    if 'Marek' in refname:
-      print('n')
     refuri = node.get('refuri')
     if refname is None and refuri.startswith('http'):
       # the case of license.rst and Markdown link with qubes os have to be converted manually
