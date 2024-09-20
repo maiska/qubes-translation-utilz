@@ -38,6 +38,7 @@ def find_and_replace_external_md(data, external_md_links_found, found):
     url_name = item[0]
     external_url_md = item[1]
     url_name_to_replace = ' `' + url_name[1:len(url_name) - 1].replace('\n', ' ')
+
     external_url = ' <' + external_url_md[1:len(external_url_md) - 1] + '>`__'
     logger.debug('MD LINKS TO REPLACE: [%s] WITH: [%s]', url_name + external_url_md,
            url_name_to_replace + external_url)
@@ -95,12 +96,30 @@ class RSTDirectoryPostProcessor:
             logger.debug("Reading RST file [%s] and adding block of type [%s] and message [%s]", filepath, block_type, message)
             write_to(data, filepath)
 
+  def find_hcl_pattern(self, role:str, text:str, md_uri:str)-> list[tuple[str, str, str]]:
+    """
+    Find the pattern in a text and return the matched strings.
+
+    Args:
+        text (str): The text to search for the pattern.
+
+    Returns:
+        list[tuple[str, str, str]]: A list of tuples containing the matched strings.
+    """
+
+    pattern = role+ r"`([^`]+?) " + md_uri
+    matches = re.findall(pattern, text)
+
+    return [(role+"`", match, md_uri) for match in matches]
+
   def search_replace_custom_qubes_links(self, links_to_replace: dict, file_pattern: str = '*.rst') -> None:
     for path, dirs, files in os.walk(os.path.abspath(self.rst_directory)):
       for filename in fnmatch.filter(files, file_pattern):
 
         filepath = os.path.join(path, filename)
+
         logger.debug("Reading RST file %s and replacing custom QUBES strings markdown links", filepath)
+
         with open(filepath, 'r') as file:
           lines = file.readlines()
         found = False
@@ -111,9 +130,16 @@ class RSTDirectoryPostProcessor:
           for line in lines:
             if to_replace in line:
               l = line
-              line = line.replace(':doc:', '')
-              line = line.replace('>`','>__`')
-              line = line.replace(to_replace, replace_with)
+              if ":" in to_replace:
+                role = ':ref:'
+              else:
+                role = ':doc:'
+              matches = self.find_hcl_pattern(role, line, to_replace)
+
+              for match in matches:
+                to_r = match[0] + match[1] +" " + match[2]
+                w_r = "`" + match[1] + " " + replace_with
+                line = line.replace(to_r, w_r)
               found = True
               logger.debug("String to replace: [%s] with: [%s]", l, line)
             new_lines.append(line)

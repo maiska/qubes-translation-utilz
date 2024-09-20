@@ -2,7 +2,7 @@
 Admin API
 =========
 
-*You may also be interested in the article*\ `Introducing the Qubes Admin API <https://www.qubes-os.org/news/2017/06/27/qubes-admin-api/>`__\ *.*
+*You may also be interested in the article* \ `Introducing the Qubes Admin API <https://www.qubes-os.org/news/2017/06/27/qubes-admin-api/>`__\ *.*
 
 Goals
 =====
@@ -782,27 +782,21 @@ Policy admin API
 There is also an API to view and update :doc:`Qubes RPC policy files </developer/services/qrexec>` in dom0. All of the following calls have dom0 as
 destination:
 
-+------------------+----------+------------------+------------------+
-| call             | argument | inside           | return           |
-+==================+==========+==================+==================+
-| ``policy.List``  | -        | -                | ``<name1>        |
-| ``polic          |          |                  | \n<name2>\n...`` |
-| y.include.List`` |          |                  |                  |
-+------------------+----------+------------------+------------------+
-| ``policy.Get``   | name     | -                | ``<tok           |
-| ``poli           |          |                  | en>\n<content>`` |
-| cy.include.Get`` |          |                  |                  |
-+------------------+----------+------------------+------------------+
-| ``               | name     | ``<tok           | -                |
-| policy.Replace`` |          | en>\n<content>`` |                  |
-| ``policy.i       |          |                  |                  |
-| nclude.Replace`` |          |                  |                  |
-+------------------+----------+------------------+------------------+
-| `                | name     | ``<token>``      | -                |
-| `policy.Remove`` |          |                  |                  |
-| ``policy.        |          |                  |                  |
-| include.Remove`` |          |                  |                  |
-+------------------+----------+------------------+------------------+
++----------------------------+----------+------------------------+------------------+
+| call                       | argument | inside                 | return           |
++============================+==========+========================+==================+
+| ``policy.List``            | `-`      | `-`                    | ``<name1>        |
+| ``policy.include.List``    |          |                        | \n<name2>\n...`` |
++----------------------------+----------+------------------------+------------------+
+| ``policy.Get``             | name     | `-`                    | ``<token>        |
+| ``policy.include.Get``     |          |                        | \n<content>``    |
++----------------------------+----------+------------------------+------------------+
+| ``policy.Replace``         | name     | ``<token>\n<content>`` | `-`              |
+| ``policy.include.Replace`` |          |                        |                  |
++----------------------------+----------+------------------------+------------------+
+| ``policy.Remove``          | name     | ``<token>``            | `-`              |
+| ``policy.include.Remove``  |          |                        |                  |
++----------------------------+----------+------------------------+------------------+
 
 The ``policy.*`` calls refer to main policy files
 (``/etc/qubes/policy.d/``), and the ``policy.include.*`` calls refer to
