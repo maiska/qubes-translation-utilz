@@ -388,6 +388,8 @@ redirect_markdown = false
 '****Note:**' = '**Note:'
 'how-to-update>``' = 'how-to-update>`'
 '**Note** *: the ``$`` character is deprecated in qrexec keywords – please use ``@`` instead (e.g. ``@anyvm``). For more information, see the bulletin*' = '**Note** *: the* ``$`` *character is deprecated in qrexec keywords – please use* ``@`` *instead (e.g.* ``@anyvm`` *). For more information, see the bulletin*'
+'{% raw %}'=''
+'{% endraw %}'=''
 
 
 #TODO after stage 2 '```qvm-device pci`` </doc/how-to-use-devices/#general-qubes-device-widget-behavior-and-handling>`__.' = '`qvm-device pci </doc/how-to-use-devices/#general-qubes-device-widget-behavior-and-handling>`__.'
