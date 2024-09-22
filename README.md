@@ -65,9 +65,18 @@ user/advanced-topics/bind-dirs.rst:  using ```/rw/config/rc.local`` </doc/config
 introduction/faq.rst:intend to use from ```sys-usb`` </doc/usb/>`__ to another qube via
 developer/system/template-implementation.rst:``/home`` </doc/templates/#inheritance-and-persistence>`__. The child  
 ```
+
 ```commandline
 grep -r "\`\`\`"
 ```
+
+```commandline
+grep -r "\*\*\*"
+```
+```commandline
+grep -r SYSTEM # for written out sphinx system errors in converted rst files
+```
+
 
 ```commandline
 grep -r ":title-reference"
@@ -78,6 +87,7 @@ user/advanced-topics/bind-dirs.rst:24:For example, in Whonix, :title-reference:`
 introduction/support.rst:39:5. Try :title-reference:`searching the ``qubes-users``
 developer/system/template-implementation.rst:36:``/home`` directory of its parent TemplateVM :title-reference:`are not copied to the
 ```
+
 ### Submodule
 
 THe new RST documentatoin expects the attachment Qubes OS repo to be available
