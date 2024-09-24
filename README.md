@@ -43,19 +43,30 @@ It contains:
 
 5. Directories and files to remove such as the markdown documentation configuration or mere redirects to external docs
 
-#### TODO
+#### final TODOs
 
-- TODO requirements - new one
-- TODO redirects does not work atm
-1. test links with sphinx
-2. fix links
-3. fix broken links in config files 
-4. pdf latex builds 
-5. new jekyll site test with new
-6. developer/general/gsoc.rst - remove the commented out section 
-7. how to edit the documentation, documentation style guide, website style guide (remove from index?? )
-8. visually style guide - manually convert??
-9. http://127.0.0.1:8000/developer/services/qrexec.html - comment
+1. fix final minor formatting errors where applicable
+2. sync repos woith origin, check commits and check conversion
+3. test links with sphinx
+4. test pdf latex builds
+5. run 3rd stage and test jekyll site
+6. deploy again
+7. go over the final version again
+8. merge pull request
+9. prepare, run final conversion of official qubes-doc
+   - qubes-doc will have different branches for old markdwon, rst, markdown after conversion
+   - qubesos.github.io will have different branches for old markdwon, rst, markdown after conversion ?
+   - attachment repo will be splitted between qubes-doc and qubesos.github.io repos and will no longer be a submodule
+   - list of documentation that needs to be ammended:
+      - https://qubes-doc-rst.readthedocs.io/en/latest/introduction/privacy.html (see also preparation folder of this repo for a suggestion)
+      - https://qubes-doc-rst.readthedocs.io/en/latest/introduction/contributing.html
+      - https://www.qubes-os.org/doc/documentation-style-guide/
+      - https://qubes-doc-rst.readthedocs.io/en/latest/index.html
+      - FAQ two sections: Should I trust the Qubes OS official website and one for RTD
+      - new doc how-to-edit-the-rst-documentation.rst in preparation folder in this repo
+      - new styleguide for RST documentation is to be created 
+
+
 
 ```commandline
 grep -r "</doc/"
@@ -163,10 +174,7 @@ In preparation folder there are two files with initial content suggestions:
 existing how-to-edit-the-documentation.md or as a separate file. The first option does not require changing cross-reference
  linking and wording in other documents, but it is not a clear differentiation either as the second one. 
 2. `privacy.rst` with a reference to the privacy policy of RTD at the end of the file.
-
-## New TODO
-
-1. style guide for RST documentation  
+ 
 
 ## Serve jekyll website locally
 
