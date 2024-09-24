@@ -393,7 +393,7 @@ redirect_markdown = false
 '{% raw %}'=''
 '{% endraw %}'=''
 '*(where ``<VMname>`` is the ' = '*(where* ``<VMname>`` *is the '
-'c:\Program Files\Invisible Things Lab\Qubes Tools\log' = 'c:\\Program Files\\Invisible Things Lab\\Qubes Tools\log'
+'c:\Program Files\Invisible Things Lab\Qubes Tools\log' = 'c:\\Program Files\\Invisible Things Lab\\Qubes Tools\\log'
 'Co mponent' = 'Component'
 'Se tting' = 'Setting'
 'Com pon ent' = 'Component'
@@ -424,6 +424,11 @@ redirect_markdown = false
 "**Note:** See our :doc:`glossary </user/reference/glossary>` and :doc:`FAQ </introduction/faq>` for more information." = ".. note::\n\n      **Note:** See our :doc:`glossary </user/reference/glossary>` and :doc:`FAQ </introduction/faq>` for more information."
 'this page are necessary, but not sufficient, for Qubes' = 'this page are *necessary, but not sufficient*, for Qubes'
 'Its log is in a fixed location: C:\move-profiles.log' = 'Its log is in a fixed location: C:\\move-profiles.log'
+':doc:`rw/config/rc.local </user/advanced-topics/config-files>`' = ':doc:`/rw/config/rc.local </user/advanced-topics/config-files>`'
+'ot her_install/-private' = 'other_install/-private'
+'policy/qubesos/code-signing — No signature found' = '``policy/qubesos/code-signing — No signature found``'
+"policy/qubesos/code-signing — Unable to verify (no valid key\n      found)" = '``policy/qubesos/code-signing — Unable to verify (no valid key found)``'
+'* - current-testing freeze' = '* - ``current-testing`` freeze'
 
 #TODO after stage 2 '```qvm-device pci`` </doc/how-to-use-devices/#general-qubes-device-widget-behavior-and-handling>`__.' = '`qvm-device pci </doc/how-to-use-devices/#general-qubes-device-widget-behavior-and-handling>`__.'
 
