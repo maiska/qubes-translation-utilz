@@ -45,15 +45,16 @@ It contains:
 
 #### final TODOs
 
-1. fix final minor formatting errors where applicable
-2. sync repos woith origin, check commits and check conversion
+1. fix final minor formatting errors where applicable - currently it is DONE (/)
+2. sync repos with origin, check commits and check conversion
 3. test links with sphinx
 4. test pdf latex builds
-5. run 3rd stage and test jekyll site
-6. deploy again
-7. go over the final version again
-8. merge pull request
-9. prepare, run final conversion of official qubes-doc
+5. test epub builds - currently it looks all right (/)
+6. run 3rd stage and test jekyll site
+7. deploy again
+8. go over the final version again
+9. merge pull request
+10. prepare, run final conversion of official qubes-doc
    - qubes-doc will have different branches for old markdwon, rst, markdown after conversion
    - qubesos.github.io will have different branches for old markdwon, rst, markdown after conversion ?
    - attachment repo will be splitted between qubes-doc and qubesos.github.io repos and will no longer be a submodule
