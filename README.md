@@ -48,7 +48,7 @@ It contains:
 1. fix final minor formatting errors where applicable - currently it is DONE (/)
 2. sync forked maiska's repos with origin, check commits and check conversion (/) DONE  
 3. test links with sphinx
-4. test pdf latex builds - there is an arror building pdf with libpng (x) 
+4. test pdf latex builds - all good (/) 
 5. test epub builds - currently it looks all right (/)
 6. run 3rd stage and test jekyll site
 7. deploy again
