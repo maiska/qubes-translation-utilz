@@ -63,6 +63,8 @@ It contains:
       - https://qubes-doc-rst.readthedocs.io/en/latest/introduction/contributing.html
       - https://www.qubes-os.org/doc/documentation-style-guide/
       - https://qubes-doc-rst.readthedocs.io/en/latest/index.html
+      - developer/general/gsod.rst
+      - developer/general/how-to-edit-the-documentation
       - FAQ two sections: Should I trust the Qubes OS official website and one for RTD
       - new doc how-to-edit-the-rst-documentation.rst in preparation folder in this repo
          -- add a sentence such as "If you want you can read and compare the current rst qubes os doc with the previous original markdown documentation here..." or something like that with links.
