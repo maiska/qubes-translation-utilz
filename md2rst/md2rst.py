@@ -23,8 +23,7 @@ from config_constants import *
 from pandocconverter import PandocConverter
 from qubesrstwriter2 import QubesRstWriter
 from rstqubespostprocessor import validate_rst_file, RSTDirectoryPostProcessor
-from utilz import get_mappings, convert_svg_to_png, is_not_readable, CheckRSTLinks
-
+from utilz import get_mappings, convert_svg_to_png, is_not_readable, CheckRSTLinks, post_convert, post_convert_index_rst
 
 basicConfig(level=DEBUG)
 logger = getLogger(__name__)
@@ -72,6 +71,7 @@ def convert_md_to_rst(config_toml: dict) -> None:
   rst_directory = config_toml[RST][RST_DIRECTORY]
   copy_from_dir = config_toml[RST][COPY_FROM_DIR]
   md_file_names_to_copy = config_toml[RST][MD_FILE_NAMES]
+
   rst_config_files_to_copy = config_toml[RST][RST_CONFIG_FILES]
   rst_files_to_copy = config_toml[RST][RST_FILES]
   rst_dirs_to_remove = config_toml[RST][DIRECTORIES_TO_REMOVE]
@@ -100,7 +100,7 @@ def convert_md_to_rst(config_toml: dict) -> None:
 
   if config_toml[RUN][COPY_RST_FILES]:
     logger.info("Copy from %s directory to %s", copy_from_dir, rst_config_files_to_copy)
-    rst_converter.post_convert(copy_from_dir, rst_config_files_to_copy, rst_files_to_copy)
+    post_convert(copy_from_dir, rst_directory, rst_config_files_to_copy, rst_files_to_copy)
 
   if config_toml[RUN][REMOVE_RST_FILES]:
     logger.info("Remove hidden files [%s] from converted rst doc directory ",
@@ -187,6 +187,7 @@ def run(config_toml: dict) -> None:
 
 
 
+
   if config_toml[RUN][REDIRECT_MARKDOWN]:
     logger.debug("------------------------------------------------")
     logger.debug("------------------------------------------------")
@@ -195,6 +196,12 @@ def run(config_toml: dict) -> None:
                          config_toml[MARKDOWN][REDIRECT_BASE_URL],
                          config_toml[MARKDOWN][EXCLUDE_FILES_FROM_REDIRECT])
     markdown_redirector.traverse_insert_redirect_delete_content()
+
+  if config_toml[RUN]['replace_index_rst']:
+    rst_directory = config_toml[RST][RST_DIRECTORY]
+    copy_from_dir = config_toml[RST][COPY_FROM_DIR]
+    post_convert_index_rst(copy_from_dir, rst_directory)
+
 
   if config_toml[TEST][RUN]:
     logger.debug("------------------------------------------------")

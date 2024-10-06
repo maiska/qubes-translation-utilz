@@ -111,21 +111,3 @@ class PandocConverter:
           with open(filepath, 'w', encoding='utf-8') as file:
             file.write(modified_content)
 
-  def post_convert(self, copy_from_dir: str = '/home/user/md2rst/preparation/',
-           rst_config_files: list = ['requirements.txt', 'conf.py', '.readthedocs.yaml'],
-           rst_files: list = ['intro.rst']) -> None:
-
-    if os.path.exists(os.path.join(self.directory_to_convert, "doc.rst")):
-      shutil.move(os.path.join(self.directory_to_convert, "doc.rst"),
-            os.path.join(self.directory_to_convert, "index.rst"))
-
-    for f in rst_files:
-      existing_files = [os.path.join(path, name) for path, subdirs, files in
-                os.walk(self.directory_to_convert) for name in files if name == f]
-      assert len(existing_files) == 1
-      shutil.copy(os.path.join(copy_from_dir, f), existing_files[0])
-
-    for file_name in rst_config_files:
-      file_to_copy = os.path.join(copy_from_dir, file_name)
-      logger.info('Copying [%s] to [%s]', file_to_copy, self.directory_to_convert)
-      shutil.copy(file_to_copy, self.directory_to_convert)

@@ -74,6 +74,7 @@ md_file_names = ['doc.md']
 # satisfies the requirements !!!
 rst_config_files = ['requirements.txt', 'conf.py', '.readthedocs.yaml']
 
+
 #######################################################################
 # rst specific files for which it was easier to create a manual representation and just copy them, 
 # reside in copy_from_dir
@@ -289,6 +290,7 @@ markdown_links_leftover = true
 replace_custom_strings = true
 replace_custom_links = true
 add_block = true
+replace_index_rst = true
 
 
 # TODO grep for SYSTEM MESSAGE in rst converted documentation

@@ -1,6 +1,7 @@
 import fnmatch
 import json
 import os
+import shutil
 from enum import Enum
 from logging import basicConfig, getLogger, DEBUG
 import urllib.request
@@ -145,6 +146,29 @@ def get_url(path: str) -> str:
   else:
     url = QUBESOS_SITE + path + '/'
   return url
+
+def post_convert_index_rst(copy_from_dir: str, directory_to_convert: str) -> None:
+
+  if os.path.exists(os.path.join(directory_to_convert, "doc.rst")):
+    os.remove(os.path.join(directory_to_convert, "doc.rst"))
+    shutil.copy(os.path.join(copy_from_dir, 'index.rst'), directory_to_convert)
+
+
+def post_convert(copy_from_dir: str, directory_to_convert: str,
+         rst_config_files: list ,
+         rst_files: list ) -> None:
+
+  for f in rst_files:
+    existing_files = [os.path.join(path, name) for path, subdirs, files in
+              os.walk(directory_to_convert) for name in files if name == f]
+    assert len(existing_files) == 1
+
+    shutil.copy(os.path.join(copy_from_dir, f), existing_files[0])
+
+  for file_name in rst_config_files:
+    file_to_copy = os.path.join(copy_from_dir, file_name)
+    logger.info('Copying [%s] to [%s]', file_to_copy, directory_to_convert)
+    shutil.copy(file_to_copy, directory_to_convert)
 
 
 class Mappings(Enum):
