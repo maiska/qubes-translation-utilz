@@ -76,6 +76,14 @@ rst_config_files = ['requirements.txt', 'conf.py', '.readthedocs.yaml']
 
 
 #######################################################################
+# rst configuration specific files reside in copy_from_dir
+#--------------
+# !!! be careful before converting, make sure the contents is up to date and
+# satisfies the requirements !!!
+rst_index_file = ['index.rst']
+
+
+#######################################################################
 # rst specific files for which it was easier to create a manual representation and just copy them, 
 # reside in copy_from_dir
 #--------------

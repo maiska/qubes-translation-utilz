@@ -3,8 +3,8 @@ How to edit the ReStructuredText documentation
 ==============================================
 
 Most of the Qubes OS documentation pages are stored as ReStructuredText files in
-the `qubes-rst-doc <https://github.com/QubesOS/qubes-rst-doc>`__ repository. By
-cloning and regularly pulling from this repo, users can maintain their
+the `qubes-rst-doc <https://github.com/QubesOS/qubes-doc>`__ repository on branch TODO.
+By cloning and regularly pulling from this repo, users can maintain their
 own up-to-date offline copy of all Qubes documentation rather than
 relying solely on the web.
 
@@ -16,7 +16,8 @@ request!
 How to submit a pull request
 ============================
 
-We keep all the ReStructuredText documentation in `qubes-doc <https://github.com/QubesOS/qubes-rst-doc>`__, a dedicated Git repository hosted on `GitHub <https://github.com/>`__. Thanks to
+We keep all the ReStructuredText documentation in `qubes-doc <https://github.com/QubesOS/qubes-doc>`__,
+a dedicated Git repository hosted on `GitHub <https://github.com/>`__. Thanks to
 GitHub’s easy web interface, you can edit the documentation even if
 you’re not familiar with Git or the command line! All you need is a free
 GitHub account.
@@ -45,7 +46,7 @@ A few notes before we get started:
 
 -  Finally, if you’ve written something that doesn’t belong in qubes-doc
    but that would be beneficial to the Qubes community, please consider
-   adding it to the :ref:`external    documentation <developer/general/documentation-style-guide:core vs external documentation>`.
+   adding it to the :ref:`external documentation <developer/general/documentation-style-guide:core vs external documentation>`.
 
 (**Advanced users:** If you’re already familiar with GitHub or wish to
 work from the command line, you can skip the rest of this section. All
@@ -164,6 +165,21 @@ When referencing to a section in an existing RST file use the ``:ref:`` role as 
    :caption: Add a link to a section in an existing internal rst documenation file. Pay attention to the missing leading slash in contrast to the doc role.
 
    text :ref:`USB Troubleshooting guide <user/troubleshooting/usb-troubleshooting:usb vm does not boot after creating and assigning usb controllers to it>`. text
+
+Tips & Tricks
+=============
+
+WIP
+
+See https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html for formatting text, it is either bold or italic, cannot be bold, if using out of the box.
+
+
+> https://qubes-doc-rst.readthedocs.io/en/latest/user/downloading-installing-upgrading/testing.html
+
+> * [ ]  `?` Im Abschnitt „Providing feedback“ fehlen die Symbole für „Daumen-hoch“ und „Daumen-runter“.
+- LATER TODO
+https://stackoverflow.com/questions/1862472/symbols-in-restructuredtext
+
 
 
 Serving the RST documentation locally
