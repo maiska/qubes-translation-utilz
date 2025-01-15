@@ -456,6 +456,12 @@ redirect_markdown = false
 '   r4.0-manager-firewall.png' = ''
 '   ipv6-1' = ''
 '   ipv6-2' = ''
+'X Font cursors'='`X Font cursors <https://tronche.com/gui/x/xlib/appendix/b/>`__'
+'Did you know? The Qubes OS installer' = '**Did you know?** The Qubes OS installer'
+'Did you know? By default, Qubes OS' = '**Did you know?** By default, Qubes OS'
+'everything except the /boot' = 'everything except the ``/boot``'
+'**sys-usb:2-5 - 058f_USB_2.0_Camera**' = '``sys-usb:2-5 - 058f_USB_2.0_Camera``'
+'`` online vif12.0 vif 10.137.0.100``' = '``online vif12.0 vif 10.137.0.100``'
 
 
 #TODO after stage 2 '```qvm-device pci`` </doc/how-to-use-devices/#general-qubes-device-widget-behavior-and-handling>`__.' = '`qvm-device pci </doc/how-to-use-devices/#general-qubes-device-widget-behavior-and-handling>`__.'
