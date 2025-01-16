@@ -462,6 +462,11 @@ redirect_markdown = false
 'everything except the /boot' = 'everything except the ``/boot``'
 '**sys-usb:2-5 - 058f_USB_2.0_Camera**' = '``sys-usb:2-5 - 058f_USB_2.0_Camera``'
 '`` online vif12.0 vif 10.137.0.100``' = '``online vif12.0 vif 10.137.0.100``'
+'   `The Applications tab in Qube   Settings </attachment/doc/r4.1-dom0-appmenu-select.png>`__' = ''
+'   qrexec internals diagram dom0-vm' = ''
+'   qrexec internals diagram vm-dom0' = ''
+'   qrexec internals diagram vm-vm' = ''
+'   Admin API Architecture' = ''
 
 
 #TODO after stage 2 '```qvm-device pci`` </doc/how-to-use-devices/#general-qubes-device-widget-behavior-and-handling>`__.' = '`qvm-device pci </doc/how-to-use-devices/#general-qubes-device-widget-behavior-and-handling>`__.'
