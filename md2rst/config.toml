@@ -154,6 +154,7 @@ attachment_url = 'https://github.com/maiska/qubes-attachment.rtd.git'
 # if their png variants exist, please ignore and set svg_png_conversion_replacement to false
 svg_files_to_png = ['admin-api-architecture.svg', 'u2f.svg', 'update_table-20140424-170010.svg', 'release-cycle.svg']
 
+
 [add_block]
 
 add_block_type = 'warning'
@@ -184,6 +185,13 @@ add_block_files = [
     'minimal-templates.rst',
     'testing.rst',
     
+]
+
+[add_icons]
+
+add_icons_to_files = [
+    'faq.rst',
+    'usability-ux.rst',
 ]
 
 [run]
@@ -290,6 +298,7 @@ git_init = false
 #replace_custom_strings = false
 #replace_custom_links = false
 #add_block = false
+#add_icons = false
 
 docutils_validate = true
 qubes_rst = true
@@ -298,6 +307,7 @@ markdown_links_leftover = true
 replace_custom_strings = true
 replace_custom_links = true
 add_block = true
+add_icons = true
 replace_index_rst = true
 
 
@@ -476,6 +486,24 @@ redirect_markdown = false
 'OverTM' = 'Over :superscript:`TM`'
 'clicking “<<”' = 'clicking “«”'
 '``yum info     qubes-core-dom0``' = '``yum info qubes-core-dom0``'
+".. important::\n      \n      Pros" = "|checkmark| **Pros**"
+".. important::\n      \n      Cons" = "|redx| **Cons**"
+".. important::\n      \n      Interfaces Should Not" = "|redx| **Interfaces Should Not**"
+".. important::\n      \n      Interfaces Should" = "|checkmark| **Interfaces Should**"
+".. important::\n      \n      Use Common Concepts" = "|checkmark| **Use Common Concepts**"
+".. important::\n      \n      Avoid Technical Words" = "|redx| **Avoid Technical Words**"
+".. important::\n      \n      Make Things Consistent" = "|checkmark| **Make Things Consistent**"
+".. important::\n      \n      Avoid Inconsistencies" = "|redx| **Avoid Inconsistencies**"
+".. important::\n      \n      Offer Actionable Solutions" = "|checkmark| **Offer Actionable Solutions**"
+".. important::\n      \n      Don’t Leave Users Stranded" = "|redx| **Don’t Leave Users Stranded**"
+".. important::\n      \n      Minimize Repetitive Steps" = "|checkmark| **Minimize Repetitive Steps**"
+".. important::\n      \n      Create Groups & Categories" = "|checkmark| **Create Groups & Categories**"
+".. important::\n      \n      Avoid Duplicate Words" = "|redx| **Avoid Duplicate Words**"
+".. important::\n      \n      Avoid Acronyms" = "|redx| **Avoid Acronyms**"
+".. important::\n      \n      Use Simple Words" = "|checkmark| **Use Simple Words**"
+
+
+
 
 
 #TODO after stage 2 '```qvm-device pci`` </doc/how-to-use-devices/#general-qubes-device-widget-behavior-and-handling>`__.' = '`qvm-device pci </doc/how-to-use-devices/#general-qubes-device-widget-behavior-and-handling>`__.'

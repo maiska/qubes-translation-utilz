@@ -83,6 +83,20 @@ class RSTDirectoryPostProcessor:
 
         if found:
           write_to(data, filepath)
+ 
+  def add_icons(self, file_patterns: list) -> None:
+    for path, dirs, files in os.walk(os.path.abspath(self.rst_directory)):
+      for file_pattern in file_patterns:
+        for filename in fnmatch.filter(files, file_pattern):
+          if filename.endswith(file_pattern):
+            filepath = os.path.join(path, filename)
+            data = read_from(filepath)
+            icons = "\n" + ".. |checkmark| image:: /attachment/doc/checkmark.png"
+            icons += "\n" + ".. |redx| image:: /attachment/doc/red_x.png"
+            data = data + icons
+            logger.debug("Reading RST file [%s] and adding icons", filepath)
+            write_to(data, filepath)
+
 
   def add_block(self, message: str, file_patterns: list, block_type: str = 'warning') -> None:
     for path, dirs, files in os.walk(os.path.abspath(self.rst_directory)):
@@ -156,11 +170,13 @@ class RSTDirectoryPostProcessor:
         data = read_from(filepath)
         found = False
         for to_replace, replace_with in links_to_replace.items():
-          if to_replace in data:
+          if to_replace in data or (to_replace.find('\n') and re.search(re.escape(to_replace), data, re.DOTALL)):
             data = data.replace(to_replace, replace_with)
             found = True
             logger.debug("Reading RST file %s and replacing custom strings markdown links", filepath)
             logger.debug("String to replace: [%s] with: [%s]", to_replace, replace_with)
+
+            
         if found:
           write_to(data, filepath)
 

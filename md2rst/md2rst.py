@@ -185,8 +185,9 @@ def run(config_toml: dict) -> None:
     logger.debug("-------------------- add block with message at the beginning of a specific files ----------------------------")
     rst_directory_post_processor.add_block(config_toml['add_block']['add_block_message'], config_toml['add_block']['add_block_files'],  config_toml['add_block']['add_block_type'])
 
-
-
+  if config_toml[RUN]['add_icons']:
+    logger.debug("-------------------- add icons at the end of a specific files ----------------------------")
+    rst_directory_post_processor.add_icons(config_toml['add_icons']['add_icons_to_files'])
 
   if config_toml[RUN][REDIRECT_MARKDOWN]:
     logger.debug("------------------------------------------------")
