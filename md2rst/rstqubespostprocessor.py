@@ -84,15 +84,15 @@ class RSTDirectoryPostProcessor:
         if found:
           write_to(data, filepath)
  
-  def add_icons(self, file_patterns: list) -> None:
+  def add_icons(self, file_patterns: list, icons: str) -> None:
     for path, dirs, files in os.walk(os.path.abspath(self.rst_directory)):
       for file_pattern in file_patterns:
         for filename in fnmatch.filter(files, file_pattern):
           if filename.endswith(file_pattern):
             filepath = os.path.join(path, filename)
             data = read_from(filepath)
-            icons = "\n" + ".. |checkmark| image:: /attachment/doc/checkmark.png"
-            icons += "\n" + ".. |redx| image:: /attachment/doc/red_x.png"
+            #icons = "\n" + ".. |checkmark| image:: /attachment/doc/checkmark.png"
+            #icons += "\n" + ".. |redx| image:: /attachment/doc/red_x.png"
             data = data + icons
             logger.debug("Reading RST file [%s] and adding icons", filepath)
             write_to(data, filepath)

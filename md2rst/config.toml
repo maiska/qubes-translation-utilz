@@ -158,6 +158,7 @@ svg_files_to_png = ['admin-api-architecture.svg', 'u2f.svg', 'update_table-20140
 [add_block]
 
 add_block_type = 'warning'
+
 add_block_message = 'This page is intended for advanced users.'
 add_block_files = [
     'awesomewm.rst',
@@ -187,8 +188,17 @@ add_block_files = [
     
 ]
 
+[add_thumbs]
+
+add_thumbs = "\n.. |thumbsup| image:: /attachment/doc/like.png\n.. |thumbsdown| image:: /attachment/doc/dislike.png"
+add_thumbs_to_files = [
+    'testing.rst',
+]
+
+
 [add_icons]
 
+add_icons = "\n.. |checkmark| image:: /attachment/doc/checkmark.png\n.. |redx| image:: /attachment/doc/red_x.png"
 add_icons_to_files = [
     'faq.rst',
     'usability-ux.rst',
@@ -308,6 +318,7 @@ replace_custom_strings = true
 replace_custom_links = true
 add_block = true
 add_icons = true
+add_thumbs = true
 replace_index_rst = true
 
 
@@ -501,6 +512,7 @@ redirect_markdown = false
 ".. important::\n      \n      Avoid Duplicate Words" = "|redx| **Avoid Duplicate Words**"
 ".. important::\n      \n      Avoid Acronyms" = "|redx| **Avoid Acronyms**"
 ".. important::\n      \n      Use Simple Words" = "|checkmark| **Use Simple Words**"
+'a simple “thumbs up” or “thumbs' = 'a simple |thumbsup| “thumbs up” or |thumbsdown| “thumbs'
 
 
 
