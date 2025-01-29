@@ -513,6 +513,9 @@ redirect_markdown = false
 ".. important::\n      \n      Avoid Acronyms" = "|redx| **Avoid Acronyms**"
 ".. important::\n      \n      Use Simple Words" = "|checkmark| **Use Simple Words**"
 'a simple “thumbs up” or “thumbs' = 'a simple |thumbsup| “thumbs up” or |thumbsdown| “thumbs'
+':ref:`intentionally written in Markdown so as to be readable as plain text for this very reason <developer/general/documentation-style-guide:markdown conventions>`' = '`intentionally written in Markdown so as to be readable as plain text for this very reason <https://www.qubes-os.org/doc/documentation-style-guide/>`__'
+'install a new Debian template' = ':ref:`install a new Debian template <user/templates/debian/debian:installing>`'
+'Learn more about the two options here.' = 'Learn more about the two options :ref:`here <user/templates/debian/debian:upgrading>`.'
 
 
 
