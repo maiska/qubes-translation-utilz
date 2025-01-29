@@ -184,6 +184,7 @@ class CheckRSTLinks:
          ) -> None:
     self.section = ''
     self.uri = uri
+
     if is_dict_empty(md_pages_permalinks_and_redirects_to_filepath_map):
       raise ValueError("md_pages_permalinks_and_redirects_to_filepath_map is not set")
     self.md_pages_permalinks_and_redirects_to_filepath_map = md_pages_permalinks_and_redirects_to_filepath_map
@@ -234,7 +235,7 @@ class CheckRSTLinks:
     elif self.uri in FEED_XML:
       uri = QUBESOS_SITE + FEED_XML[1:len(FEED_XML)]
     elif self.uri.startswith('/doc/#'):
-      uri = '/index' + ':' + self.get_custom_section_name()
+      uri = result = self.section.replace('#', '')
     elif len(self.section) > 0 and self.uri.startswith('/') and not self.uri.startswith('/attachment'):
       # sections
       perm = self.uri
