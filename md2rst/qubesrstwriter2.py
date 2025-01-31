@@ -1,6 +1,7 @@
 # based on https://github.com/sphinx-contrib/restbuilder
 from __future__ import absolute_import
 import re
+import os
 from logging import basicConfig, getLogger, DEBUG
 
 import docutils
@@ -9,7 +10,10 @@ from docutils.nodes import Node
 
 from config_constants import PATTERN_STRIKEOUT_1, PATTERN_STRIKEOUT_2
 
+from typing import List
+
 PUNCTUATION_SET = {'!', ',', '.', ':', ';', '?', '__'}
+ADVANCED_WARNING = ".. warning::" + "\n\n      " + 'This page is intended for advanced users.'
 
 basicConfig(level=DEBUG)
 logger_qubes_rst = getLogger(__name__)
@@ -31,13 +35,14 @@ class QubesRstWriter(writers.Writer):
 
   output = None
 
-  def __init__(self, qubes_rst_links_checker: CheckRSTLinks, rst_directory: str) -> None:
+  def __init__(self, qubes_rst_links_checker: CheckRSTLinks, rst_directory: str, advanced_warning_files: List[str]) -> None:
     writers.Writer.__init__(self)
     self.qubes_rst_links_checker = qubes_rst_links_checker
     self.rst_directory = rst_directory
+    self.advanced_warning_files = advanced_warning_files
 
   def translate(self) -> None:
-    visitor = QubesRstTranslator(self.document, self.qubes_rst_links_checker, self.rst_directory)
+    visitor = QubesRstTranslator(self.document, self.qubes_rst_links_checker, self.rst_directory, self.advanced_warning_files)
     self.document.walkabout(visitor)
     self.output = visitor.body
 
@@ -87,6 +92,8 @@ def is_bash_original_code_block(node: Node) -> bool:
   return node.hasattr('classes') and len(node['classes']) == 2 and node['classes'][0] == 'code' and \
        (node['classes'][1] == 'bash' or node['classes'][1] == 'shell' or node['classes'][1] == 'sh')
 
+def get_basename(filename: str):
+  return os.path.basename(filename)
 
 def is_c_code_block(code_as_string: str) -> bool:
   return ' while(' in code_as_string or ' for(' in code_as_string or \
@@ -132,7 +139,7 @@ def get_title_text_length(child: Node) -> int:
 class QubesRstTranslator(RstTranslator):
 
   def __init__(self, document: docutils.nodes.document, qubes_rst_links_checker: CheckRSTLinks,
-         rst_directory: str) -> None:
+         rst_directory: str, advanced_warning_files = List[str]) -> None:
     super().__init__(document)
     self.qubes_rst_links_checker = qubes_rst_links_checker
     self.rst_directory = rst_directory
@@ -144,10 +151,11 @@ class QubesRstTranslator(RstTranslator):
     self.enumerated_lists_count = 0
     self.ident_count = 0
     self.video_container_summit_count = 0
-
     self.indentation = STDINDENT
+    self.advanced_warning_files = advanced_warning_files
 
   def get_self_docname(self) -> str:
+
     source = self.document['source']
     return source.replace(self.rst_directory + '/', '').replace('.rst', '') \
       if source.startswith(self.rst_directory + '/') and source.endswith('.rst') \
@@ -377,10 +385,14 @@ class QubesRstTranslator(RstTranslator):
     length = 0
     for child in node.children:
       length += get_title_text_length(child)
+
     # section title
     if self.title_count >= 0 and isinstance(parent, docutils.nodes.section) and not (
         isinstance(parent.parent, docutils.nodes.section)):
       self.write(self.nl + '=' * length + self.nl + self.nl)
+      # only with title
+      if self.title_count == 0 and get_basename(self.document['source']) in self.advanced_warning_files:
+        self.write(ADVANCED_WARNING + self.nl)
     # subsubsection title
     elif self.title_count >= 0 and isinstance(parent, docutils.nodes.section) and \
         isinstance(parent.parent, docutils.nodes.section) and \
@@ -777,7 +789,6 @@ class QubesRstTranslator(RstTranslator):
         prefix = prefix
       else:
         prefix = ' ' + prefix
-
       self.write(prefix)
 
   def depart_reference(self, node: Node) -> None:
@@ -786,6 +797,7 @@ class QubesRstTranslator(RstTranslator):
     if refname is None and refuri.startswith('http'):
       # the case of license.rst and Markdown link with qubes os have to be converted manually
       return
+
     if refuri.startswith('/doc/#'):
       section = refuri[refuri.index('#') + 1:len(refuri)]
       self.qubes_rst_links_checker.set_section(section)

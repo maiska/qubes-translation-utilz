@@ -157,9 +157,6 @@ svg_files_to_png = ['admin-api-architecture.svg', 'u2f.svg', 'update_table-20140
 
 [add_block]
 
-add_block_type = 'warning'
-
-add_block_message = 'This page is intended for advanced users.'
 add_block_files = [
     'awesomewm.rst',
     'disposable-customization.rst',
@@ -307,7 +304,6 @@ git_init = false
 #markdown_links_leftover = false
 #replace_custom_strings = false
 #replace_custom_links = false
-#add_block = false
 #add_icons = false
 
 docutils_validate = true
@@ -316,7 +312,6 @@ svg_png_conversion_replacement = true
 markdown_links_leftover = true
 replace_custom_strings = true
 replace_custom_links = true
-add_block = true
 add_icons = true
 add_thumbs = true
 replace_index_rst = true

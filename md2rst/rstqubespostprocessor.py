@@ -6,6 +6,9 @@ from logging import basicConfig, getLogger, DEBUG
 
 import docutils.utils
 from docutils.io import StringOutput
+from docutils import nodes
+
+from typing import List
 from sphinx.util import ensuredir
 
 from config_constants import PATTERN_MD_INTERNAL_LINKS, PATTERN_MD_EXTERNAL_LINKS, PATTERN_MD_INTERNAL_LINKS_SPACEY, \
@@ -63,13 +66,15 @@ def traverse_and_gather_section_ids_and_title(rst_document):
 
 
 class RSTDirectoryPostProcessor:
-  def __init__(self, rst_directory: str, qubes_rst_links_checker: CheckRSTLinks, files_to_skip: list) -> None:
+  def __init__(self, rst_directory: str, qubes_rst_links_checker: CheckRSTLinks, files_to_skip: list,
+               advanced_warning_files = List[str]) -> None:
     self.rst_directory = rst_directory
     self.qubes_rst_links_checker = qubes_rst_links_checker
     if files_to_skip is None:
       self.rst_files_to_skip = []
     else:
       self.rst_files_to_skip = files_to_skip
+    self.advanced_warning_files = advanced_warning_files
 
   def search_replace_md_links(self, file_pattern: str = '*.rst') -> None:
     for path, dirs, files in os.walk(os.path.abspath(self.rst_directory)):
@@ -91,23 +96,8 @@ class RSTDirectoryPostProcessor:
           if filename.endswith(file_pattern):
             filepath = os.path.join(path, filename)
             data = read_from(filepath)
-            #icons = "\n" + ".. |checkmark| image:: /attachment/doc/checkmark.png"
-            #icons += "\n" + ".. |redx| image:: /attachment/doc/red_x.png"
             data = data + icons
             logger.debug("Reading RST file [%s] and adding icons", filepath)
-            write_to(data, filepath)
-
-
-  def add_block(self, message: str, file_patterns: list, block_type: str = 'warning') -> None:
-    for path, dirs, files in os.walk(os.path.abspath(self.rst_directory)):
-      for file_pattern in file_patterns:
-        for filename in fnmatch.filter(files, file_pattern):
-          if filename.endswith(file_pattern):
-            filepath = os.path.join(path, filename)
-            data = read_from(filepath)
-            block = ".. " + block_type + "::" + "\n      " + message + "\n\n"
-            data = block + data
-            logger.debug("Reading RST file [%s] and adding block of type [%s] and message [%s]", filepath, block_type, message)
             write_to(data, filepath)
 
   def find_hcl_pattern(self, role:str, text:str, md_uri:str)-> list[tuple[str, str, str]]:
@@ -214,7 +204,8 @@ class RSTDirectoryPostProcessor:
         filepath = os.path.join(path, filename)
         if not os.path.basename(filepath) in self.rst_files_to_skip:
           rst_file_postprocessor = RSTFilePostProcessor(filepath,
-                                  self.qubes_rst_links_checker, self.rst_directory)
+                                  self.qubes_rst_links_checker, self.rst_directory,
+                                  self.advanced_warning_files)
           rst_file_postprocessor.find_and_qube_links()
 
   def parse_and_validate_rst(self, file_pattern: str = '*.rst') -> None:
@@ -247,20 +238,25 @@ class RSTDirectoryPostProcessor:
 
 
 class RSTFilePostProcessor:
-  def __init__(self, file_path: str, qubes_rst_links_checker, rst_directory) -> None:
+  def __init__(self, file_path: str, qubes_rst_links_checker, rst_directory: str, advanced_warning_files: List[str]) -> None:
     if not check_file(file_path):
       raise ValueError("Directory parameter does not point to a directory: " + file_path)
     if not check_file(rst_directory):
+
       raise ValueError("Directory parameter does not point to a directory: " + rst_directory)
     if is_not_readable(file_path):
       raise PermissionError("Directory could not be read")
+    if not advanced_warning_files:
+      raise ValueError("Advanced warning files is empty" )
+
     self.file_path = file_path
     self.qubes_rst_links_checker = qubes_rst_links_checker
     self.rst_directory = rst_directory
+    self.advanced_warning_files = advanced_warning_files
 
   def find_and_qube_links(self) -> None:
     rst_document = self.get_rst_document()
-    writer = QubesRstWriter(self.qubes_rst_links_checker, self.rst_directory)
+    writer = QubesRstWriter(self.qubes_rst_links_checker, self.rst_directory, self.advanced_warning_files)
     self.write_rst_file(rst_document, writer)
 
   # noinspection PyUnresolvedReferences

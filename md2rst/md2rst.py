@@ -125,7 +125,8 @@ def run(config_toml: dict) -> None:
 
   rst_directory_post_processor = RSTDirectoryPostProcessor(config_toml[RST][RST_DIRECTORY],
                                qubes_rst_links_checker,
-                               config_toml[RST][SKIP_FILES])
+                               config_toml[RST][SKIP_FILES],
+                               config_toml['add_block']['add_block_files'])
 
   logger.debug("md_doc_permalinks_and_redirects_to_filepath_map")
   logger.debug(md_doc_permalinks_and_redirects_to_filepath_map)
@@ -180,10 +181,6 @@ def run(config_toml: dict) -> None:
   if config_toml[RUN]['replace_custom_strings']:
     logger.debug("-------------------- MD LINKS REPLACE TEST ----------------------------")
     rst_directory_post_processor.search_replace_custom_links(config_toml['replace_custom_strings_values'])
-
-  if config_toml[RUN]['add_block']:
-    logger.debug("-------------------- add block with message at the beginning of a specific files ----------------------------")
-    rst_directory_post_processor.add_block(config_toml['add_block']['add_block_message'], config_toml['add_block']['add_block_files'],  config_toml['add_block']['add_block_type'])
  
   if config_toml[RUN]['add_icons']:
     logger.debug("-------------------- add icons at the end of a specific files ----------------------------")
@@ -240,7 +237,7 @@ def run_single_rst_test(file_name: str, external_redirects_mappings: dict,
   qubes_rst_links_checker = CheckRSTLinks('', md_doc_permalinks_and_redirects_to_filepath_map,
                       md_pages_permalinks_and_redirects_to_filepath_map,
                       external_redirects_mappings, md_sections_id_name_map)
-  writer = QubesRstWriter(qubes_rst_links_checker, rst_directory)
+  writer = QubesRstWriter(qubes_rst_links_checker, rst_directory, [])
 
   destination = StringOutput(encoding='utf-8')
   writer.write(rst_document, destination)

@@ -108,13 +108,14 @@ def convert_svg_to_png(config_toml: dict) -> None:
           write_to(data, filepath)
 
 
-def write_to(data: str, filepath: str) -> None:
-  with open(filepath, "w") as f:
+
+def write_to(data: str, filepath: str, mode: str = "w") -> None:
+  with open(filepath, mode) as f:
     f.write(data)
 
 
 def read_from(filepath: str) -> str:
-  with open(filepath, 'r') as f:
+  with open(filepath, 'r', encoding='utf-8') as f:
     data = f.read()
   return data
 
