@@ -511,6 +511,10 @@ redirect_markdown = false
 ':ref:`intentionally written in Markdown so as to be readable as plain text for this very reason <developer/general/documentation-style-guide:markdown conventions>`' = '`intentionally written in Markdown so as to be readable as plain text for this very reason <https://www.qubes-os.org/doc/documentation-style-guide/>`__'
 'install a new Debian template' = ':ref:`install a new Debian template <user/templates/debian/debian:installing>`'
 'Learn more about the two options here.' = 'Learn more about the two options :ref:`here <user/templates/debian/debian:upgrading>`.'
+'Updating with direct commands such as dnf update, and apt update is not' = 'Updating with direct commands such as ``dnf update``, and ``apt update`` is not'
+'| Repo' = 'Repo'
+'| There' ='There'
+'| To permanently' = 'To permanently'
 
 
 
