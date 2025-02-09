@@ -515,6 +515,8 @@ redirect_markdown = false
 '| Repo' = 'Repo'
 '| There' ='There'
 '| To permanently' = 'To permanently'
+'- /etc/skel to /home; /usr/local.orig to /usr/local' = '- ``/etc/skel`` to ``/home``; ``/usr/local.orig`` to ``/usr/local``'
+'- /rw (includes /home, /usr/local, and bind-dirs)' = '- ``/rw`` (includes ``/home``, ``/usr/local``, and ``bind-dirs``)'
 
 
 
