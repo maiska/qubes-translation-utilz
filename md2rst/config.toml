@@ -65,6 +65,8 @@ copy_from_dir = '/home/user/rst/qubes-translation-utilz/md2rst/preparation/'
 #--------------
 # !!! be careful before converting, make sure the contents is up to date and
 # satisfies the requirements of the index doc.md file !!!
+# actually this is now obsolete and can be omitted entirely, also can be deleted 
+# from the source code and configuration altogether
 md_file_names = ['doc.md']
 
 #######################################################################
@@ -517,6 +519,7 @@ redirect_markdown = false
 '| To permanently' = 'To permanently'
 '- /etc/skel to /home; /usr/local.orig to /usr/local' = '- ``/etc/skel`` to ``/home``; ``/usr/local.orig`` to ``/usr/local``'
 '- /rw (includes /home, /usr/local, and bind-dirs)' = '- ``/rw`` (includes ``/home``, ``/usr/local``, and ``bind-dirs``)'
+'and our `mailing lists <https://www.qubes-os.org/support/>`__.' = 'and our :doc:`mailing lists </introduction/support>`.'
 
 
 
