@@ -520,6 +520,8 @@ redirect_markdown = false
 '- /etc/skel to /home; /usr/local.orig to /usr/local' = '- ``/etc/skel`` to ``/home``; ``/usr/local.orig`` to ``/usr/local``'
 '- /rw (includes /home, /usr/local, and bind-dirs)' = '- ``/rw`` (includes ``/home``, ``/usr/local``, and ``bind-dirs``)'
 'and our `mailing lists <https://www.qubes-os.org/support/>`__.' = 'and our :doc:`mailing lists </introduction/support>`.'
+'``make      help``' = '``make help``'
+'*$(WIN_OUTPUT_LIBS)/*/**' = '*$(WIN_OUTPUT_LIBS)/\*/\**'
 
 
 
