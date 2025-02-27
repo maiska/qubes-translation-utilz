@@ -226,7 +226,7 @@ def run_single_rst_test(file_name: str, external_redirects_mappings: dict,
             md_doc_permalinks_and_redirects_to_filepath_map: dict,
             md_pages_permalinks_and_redirects_to_filepath_map: dict, md_sections_id_name_map: dict,
             rst_directory: str) -> None:
-  fileobj = open(file_name, 'r')
+  fileobj = open(file_name, 'r', encoding='utf-8')
   # noinspection PyUnresolvedReferences
   default_settings = docutils.frontend.OptionParser(components=(docutils.parsers.rst.Parser,)).get_default_values()
   rst_document = docutils.utils.new_document(fileobj.name, default_settings)
@@ -243,7 +243,7 @@ def run_single_rst_test(file_name: str, external_redirects_mappings: dict,
   writer.write(rst_document, destination)
   ensuredir(os.path.dirname(file_name))
   try:
-    f = codecs.open(file_name + '.test', 'w', 'utf-8')
+    f = codecs.open(file_name + '.test', 'w', encoding='utf-8')
     try:
       f.write(writer.output)
     finally:

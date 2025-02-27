@@ -124,7 +124,7 @@ class RSTDirectoryPostProcessor:
 
         logger.debug("Reading RST file %s and replacing custom QUBES strings markdown links", filepath)
 
-        with open(filepath, 'r') as file:
+        with open(filepath, 'r', encoding='utf-8') as file:
           lines = file.readlines()
         found = False
         new_lines = []
@@ -149,7 +149,7 @@ class RSTDirectoryPostProcessor:
             new_lines.append(line)
           lines = new_lines
         if found:
-          with open(filepath, 'w') as file:
+          with open(filepath, 'w', encoding='utf-8') as file:
             file.writelines(lines)
 
 
@@ -262,7 +262,7 @@ class RSTFilePostProcessor:
   # noinspection PyUnresolvedReferences
   def get_rst_document(self):
     logger.debug("Reading docutils document object from a RST file %s", self.file_path)
-    fileobj = open(self.file_path, 'r')
+    fileobj = open(self.file_path, 'r', encoding='utf-8')
     default_settings = docutils.frontend.OptionParser(
       components=(docutils.parsers.rst.Parser,)).get_default_values()
     rst_document = docutils.utils.new_document(fileobj.name, default_settings)
@@ -277,7 +277,7 @@ class RSTFilePostProcessor:
     writer.write(rst_document, destination)
     ensuredir(os.path.dirname(self.file_path))
     try:
-      f = codecs.open(self.file_path, 'w', 'utf-8')
+      f = codecs.open(self.file_path, 'w', encoding='utf-8')
       try:
         f.write(writer.output)
       finally:
@@ -289,7 +289,7 @@ class RSTFilePostProcessor:
 # noinspection PyUnresolvedReferences
 def validate_rst_file(filepath):
   logger.debug("Reading and parsing an RST file %s, check for errors below!", filepath)
-  fileobj = open(filepath, 'r')
+  fileobj = open(filepath, 'r', encoding='utf-8')
   default_settings = docutils.frontend.OptionParser(
     components=(docutils.parsers.rst.Parser,)).get_default_values()
   rst_document = docutils.utils.new_document(fileobj.name, default_settings)

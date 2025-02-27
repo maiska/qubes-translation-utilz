@@ -50,7 +50,7 @@ class Permalinks2Filepath:
             file_pattern[1:len(file_pattern)])]
           if relative_path.startswith(exclude_pattern):
             continue
-          with io.open(file_path) as fp:
+          with io.open(file_path, encoding='utf-8') as fp:
             md = load(fp)
             if not md.metadata:
               continue
@@ -79,7 +79,7 @@ class Permalinks2Filepath:
           relative_path = file_path[file_path.index(subdir) + len(subdir):file_path.index(
             file_pattern[1:len(file_pattern)])]
           if relative_path.startswith(single_dir):
-            with io.open(file_path) as fp:
+            with io.open(file_path, encoding='utf-8') as fp:
               md = load(fp)
               if not md.metadata:
                 continue
@@ -104,7 +104,7 @@ class Permalinks2Filepath:
           file_path = os.path.join(path, file_name)
           logger.info('Collecting section mapping ids -> name doc path for [%s] in [%s]' %
                 (docs_path, file_path))
-          with io.open(file_path) as fp:
+          with io.open(file_path, encoding='utf-8') as fp:
             md = load(fp)
             if not md.metadata:
               continue

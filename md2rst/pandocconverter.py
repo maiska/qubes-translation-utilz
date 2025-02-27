@@ -31,7 +31,7 @@ class PandocConverter:
           # continue
           rst_name = os.path.splitext(filepath)[0] + '.rst'
           logger.info('Converting [%s] to [%s]', filepath, rst_name)
-          with io.open(filepath, 'r') as fp:
+          with io.open(filepath, 'r', encoding='utf-8') as fp:
             md = load(fp)
             title = md.get('title')
           #if filename == "how-to-back-up-restore-and-migrate.md":
@@ -39,7 +39,7 @@ class PandocConverter:
           #else:
           #  convert_file(filepath, outputfile=rst_name, to='rst')#, format='md')
 
-          with io.open(rst_name, 'r+') as fp:
+          with io.open(rst_name, 'r+', encoding='utf-8') as fp:
             lines = fp.readlines()
             fp.seek(0)
             header = "=" * len(title)

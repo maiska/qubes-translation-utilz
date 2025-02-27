@@ -45,7 +45,7 @@ class MarkdownRedirector:
         relative_path = file_path[file_path.index(subdir) + len(subdir):file_path.index(
           file_extension[1:len(file_extension)])]
 
-        with open(file_path) as fp:
+        with open(file_path, encoding='utf-8') as fp:
           md = load(fp)
         if not md.metadata:
           continue
@@ -55,5 +55,5 @@ class MarkdownRedirector:
           md[REDIRECT_TO_KEY] = create_rtd_url(self.base_site, relative_path)
         md.content = ''
 
-        with open(file_path, 'wb') as f:
+        with open(file_path, 'wb', encoding='utf-8') as f:
           dump(md, f)

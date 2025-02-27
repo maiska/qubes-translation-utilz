@@ -110,7 +110,7 @@ def convert_svg_to_png(config_toml: dict) -> None:
 
 
 def write_to(data: str, filepath: str, mode: str = "w") -> None:
-  with open(filepath, mode) as f:
+  with open(filepath, mode, encoding='utf-8') as f:
     f.write(data)
 
 

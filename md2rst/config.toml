@@ -201,6 +201,7 @@ add_icons = "\n.. |checkmark| image:: /attachment/doc/checkmark.png\n.. |redx| i
 add_icons_to_files = [
     'faq.rst',
     'usability-ux.rst',
+    'qmemman.rst',
 ]
 
 [run]
@@ -522,7 +523,14 @@ redirect_markdown = false
 'and our `mailing lists <https://www.qubes-os.org/support/>`__.' = 'and our :doc:`mailing lists </introduction/support>`.'
 '``make      help``' = '``make help``'
 '*$(WIN_OUTPUT_LIBS)/*/**' = '*$(WIN_OUTPUT_LIBS)/\*/\**'
-
+':widths: 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4' = ':widths: 4 4 4 4 4 4 4 4'
+':widths: 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1' = ':widths: 1 1 1 1 1 1 1 1'
+"        -  \n        -" = '      * -'
+"(‘\n’ aka LF)" = "('\\n' aka LF)"
+"   policy/qubesos/code-signing — Unable to verify (no valid key found)" = "   ``policy/qubesos/code-signing — Unable to verify (no valid key found)``"
+"Please note: The Qubes security team email address is intended for responsible disclosure by security researchers and others who discover legitimate security vulnerabilities. It is not intended for everyone who suspects they’ve been hacked. Please do not attempt to contact the Qubes security team unless you can demonstrate an actual security vulnerability or unless the team will be able to take reasonable steps to verify your claims." = "**Please note:** The Qubes security team email address is intended for **responsible disclosure** by security researchers and others who discover legitimate security vulnerabilities. It is **not** intended for everyone who suspects they’ve been hacked. Please do not attempt to contact the Qubes security team unless you can **demonstrate** an actual security vulnerability or unless the team will be able to take reasonable steps to verify your claims."
+"`Qubes’ qrexec system <https://www.qubes-os.org/doc/qrexec/>`__" = ":doc:`Qubes’ qrexec system </developer/services/qrexec>`"
+"These can be :ref:`copied <user/how-to-guides/how-to-copy-from-dom0:copying **from** dom0>`" = "These can be :ref:`copied <user/how-to-guides/how-to-copy-from-dom0:copying *from* dom0>`"
 
 
 
