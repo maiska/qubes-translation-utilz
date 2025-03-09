@@ -531,7 +531,7 @@ redirect_markdown = false
 "Please note: The Qubes security team email address is intended for responsible disclosure by security researchers and others who discover legitimate security vulnerabilities. It is not intended for everyone who suspects they’ve been hacked. Please do not attempt to contact the Qubes security team unless you can demonstrate an actual security vulnerability or unless the team will be able to take reasonable steps to verify your claims." = "**Please note:** The Qubes security team email address is intended for **responsible disclosure** by security researchers and others who discover legitimate security vulnerabilities. It is **not** intended for everyone who suspects they’ve been hacked. Please do not attempt to contact the Qubes security team unless you can **demonstrate** an actual security vulnerability or unless the team will be able to take reasonable steps to verify your claims."
 "`Qubes’ qrexec system <https://www.qubes-os.org/doc/qrexec/>`__" = ":doc:`Qubes’ qrexec system </developer/services/qrexec>`"
 "These can be :ref:`copied <user/how-to-guides/how-to-copy-from-dom0:copying **from** dom0>`" = "These can be :ref:`copied <user/how-to-guides/how-to-copy-from-dom0:copying *from* dom0>`"
-
+"``qrexec-agent``s" = "``qrexec-agent(s)``"
 
 
 
