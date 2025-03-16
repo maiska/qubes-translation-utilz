@@ -532,6 +532,9 @@ redirect_markdown = false
 "`Qubes’ qrexec system <https://www.qubes-os.org/doc/qrexec/>`__" = ":doc:`Qubes’ qrexec system </developer/services/qrexec>`"
 "These can be :ref:`copied <user/how-to-guides/how-to-copy-from-dom0:copying **from** dom0>`" = "These can be :ref:`copied <user/how-to-guides/how-to-copy-from-dom0:copying *from* dom0>`"
 "``qrexec-agent``s" = "``qrexec-agent(s)``"
+'   |QWT_install_select|' = "\n   |QWT_install_select|\n"
+'   |QWT_install_driver|' = "\n   |QWT_install_driver|\n"
+
 
 
 
