@@ -409,8 +409,8 @@ redirect_markdown = false
 ':doc:`Disk Trim <https://forum.qubes-os.org/t/19054>`' = '`Disk Trim <https://forum.qubes-os.org/t/19054>`__'
 ':doc:`here <https://forum.qubes-os.org/t/19054>`' = '`here <https://forum.qubes-os.org/t/19054>`__'
 '- app qube3'='- :ref:`app qubes <user/reference/glossary:app qube>`:superscript:`3`'
-'- dispo sable'='- :ref:`disposable <user/reference/glossary:disposable>`'
-'- t emplate' = '- :ref:`template <user/reference/glossary:template>`'
+'* - disposable'='* - :ref:`disposable <user/reference/glossary:disposable>`'
+'* - template' = '* - :ref:`template <user/reference/glossary:template>`'
 'Inheritance1' = 'Inheritance :superscript:`1`'
 'Persistence2' = 'Persistence :superscript:`2`'
 '1Upon creation' = ':superscript:`1` Upon creation'
@@ -534,8 +534,14 @@ redirect_markdown = false
 "``qrexec-agent``s" = "``qrexec-agent(s)``"
 '   |QWT_install_select|' = "\n   |QWT_install_select|\n"
 '   |QWT_install_driver|' = "\n   |QWT_install_driver|\n"
-
-
+'#qubes-41-how-to-enable-a-usb-keyboard-on-a-separate-usb-controller' = '#qubes-4-1-how-to-enable-a-usb-keyboard-on-a-separate-usb-controller'
+'*Note* ' = '*Note*: '
+'** The CentOS' = '\* *The CentOS'
+"| Some users" = "Some users"
+"| We do not" = "\nWe do not"
+"| An alternative approach" = "An alternative approach"
+"| A list of steps to" = "\nA list of steps to"
+"| As stated in" = "\nAs stated in"
 
 
 #TODO after stage 2 '```qvm-device pci`` </doc/how-to-use-devices/#general-qubes-device-widget-behavior-and-handling>`__.' = '`qvm-device pci </doc/how-to-use-devices/#general-qubes-device-widget-behavior-and-handling>`__.'
