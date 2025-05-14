@@ -152,7 +152,6 @@ class RSTDirectoryPostProcessor:
           with open(filepath, 'w', encoding='utf-8') as file:
             file.writelines(lines)
 
-
   def search_replace_custom_links(self, links_to_replace: dict, file_pattern: str = '*.rst') -> None:
     for path, dirs, files in os.walk(os.path.abspath(self.rst_directory)):
       for filename in fnmatch.filter(files, file_pattern):
@@ -165,10 +164,28 @@ class RSTDirectoryPostProcessor:
             found = True
             logger.debug("Reading RST file %s and replacing custom strings markdown links", filepath)
             logger.debug("String to replace: [%s] with: [%s]", to_replace, replace_with)
-
             
         if found:
           write_to(data, filepath)
+
+
+  def check_replaced_custom_links(self, links_to_replace: dict, file_pattern: str = '*.rst') -> None:
+    replaced_dict = {key:False for key in links_to_replace.values()}
+    for path, dirs, files in os.walk(os.path.abspath(self.rst_directory)):
+      for filename in fnmatch.filter(files, file_pattern):
+        filepath = os.path.join(path, filename)
+        data = read_from(filepath)
+        for replace_with in links_to_replace.values():
+          if replace_with in data or (replace_with.find('\n') and re.search(re.escape(replace_with), data, re.DOTALL)):
+            replaced_dict[replace_with] = True
+
+    logger.debug('################################')
+    logger.debug('################################')
+    logger.debug('############## Replaced value NOT found in rst doc ##################')
+    logger.debug([key for key, value in replaced_dict.items() if value is False])
+    logger.debug('################################')
+    logger.debug('################################')
+
 
   def search_replace_md_links_single(self, filepath: str) -> None:
     logger.debug("Reading RST file %s and replacing leftover markdown links if any", filepath)

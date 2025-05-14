@@ -178,9 +178,11 @@ def run(config_toml: dict) -> None:
     rst_directory_post_processor.search_replace_custom_qubes_links(config['customized_qubesos_link_mappings'])
 
 
+
   if config_toml[RUN]['replace_custom_strings']:
     logger.debug("-------------------- MD LINKS REPLACE TEST ----------------------------")
     rst_directory_post_processor.search_replace_custom_links(config_toml['replace_custom_strings_values'])
+
  
   if config_toml[RUN]['add_icons']:
     logger.debug("-------------------- add icons at the end of a specific files ----------------------------")
@@ -221,6 +223,8 @@ def run(config_toml: dict) -> None:
       logger.debug("-------------------- MD LINKS REPLACE TEST ----------------------------")
       rst_directory_post_processor.search_replace_md_links_single(file_name_converted)
 
+  if config_toml[RUN]['check_custom_strings']:
+    rst_directory_post_processor.check_replaced_custom_links(config_toml['replace_custom_strings_values'])
 
 def run_single_rst_test(file_name: str, external_redirects_mappings: dict,
             md_doc_permalinks_and_redirects_to_filepath_map: dict,

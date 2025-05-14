@@ -308,6 +308,9 @@ git_init = false
 #replace_custom_strings = false
 #replace_custom_links = false
 #add_icons = false
+#check_custom_strings = false
+#add_thumbs = false
+##replace_index_rst = false
 
 docutils_validate = true
 qubes_rst = true
@@ -318,6 +321,8 @@ replace_custom_links = true
 add_icons = true
 add_thumbs = true
 replace_index_rst = true
+check_custom_strings = true
+
 
 
 # TODO grep for SYSTEM MESSAGE in rst converted documentation
