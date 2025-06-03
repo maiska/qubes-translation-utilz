@@ -74,6 +74,7 @@ md_file_names = ['doc.md']
 #--------------
 # !!! be careful before converting, make sure the contents is up to date and
 # satisfies the requirements !!!
+
 rst_config_files = ['requirements.txt', 'conf.py', '.readthedocs.yaml']
 
 
@@ -92,6 +93,8 @@ rst_index_file = ['index.rst']
 # !!! be careful before converting, make sure the contents is up to date and
 # satisfies the requirements !!!
 #----------------------------------------------------------------------
+
+#rst_files = ['research.rst', 'intro.rst']
 rst_files = ['research.rst', 'intro.rst', 'admin-api.rst']
 
 #######################################################################
@@ -395,7 +398,7 @@ redirect_markdown = false
 '**``sys-usb:2-5 - 058f_USB_2.0_Camera``**' = '**sys-usb:2-5 - 058f_USB_2.0_Camera**'
 '“\|appmenu\|[VM-name]: Qube Settings”' = '“[VM-name]: Qube Settings”'
 'Mostly WorksTM' = 'Mostly Works :superscript:`TM`'
-'of that usage see `here <../firewall_4.1/>`__' = 'of that usage see :doc:`here </user/security-in-qubes/firewall_4.1>`.'
+'of that usage see `here <../firewall_4.1/>`__' = 'of that usage see :doc:`here </user/security-in-qubes/firewall_4.1>`'
 'of that usage see `here <../firewall/>`__' = 'of that usage see :doc:`here </user/security-in-qubes/firewall/>`'
 'some created as `disposables <../glossary#disposable>`__' = 'some created as :ref:`disposables <user/reference/glossary:disposable>`.'
 '`templates <../templates/>`__ you want to have installed' = ':doc:`templates </user/templates/templates>` you want to have installed'
@@ -547,7 +550,36 @@ redirect_markdown = false
 "| An alternative approach" = "An alternative approach"
 "| A list of steps to" = "\nA list of steps to"
 "| As stated in" = "\nAs stated in"
+"| - " = "| `-` "
+"  The Applications tab in Qube Settings `The Applications tab in Qube Settings <>`__" = ""
+#"__which allows" = "__ which allows"
+"`here <https://www.qubes-os.org/doc/split-gpg-2/>`__" = ":doc:`here </user/security-in-qubes/split-gpg-2>`."
+"`here <https://www.qubes-os.org/doc/ctap-proxy/>`__" = ":doc:`here </user/security-in-qubes/ctap-proxy>`"
+"`attach the YubiKey <https://www.qubes-os.org/doc/how-to-use-usb-devices/>`__" = ":doc:`attach the YubiKey </user/how-to-guides/how-to-use-usb-devices>`"
+"**public keys must live in your ``work-email`` qube with Thunderbird rather than your offline ``work-gpg`` qube**" = "**public keys must live in your** ``work-email`` **qube with Thunderbird rather than your offline** ``work-gpg`` **qube**"
 
+"* - NovaCustom" = "* - `NovaCustom <https://novacustom.com/>`__"
+"* - Nitrokey" = "* - `Nitrokey <https://www.nitrokey.com/>`__"
+"* - Star Labs" = "* - `Star Labs <https://starlabs.systems/>`__"
+"* - 3mdeb" = "* - `3mdeb <https://3mdeb.com/>`__"
+"* - Insurgo" = "* - `Insurgo <https://insurgo.ca/>`__"
+"     - NitroPad V56\n     - Certification details" = "     - `NitroPad V56 <https://shop.nitrokey.com/shop/nitropad-v56-684>`__ \n     - :doc:`Certification details </user/hardware/certified-hardware/nitropad-v56/>`" 
+"     - NitroPad T430\n     - Certification details" = "     - `NitroPad T430 <https://shop.nitrokey.com/shop/nitropad-t430-119>`__ \n     - :doc:`Certification details </user/hardware/certified-hardware/nitropad-t430/>`" 
+"     - V54 Series\n     - Certification details"="     - `V54 Series <https://novacustom.com/product/v54-series/>`__ \n     - :doc:`Certification details </user/hardware/certified-hardware/novacustom-v54-series/>`"
+"     - V56 Series\n     - Certification details"="     - `V56 Series <https://novacustom.com/product/v56-series/>`__ \n     - :doc:`Certification details </user/hardware/certified-hardware/novacustom-v54-series/>`"
+"     - StarBook\n     - Certification details" = "     - `StarBook <https://starlabs.systems/pages/starbook>`__ \n     - :doc:`Certification details </user/hardware/certified-hardware/starlabs-starbook/>`"
+"     - NitroPC Pro 2\n     - Certification details" = "     - `NitroPC Pro 2 <https://shop.nitrokey.com/shop/nitropc-pro-2-523>`__ \n     - :doc:`Certification details </user/hardware/certified-hardware/nitropc-pro-2/>`"
+"     - NitroPC Pro\n     - Certification details" = "     - `NitroPC Pro <https://web.archive.org/web/20231027112856/https://shop.nitrokey.com/shop/product/nitropc-pro-523>`__ \n     - :doc:`Certification details </user/hardware/certified-hardware/nitropc-pro/>`"
+"     - NV41 Series\n     - Certification details" ="     - `NV41 Series <https://novacustom.com/product/nv41-series/>`__\n     - :doc:`Certification details </user/hardware/certified-hardware/novacustom-nv41-series/>`"
+"     - Dasharo FidelisGuard Z690\n     - Certification details" = "     - `Dasharo FidelisGuard Z690 <https://web.archive.org/web/20240917145232/https://shop.3mdeb.com/shop/open-source-hardware/dasharo-fidelisguard-z690-qubes-os-certified/>`__\n     - :doc:`Certification details </user/hardware/certified-hardware/dasharo-fidelisguard-z690/>`"
+"     - NitroPad X230\n     - Certification details" = "     - `NitroPad X230 <https://shop.nitrokey.com/shop/product/nitropad-t430-119>`__ \n     - :doc:`Certification details </user/hardware/certified-hardware/nitropad-x230/>`"
+"     - PrivacyBeast X230\n     - Certification details" = "     - `PrivacyBeast X230 <https://insurgo.ca/produit/qubesos-certified-privacybeast_x230-reasonably-secured-laptop/>`__ \n     - :doc:`Certification details </user/hardware/certified-hardware/insurgo-privacybeast-x230/>`"
+"The “HEADS with Measured Boot, requires Nitrokey!” firmware option is not certified." = "The “HEADS with Measured Boot, requires Nitrokey!” firmware option is *not* certified."
+"NitroPC Pro 2 configurations that include discrete graphics cards are not Qubes-certified. The only NitroPC Pro 2 configurations that are Qubes-certified are those that contain only integrated graphics." = "NitroPC Pro 2 configurations that include discrete graphics cards are *not* Qubes-certified. The only NitroPC Pro 2 configurations that are Qubes-certified are those that contain *only* integrated graphics."
+
+"how-to-edit-the-documentation/#security/>`__" = "how-to-edit-the-documentation/#security>`__"
+"this very reason <https://www.qubes-os.org/doc/documentation-style-guide/>`__" = "this very reason <https://www.qubes-os.org/doc/documentation-style-guide/#markdown-conventions>`__"
+":doc:`sys-usb </user/advanced-topics/usb-qubes>` to another qube via" = ":doc:`sys-usb </user/how-to-guides/how-to-use-usb-devices>` to another qube via"
 
 #TODO after stage 2 '```qvm-device pci`` </doc/how-to-use-devices/#general-qubes-device-widget-behavior-and-handling>`__.' = '`qvm-device pci </doc/how-to-use-devices/#general-qubes-device-widget-behavior-and-handling>`__.'
 
