@@ -580,6 +580,7 @@ redirect_markdown = false
 "how-to-edit-the-documentation/#security/>`__" = "how-to-edit-the-documentation/#security>`__"
 "this very reason <https://www.qubes-os.org/doc/documentation-style-guide/>`__" = "this very reason <https://www.qubes-os.org/doc/documentation-style-guide/#markdown-conventions>`__"
 ":doc:`sys-usb </user/advanced-topics/usb-qubes>` to another qube via" = ":doc:`sys-usb </user/how-to-guides/how-to-use-usb-devices>` to another qube via"
+"You can see the current supported versions :doc:`here <user/downloading-installing-upgrading/supported-releases:templates>`." = "You can see the current supported versions :ref:`here <user/downloading-installing-upgrading/supported-releases:templates>`."
 
 #TODO after stage 2 '```qvm-device pci`` </doc/how-to-use-devices/#general-qubes-device-widget-behavior-and-handling>`__.' = '`qvm-device pci </doc/how-to-use-devices/#general-qubes-device-widget-behavior-and-handling>`__.'
 
