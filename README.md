@@ -35,42 +35,57 @@ It contains:
 2. Markdown files to be copied prior conversion such as 
 - doc.md - written out documentation index containing references to the separate doc files and external documentation 
   Be careful before converting, make sure the contents is up to date and satisfies the requirements 
+- This can now be **omitted** completely, since a preprared index.rst taking care of subsections instead of relying
+on dynamic conversion of an doc.md is used (!)
 
-3. RST specific files for which it was easier to create a manual representation
+3. RST specific files for which it was easier to create a manual representation:
+- index.rst
+- admin-api.rst
+- intro.rst
+- research.rst
+- video-tours.rst
 
 4. Certain RST files to skip from post processing and cross referencing links because either they do not have any (gui.rst) 
   or are already converted and prepared (the rest of the files). These files will be skipped ALWAYS
 
 5. Directories and files to remove such as the markdown documentation configuration or mere redirects to external docs
 
-#### final TODOs
 
-1. fix final minor formatting errors where applicable
-2. sync forked maiska's repos with origin, check commits and check conversion
-3. test links with sphinx
-4. test pdf latex builds - all good (/) 
-5. test epub builds - currently it looks all right (/)
-6. run 3rd stage and test jekyll site
-7. deploy again
-8. go over the final version again  - till 3rd February
-9. fix extension strike through or some other highlighting
-10. merge pull request
-11. prepare, run final conversion of official qubes-doc
+### final TODOs
+
+#### TODOs before actualy productive conversion
+
+- existing pull requests
+- attachments folder added?
+- verify test pdf latex builds
+- verify test epub builds
+- rst specific documentation
+
+#### TODOs finalization
+
+1. prepare, run final conversion of official qubes-doc
    - qubes-doc will have different branches for old markdwon, rst, markdown after conversion
    - qubesos.github.io will have different branches for old markdwon, rst, markdown after conversion ?
    - attachment repo will be splitted between qubes-doc and qubesos.github.io repos and will no longer be a submodule
-   - list of documentation that needs to be ammended:
-      - https://qubes-doc-rst.readthedocs.io/en/latest/introduction/privacy.html (see also preparation folder of this repo for a suggestion)
-      - https://qubes-doc-rst.readthedocs.io/en/latest/introduction/contributing.html
-      - https://www.qubes-os.org/doc/documentation-style-guide/
-      - https://qubes-doc-rst.readthedocs.io/en/latest/index.html
-      - developer/general/gsod.rst
-      - developer/general/how-to-edit-the-documentation
-      - FAQ two sections: Should I trust the Qubes OS official website and one for RTD
-      - new doc how-to-edit-the-rst-documentation.rst in preparation folder in this repo
-         -- add a sentence such as "If you want you can read and compare the current rst qubes os doc with the previous original markdown documentation here..." or something like that with links.
-      - new styleguide for RST documentation is to be created 
 
+#### TODOs *after* conversion
+
+- create a comprehensive guide to locally serve, test and change the rst documentation
+- how to utilize css with rst?
+- get rid of warnings in the sphinx build log
+   - list of documentation that needs to be ammended:
+     - actually almost all of them in the rst version, some in the markdown version as commits!!
+     - https://current-qubes-docrtd.readthedocs.io/en/rtd-deploy-pr/introduction/privacy.html (see also preparation folder of this repo for a suggestion)
+     - https://current-qubes-docrtd.readthedocs.io/en/latest/introduction/contributing.html
+     - https://www.qubes-os.org/doc/documentation-style-guide/
+     - https://qubes-doc-rst.readthedocs.io/en/latest/index.html
+     - https://www.qubes-os.org/doc/how-to-edit-the-documentation/
+     - https://www.qubes-os.org/doc/visual-style-guide/ (include an rst section?)
+     - https://current-qubes-docrtd.readthedocs.io/en/rtd-deploy-pr/developer/general/gsod.html
+     - https://current-qubes-docrtd.readthedocs.io/en/rtd-deploy-pr/introduction/faq.html two sections: Should I trust the Qubes OS official website and a new one for RTD
+     - new doc how-to-edit-the-rst-documentation.rst in preparation folder in this repo
+         -- add a sentence such as "If you want you can read and compare the current rst qubes os doc with the previous original markdown documentation here..." or something like that with links.
+     - new styleguide for RST documentation is to be created
 
 
 ```commandline

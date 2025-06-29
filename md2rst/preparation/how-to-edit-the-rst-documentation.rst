@@ -180,27 +180,246 @@ See https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html for 
 - LATER TODO
 https://stackoverflow.com/questions/1862472/symbols-in-restructuredtext
 
+Sure, here is the documentation formatted as a reStructuredText document:
+
+ref: https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html
 
 
-Serving the RST documentation locally
+Basic Syntax
+-----------
+
+- **Paragraphs**: Separate paragraphs by leaving a blank line between them.
+- **Headings**: Use underlined text to create headings. The length of the underline determines the heading level.
+
+  .. code-block::
+
+     Heading
+     =======
+
+     Subheading
+     ---------
+
+Lists
+-----
+
+Unordered Lists
+^^^^^^^^^^^^^^
+
+Use asterisks (`*`), plus signs (`+`), or hyphens (`-`) for unordered lists.
+
+.. code-block::
+
+   - Item 1
+   - Item 2
+     - Subitem 2.1
+     - Subitem 2.2
+   - Item 3
+
+Ordered Lists
+^^^^^^^^^^^^
+
+Tables
+------
+
+Tables are created using grid syntax. Here’s an example:
+
+.. code-block::
+
+   +------------+------------+------------+
+   | Header 1   | Header 2   | Header 3   |
+   +============+============+============+
+   | Cell 1     | Cell 2     | Cell 3     |
+   +------------+------------+------------+
+   | Cell 4     | Cell 5     | Cell 6     |
+   +------------+------------+------------+
+
+or simple tables:
+
+
+
+Or as list:
+
+.. code-block::
+   .. list-table::
+   :widths: 15 8 8 10 20 30
+   :align: left
+   :header-rows: 1
+
+   * - call
+     - dest
+     - argument
+     - inside
+     - return
+     - note
+   * - ``admin.vmclass.List``
+     - ``dom0``
+     - `-`
+     - `-`
+     - ``<class>\n``
+     -
+   * - ``admin.vm.List``
+     - ``dom0|<vm>``
+     - `-`
+     - `-`
+     - ``<name> class=<class> state=<state>\n``
+     -
+
+
+Titles and Sections
+------------------
+
+Use underlines to create titles and sections. The type of underline determines the level of the heading.
+
+- `=` for main titles
+- `-` for subsections
+- `^` for sub-subsections
+- `"` for paragraphs
+
+.. code-block::
+
+   Main Title
+   =========
+
+   Subsection
+   ----------
+
+   Sub-subsection
+   ^^^^^^^^^^^^
+
+   Paragraph
+   """""""""
+
+Emphasis and Italics
+--------------------
+
+- *Italics*: Use single asterisks
+
+  .. code-block::
+
+     *italics*
+
+- **Bold**: Use double asterisks or underscores.
+
+  .. code-block::
+
+     **bold** or __bold__
+
+- `Monospace`: Use backticks.
+
+  .. code-block::
+
+     `monospace`
+
+Images
+------
+
+To include images, use the `image` directive. You need to specify the path to the image and an optional alt text.
+
+.. code-block::
+
+   .. image:: path/to/image.png
+      :alt: Alternative text
+      :width: 200px
+      :align: center
+
+Roles and References
+-------------------
+
+Roles
+
+Roles allow you to mark up text with additional meaning. For example, `:math:` for mathematical notation.
+
+.. code-block::
+
+   :math:`E=mc^2`
+
+References
+
+You can create references to other documents or sections within your documentation.
+
+Internal Links
+
+Use the `ref` role to link to other sections.
+
+.. code-block::
+
+   See the section on `links`_ for more information.
+
+Define the target:
+
+.. code-block::
+
+   .. _links: path/to/your/section
+
+Cross referencing:
+
+Use the `:doc:` role with a path
+
+.. code-block::
+    :doc:`contributions </introduction/contributing>`.
+
+TODO
+
+use `:ref:` for specific sections
+
+.. code-block::
+    :ref:`qubes <user/reference/glossary:qube>`
+
+External Links
+
+
+.. code-block::
+   `Mastodon <https://mastodon.social/@QubesOS>`__
+
+Or
+
+.. code-block::
+
+   Check out `Sphinx documentation`_ for more details.
+
+Define the target:
+
+.. code-block::
+
+   .. _Sphinx documentation: https://www.sphinx-doc.org/en/master/
+
+Directives
+----------
+
+Directives are used to insert non-paragraph content, such as images, tables, and code blocks.
+
+Code Blocks
+
+Use the `code-block` directive to insert code.
+
+.. code-block::
+
+   .. code-block:: python
+
+      def hello_world():
+          print("Hello, world!")
+
+Admonitions
+
+Admonitions are used to draw attention to specific information, such as notes, warnings, or tips.
+
+.. code-block::
+
+   .. note::
+      This is a note.
+
+   .. warning::
+      This is a warning.
+
+
+
+Building the RST documentation locally
 =====================================
 
-You can serve the ReStrucutedText offline on your local machine by using sphinx.
-The following commands should do the trick:
-
 .. code-block:: sh
-    :caption: Sphinx-View
+    :caption: sphinx-build
 
-    virtualenv -v .venv;
-    source .venv/bin/activate;
-    pip3 install sphinx-view;
-    sphinx-view _doc/ -c _doc/conf.py
-   
-
-
-This can be useful for making sure that your changes render the way you
-expect, especially when your changes affect formatting, images, tables,
-styling, etc.
+    sphinx-build -b html qubes-doc-rst/ build_qubes_rst
 
 Security
 ========
